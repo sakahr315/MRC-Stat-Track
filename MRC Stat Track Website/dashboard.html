@@ -9,14 +9,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #0d0d0d;
+            --bg-primary: #060b14;
+            --bg-secondary: #0a1120;
             --card-bg: rgba(255, 255, 255, 0.03);
             --border-subtle: rgba(255, 255, 255, 0.06);
-            --text-primary: rgba(250, 250, 250, 0.82);
-            --text-secondary: rgba(180, 180, 180, 0.75);
-            --accent: #2f8ffb;
-            --accent-glow: rgba(47, 143, 251, 0.25);
+            --text-primary: rgba(240, 245, 255, 0.88);
+            --text-secondary: rgba(180, 195, 215, 0.78);
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
             --font-outfit: 'Outfit', system-ui, -apple-system, sans-serif;
             --sidebar-width: 260px;
         }
@@ -52,10 +52,10 @@
             inset: 0;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.22;
+            opacity: 0.18;
             background-image:
-                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 48px 48px;
             mask-image: radial-gradient(ellipse 65% 55% at 50% 40%, black 30%, transparent 70%);
             -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 40%, black 30%, transparent 70%);
@@ -70,8 +70,8 @@
             transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
         .glass-card:hover {
-            border-color: rgba(47, 143, 251, 0.25);
-            box-shadow: 0 0 0 1px rgba(47, 143, 251, 0.08), 0 8px 32px rgba(0, 0, 0, 0.4);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1), 0 12px 40px rgba(0, 0, 0, 0.5);
         }
 
         @keyframes shine-sweep {
@@ -104,9 +104,9 @@
             height: 100%;
             background: linear-gradient(90deg,
                     transparent,
-                    rgba(255, 255, 255, 0.2) 40%,
-                    rgba(255, 255, 255, 0.3) 50%,
-                    rgba(255, 255, 255, 0.2) 60%,
+                    rgba(255, 255, 255, 0.15) 40%,
+                    rgba(255, 255, 255, 0.25) 50%,
+                    rgba(255, 255, 255, 0.15) 60%,
                     transparent);
             animation: shine-sweep 3.5s ease-in-out infinite;
             pointer-events: none;
@@ -156,8 +156,8 @@
         }
         .hover-lift:hover {
             transform: translateY(-6px);
-            border-color: rgba(47, 143, 251, 0.35);
-            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(47, 143, 251, 0.12);
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(59, 130, 246, 0.15);
         }
 
         .btn {
@@ -194,14 +194,14 @@
         }
 
         .btn-accent {
-            background: #2f8ffb;
+            background: #3b82f6;
             color: #ffffff;
             border: none;
-            box-shadow: 0 0 0 1px rgba(47, 143, 251, 0.3), 0 4px 16px rgba(47, 143, 251, 0.25);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.4), 0 4px 16px rgba(59, 130, 246, 0.3);
         }
         .btn-accent:hover {
-            background: #3b9aff;
-            box-shadow: 0 0 0 1px rgba(47, 143, 251, 0.5), 0 8px 24px rgba(47, 143, 251, 0.35);
+            background: #4f94ff;
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.6), 0 8px 24px rgba(59, 130, 246, 0.4);
         }
 
         .btn-danger {
@@ -271,7 +271,7 @@
             width: 420px;
             height: 420px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(47, 143, 251, 0.04) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
             transform: translate(-50%, -50%);
             transition: opacity 0.4s;
             will-change: left, top;
@@ -284,10 +284,10 @@
             position: fixed;
             top: 0;
             left: 0;
-            background: rgba(10, 10, 10, 0.9);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(8, 14, 26, 0.95);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
             padding: 1.5rem 1rem;
             display: flex;
             flex-direction: column;
@@ -326,14 +326,14 @@
             width: 100%;
             text-align: left;
         }
-        .nav-link:hover,
-        .nav-link.active {
-            background: rgba(47, 143, 251, 0.08);
+        .nav-link:hover {
+            background: rgba(59, 130, 246, 0.1);
             color: var(--text-primary);
         }
         .nav-link.active {
-            border-left: 2px solid var(--accent);
-            background: rgba(47, 143, 251, 0.1);
+            background: rgba(59, 130, 246, 0.15);
+            color: #fff;
+            border-left: 3px solid var(--accent);
         }
         .nav-link svg {
             width: 20px;
@@ -360,7 +360,7 @@
         }
         .stat-card {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-radius: 20px;
@@ -373,8 +373,8 @@
             overflow: hidden;
         }
         .stat-card:hover {
-            border-color: rgba(47, 143, 251, 0.3);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(47,143,251,0.12);
+            border-color: rgba(59, 130, 246, 0.35);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(59,130,246,0.12);
             transform: translateY(-2px);
         }
         .stat-card .icon-title {
@@ -417,8 +417,8 @@
             gap: 0.5rem;
         }
         .account-row {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 14px;
             padding: 1rem 1.25rem;
             display: flex;
@@ -430,8 +430,8 @@
             cursor: pointer;
         }
         .account-row:hover {
-            border-color: rgba(47, 143, 251, 0.3);
-            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(59, 130, 246, 0.35);
+            background: rgba(59, 130, 246, 0.05);
         }
         .account-info {
             display: flex;
@@ -457,9 +457,9 @@
             border: 1px solid rgba(52, 211, 153, 0.3);
         }
         .badge.offline {
-            background: rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.05);
             color: #888;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.08);
         }
         .badge.secret {
             background: rgba(255, 60, 60, 0.15);
@@ -471,70 +471,11 @@
             color: #c03cff;
             border: 1px solid rgba(200, 60, 255, 0.3);
         }
-        .badge.favourite {
-            background: rgba(255, 215, 0, 0.15);
-            color: #ffd700;
-            border: 1px solid rgba(255, 215, 0, 0.3);
-        }
         .stat-value {
             font-weight: 500;
             font-size: 0.9375rem;
             color: var(--text-secondary);
             font-feature-settings: "tnum";
-        }
-
-        /* Chart placeholder */
-        .chart-container {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 1.5rem;
-            height: 200px;
-            display: flex;
-            align-items: flex-end;
-            gap: 0.5rem;
-        }
-        .chart-bar {
-            flex: 1;
-            background: linear-gradient(to top, #2f8ffb, rgba(47,143,251,0.3));
-            border-radius: 4px 4px 0 0;
-            height: 0;
-            transition: height 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
-        }
-
-        /* Game selection cards */
-        .game-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 20px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        .game-card:hover {
-            border-color: rgba(47, 143, 251, 0.4);
-            background: rgba(47, 143, 251, 0.05);
-            transform: translateY(-4px);
-        }
-        .game-card .game-icon {
-            font-size: 2.5rem;
-        }
-        .game-card .game-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-
-        /* Page visibility */
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
         }
 
         /* Inventory table */
@@ -553,18 +494,19 @@
             cursor: pointer;
             user-select: none;
             font-weight: 500;
+            transition: color 0.2s;
         }
         .inventory-table th:hover {
             color: var(--text-primary);
         }
         .inventory-table td {
-            padding: 0.75rem 1rem;
+            padding: 0.8rem 1rem;
             font-size: 0.875rem;
             border-bottom: 1px solid rgba(255,255,255,0.03);
             color: var(--text-secondary);
         }
         .inventory-table tr:hover td {
-            background: rgba(255,255,255,0.02);
+            background: rgba(59, 130, 246, 0.04);
         }
         .inventory-table .pet-name {
             color: var(--text-primary);
@@ -593,16 +535,16 @@
             font-family: var(--font-outfit);
             font-size: 0.875rem;
             width: 100%;
-            max-width: 350px;
+            max-width: 300px;
             outline: none;
             transition: border-color 0.2s;
         }
         .search-input:focus {
-            border-color: rgba(47,143,251,0.4);
+            border-color: rgba(59,130,246,0.4);
         }
         .search-input::placeholder {
             color: var(--text-secondary);
-            opacity: 0.6;
+            opacity: 0.5;
         }
 
         /* Filter select */
@@ -616,54 +558,37 @@
             font-size: 0.8125rem;
             outline: none;
             cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .filter-select:focus {
+            border-color: rgba(59,130,246,0.4);
         }
         .filter-select option {
-            background: #1a1a1a;
+            background: #0a1120;
             color: var(--text-primary);
         }
 
-        /* Modal overlay */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.75);
-            z-index: 200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+        /* Games overview cards */
+        .game-overview-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.3s ease;
         }
-        .modal {
-            background: rgba(20,20,20,0.95);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px;
-            padding: 2rem;
-            max-width: 700px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            z-index: 201;
+        .game-overview-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
-        .modal h2 {
-            margin-bottom: 1.5rem;
-        }
-        .modal-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            font-size: 1.5rem;
-            padding: 0.5rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-        .modal-close:hover {
-            background: rgba(255,255,255,0.06);
-            color: var(--text-primary);
+
+        /* Analytics section */
+        .analytics-panel {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         /* Notification toast */
@@ -671,8 +596,8 @@
             position: fixed;
             bottom: 2rem;
             right: 2rem;
-            background: rgba(30,30,30,0.95);
-            border: 1px solid rgba(47,143,251,0.3);
+            background: rgba(8, 14, 26, 0.95);
+            border: 1px solid rgba(59,130,246,0.3);
             border-radius: 14px;
             padding: 1rem 1.5rem;
             z-index: 999;
@@ -694,8 +619,8 @@
 
         /* Back button */
         .back-btn {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
             color: var(--text-secondary);
             padding: 0.5rem 1rem;
             border-radius: 10px;
@@ -713,11 +638,18 @@
             color: var(--text-primary);
         }
 
-        /* Copy button feedback */
-        .copied {
-            background: #34d399 !important;
-            color: #000 !important;
-            border-color: #34d399 !important;
+        /* Loading spinner */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto;
         }
 
         @media (max-width: 768px) {
@@ -765,11 +697,11 @@
     <aside class="sidebar">
         <a href="index.html" class="sidebar-logo">
             <svg width="30" height="30" viewBox="0 0 32 32" fill="none" style="flex-shrink:0;">
-                <rect x="2" y="2" width="28" height="28" rx="7" fill="rgba(47,143,251,0.12)" stroke="rgba(47,143,251,0.5)" stroke-width="1.5"/>
-                <rect x="8" y="18" width="4" height="8" rx="1.5" fill="#2f8ffb" opacity="0.9"/>
-                <rect x="14" y="12" width="4" height="14" rx="1.5" fill="#2f8ffb" opacity="0.75"/>
-                <rect x="20" y="6" width="4" height="20" rx="1.5" fill="#2f8ffb" opacity="0.6"/>
-                <circle cx="10" cy="8" r="1.8" fill="#2f8ffb" class="pulse-dot"/>
+                <rect x="2" y="2" width="28" height="28" rx="7" fill="rgba(59,130,246,0.12)" stroke="rgba(59,130,246,0.5)" stroke-width="1.5"/>
+                <rect x="8" y="18" width="4" height="8" rx="1.5" fill="#3b82f6" opacity="0.9"/>
+                <rect x="14" y="12" width="4" height="14" rx="1.5" fill="#3b82f6" opacity="0.75"/>
+                <rect x="20" y="6" width="4" height="20" rx="1.5" fill="#3b82f6" opacity="0.6"/>
+                <circle cx="10" cy="8" r="1.8" fill="#3b82f6" class="pulse-dot"/>
             </svg>
             MRC Track Stat
         </a>
@@ -801,7 +733,7 @@
             <p class="text-body">Manage your trackers and monitor your Roblox accounts. <span id="refresh-indicator" style="color:var(--accent);font-size:0.75rem;"></span></p>
         </section>
 
-        <!-- Global Account Tracking (always visible on Dashboard, loads automatically) -->
+        <!-- Global Account Tracking (loads automatically) -->
         <div class="stat-cards-grid fade-up delay-1" id="global-stats">
             <div class="stat-card">
                 <div class="icon-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Total Accounts</div>
@@ -817,6 +749,28 @@
                 <div class="icon-title"><span style="color:#888;">●</span> Offline</div>
                 <div class="main-value" id="stat-offline">—</div>
                 <div class="trend">—</div>
+            </div>
+        </div>
+
+        <!-- Games Overview -->
+        <div class="fade-up delay-2" style="margin-bottom:2.5rem;" id="games-overview">
+            <h2 style="font-size:1.5rem; margin-bottom:1rem;">Games Overview</h2>
+            <div class="stat-cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+                <div class="game-overview-card" id="game-saber-card">
+                    <div style="font-size:1.5rem; margin-bottom:0.5rem;">🗡️</div>
+                    <h3 style="font-size:1rem;">Saber Simulator</h3>
+                    <p id="saber-online-count" class="text-body" style="margin-top:0.25rem;">Loading…</p>
+                </div>
+                <div class="game-overview-card">
+                    <div style="font-size:1.5rem; margin-bottom:0.5rem;">🐾</div>
+                    <h3 style="font-size:1rem;">Pet Simulator 99</h3>
+                    <p class="text-body" style="margin-top:0.25rem; opacity:0.6;">Coming Soon</p>
+                </div>
+                <div class="game-overview-card">
+                    <div style="font-size:1.5rem; margin-bottom:0.5rem;">🌱</div>
+                    <h3 style="font-size:1rem;">Other Games</h3>
+                    <p class="text-body" style="margin-top:0.25rem; opacity:0.6;">Coming Soon</p>
+                </div>
             </div>
         </div>
 
@@ -877,7 +831,8 @@
                     <h3 style="font-size:1.125rem; margin-bottom:1rem;">Tracked Accounts</h3>
                     <div class="account-list" id="account-list">
                         <div style="text-align:center;padding:2rem;color:var(--text-secondary);">
-                            <p>Loading accounts...</p>
+                            <div class="spinner" style="margin-bottom:0.75rem;"></div>
+                            Loading accounts...
                         </div>
                     </div>
                 </section>
@@ -892,7 +847,15 @@
                         <span class="text-small" id="detail-total-pets">Total pets: —</span>
                         <span class="text-small" id="detail-inventory-value">Inventory value: —</span>
                     </div>
-                    <h4 style="font-size:0.9375rem;margin-bottom:0.75rem;color:var(--text-secondary);">Pet Inventory</h4>
+                    <button class="btn btn-accent" style="margin-bottom:1rem; padding:0.4rem 1rem; font-size:0.8125rem;" onclick="toggleAnalytics()">📊 Analytics</button>
+
+                    <!-- Analytics Panel -->
+                    <div class="analytics-panel" id="analytics-panel" style="display:none;">
+                        <h4 style="margin-bottom:1rem;">Account Analytics</h4>
+                        <div id="analytics-content">Loading...</div>
+                    </div>
+
+                    <h4 style="font-size:0.9375rem;margin:1.5rem 0 0.75rem;color:var(--text-secondary);">Pet Inventory</h4>
                     <div style="overflow-x:auto;">
                         <table class="inventory-table" id="detail-inventory-table">
                             <thead>
@@ -914,7 +877,7 @@
                     </div>
                 </section>
 
-                <!-- Global Pet Inventory (on-demand loading with account selector) -->
+                <!-- Global Pet Inventory -->
                 <section class="glass-card fade-up delay-3" style="padding:1.5rem;margin-bottom:2rem;" id="global-inventory-section">
                     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
                         <h3 style="font-size:1.125rem;">All Pet Inventory</h3>
@@ -923,15 +886,6 @@
                                 <option value="">All Accounts</option>
                             </select>
                             <input type="text" class="search-input" placeholder="Search pets..." id="inventory-search" oninput="filterInventory()">
-                            <select class="filter-select" id="rarity-filter" onchange="filterInventory()">
-                                <option value="">All Rarities</option>
-                                <option value="Secret">Secret</option>
-                                <option value="Mythical">Mythical</option>
-                                <option value="Legendary">Legendary</option>
-                                <option value="Epic">Epic</option>
-                                <option value="Rare">Rare</option>
-                                <option value="Common">Common</option>
-                            </select>
                             <select class="filter-select" id="variant-filter" onchange="filterInventory()">
                                 <option value="">All Variants</option>
                                 <option value="Rainbow">Rainbow</option>
@@ -953,7 +907,7 @@
                                     <th onclick="sortInventory('amount')">Total Owned ↕</th>
                                     <th onclick="sortInventory('value')">Value (each) ↕</th>
                                     <th onclick="sortInventory('totalValue')">Total Value ↕</th>
-                                    <th>Owners</th>
+                                    <th onclick="sortInventory('owners')">Owners ↕</th>
                                     <th>Fav</th>
                                 </tr>
                             </thead>
@@ -1040,7 +994,7 @@
                     <div style="font-size:2rem;">🗡️</div>
                     <h3>Saber Simulator</h3>
                     <p class="text-small">Live tracking — Gems, Pets, Inventory</p>
-                    <span class="badge" style="background:rgba(47,143,251,0.12); color:var(--accent); margin-top:0.5rem;">Live</span>
+                    <span class="badge" style="background:rgba(59,130,246,0.12); color:var(--accent); margin-top:0.5rem;">Live</span>
                 </div>
                 <div class="glass-card" style="padding:1.5rem; text-align:center;">
                     <div style="font-size:2rem;">🐾</div>
@@ -1110,7 +1064,6 @@
             let allInventory = [];
             let accountDetailsCache = {};
             let currentSort = { field: 'rarity', asc: false };
-            // Favourites now stored as "petName|variant" keys
             let favourites = JSON.parse(localStorage.getItem('mrc_favourites_v2') || '[]');
             let favFilterActive = false;
             let currentGame = null;
@@ -1118,6 +1071,7 @@
             let previousOnlineCount = 0;
             let autoRefreshInterval = null;
             let globalOverviewData = null;
+            let currentAnalyticsUsername = null;
 
             // ─── Favourite key helpers ───
             function makeFavKey(petName, variant) {
@@ -1129,12 +1083,57 @@
             function toggleFavByKey(petName, variant) {
                 const key = makeFavKey(petName, variant);
                 const idx = favourites.indexOf(key);
-                if (idx >= 0) {
-                    favourites.splice(idx, 1);
-                } else {
-                    favourites.push(key);
-                }
+                if (idx >= 0) favourites.splice(idx, 1);
+                else favourites.push(key);
                 localStorage.setItem('mrc_favourites_v2', JSON.stringify(favourites));
+            }
+
+            // ─── Analytics helpers ───
+            function getAnalyticsKey(username) { return `mrc_analytics_${username}`; }
+            function loadAnalytics(username) {
+                const raw = localStorage.getItem(getAnalyticsKey(username));
+                return raw ? JSON.parse(raw) : null;
+            }
+            function saveAnalytics(username, data) {
+                localStorage.setItem(getAnalyticsKey(username), JSON.stringify(data));
+            }
+            function initAnalytics(username, currentPets) {
+                const now = Date.now();
+                const data = {
+                    addedDate: now,
+                    startingPets: currentPets,
+                    currentPets: currentPets,
+                    snapshots: [{ date: now, pets: currentPets }]
+                };
+                saveAnalytics(username, data);
+                return data;
+            }
+            function updateAnalytics(username, currentPets) {
+                let data = loadAnalytics(username);
+                if (!data) data = initAnalytics(username, currentPets);
+                data.currentPets = currentPets;
+                // Add snapshot if it's a new day
+                const lastSnapshot = data.snapshots[data.snapshots.length - 1];
+                const today = new Date().toDateString();
+                if (new Date(lastSnapshot.date).toDateString() !== today) {
+                    data.snapshots.push({ date: Date.now(), pets: currentPets });
+                }
+                saveAnalytics(username, data);
+                return data;
+            }
+            function get24hChange(data) {
+                if (!data || !data.snapshots.length) return null;
+                const now = Date.now();
+                const oneDay = 24 * 60 * 60 * 1000;
+                let closest = null;
+                for (const snap of data.snapshots) {
+                    if (now - snap.date <= oneDay && (closest === null || snap.date > closest.date)) {
+                        closest = snap;
+                    }
+                }
+                if (closest) return data.currentPets - closest.pets;
+                // fallback to starting
+                return data.currentPets - data.startingPets;
             }
 
             // ─── Cursor glow ───
@@ -1252,6 +1251,7 @@
             };
             const navLinks = document.querySelectorAll('.nav-link');
             const globalStats = document.getElementById('global-stats');
+            const gamesOverview = document.getElementById('games-overview');
 
             function switchPage(pageName) {
                 Object.values(pages).forEach(p => p.classList.remove('active'));
@@ -1262,10 +1262,11 @@
                 });
                 if (pageName === 'dashboard') {
                     globalStats.style.display = 'grid';
-                    // Load global overview immediately
+                    gamesOverview.style.display = 'block';
                     loadGlobalOverview();
                 } else {
                     globalStats.style.display = 'none';
+                    gamesOverview.style.display = 'none';
                 }
                 observeFadeUps();
             }
@@ -1277,7 +1278,7 @@
                 });
             });
 
-            // ─── Load global overview (called on dashboard entry, no game selection needed) ───
+            // ─── Load global overview (runs automatically) ───
             async function loadGlobalOverview() {
                 try {
                     const overview = await API.getSaberOverview();
@@ -1285,6 +1286,7 @@
                     document.getElementById('stat-total-accounts').textContent = overview.totalAccounts || 0;
                     document.getElementById('stat-online').textContent = overview.onlineAccounts || 0;
                     document.getElementById('stat-offline').textContent = overview.offlineAccounts || 0;
+                    document.getElementById('saber-online-count').innerHTML = `🟢 ${overview.onlineAccounts || 0} Online`;
 
                     if (previousOnlineCount > 0 && overview.onlineAccounts !== previousOnlineCount) {
                         const diff = overview.onlineAccounts - previousOnlineCount;
@@ -1299,21 +1301,18 @@
             // ─── Game selection ───
             window.selectGame = function(game) {
                 currentGame = game;
-                const gameSelection = document.getElementById('game-selection');
-                const ps99Dash = document.getElementById('ps99-dashboard');
-                const saberDash = document.getElementById('saber-dashboard');
-                gameSelection.style.display = 'none';
-                ps99Dash.style.display = 'none';
-                saberDash.style.display = 'none';
-
+                document.getElementById('game-selection').style.display = 'none';
+                document.getElementById('ps99-dashboard').style.display = 'none';
+                document.getElementById('saber-dashboard').style.display = 'none';
                 if (game === 'ps99') {
-                    ps99Dash.style.display = 'block';
+                    document.getElementById('ps99-dashboard').style.display = 'block';
                 } else if (game === 'saber') {
-                    saberDash.style.display = 'block';
+                    document.getElementById('saber-dashboard').style.display = 'block';
                     loadSaberData();
                     startAutoRefresh();
                 }
                 globalStats.style.display = 'grid';
+                gamesOverview.style.display = 'block';
                 observeFadeUps();
             };
 
@@ -1342,17 +1341,15 @@
                 try {
                     const refresh = document.getElementById('refresh-indicator');
                     refresh.textContent = silent ? 'Auto‑refreshing...' : 'Loading...';
-
                     const [overview, accounts] = await Promise.all([
                         API.getSaberOverview(),
                         API.getSaberAccounts()
                     ]);
-
-                    // Update global stats
                     globalOverviewData = overview;
                     document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
                     document.getElementById('stat-online').textContent = overview.onlineAccounts;
                     document.getElementById('stat-offline').textContent = overview.offlineAccounts;
+                    document.getElementById('saber-online-count').innerHTML = `🟢 ${overview.onlineAccounts} Online`;
                     document.getElementById('saber-total-gems').textContent = formatNumber(overview.totalGems);
                     document.getElementById('saber-total-pets-card').textContent = formatNumber(overview.totalPets);
 
@@ -1384,7 +1381,6 @@
                 }
             }
 
-            // ─── Update account filter dropdown ───
             function updateAccountFilterDropdown() {
                 const select = document.getElementById('account-filter');
                 const currentVal = select.value;
@@ -1399,8 +1395,8 @@
             window.loadFullInventory = async function() {
                 const tbody = document.getElementById('global-inventory-body');
                 const rareGrid = document.getElementById('rare-pets-grid');
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;">Loading inventory…</td></tr>';
-                rareGrid.innerHTML = '<div style="text-align:center;padding:2rem;grid-column:1/-1;">Loading…</div>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;"><div class="spinner" style="margin-bottom:0.5rem;"></div>Loading inventory…</td></tr>';
+                rareGrid.innerHTML = '<div style="text-align:center;padding:2rem;grid-column:1/-1;"><div class="spinner" style="margin-bottom:0.5rem;"></div>Loading…</div>';
 
                 try {
                     const details = await Promise.all(
@@ -1411,7 +1407,6 @@
                             }).catch(() => null)
                         )
                     );
-
                     const invMap = {};
                     for (const data of details) {
                         if (!data || !data.pets) continue;
@@ -1436,10 +1431,8 @@
                         owners: Array.from(item.owners),
                         totalValue: item.value * item.amount,
                     }));
-
                     const rareCount = allInventory.filter(p => isRarePet(p.rarity)).reduce((s, p) => s + p.amount, 0);
                     document.getElementById('saber-rare-pets-count').textContent = rareCount;
-
                     updateAccountFilterDropdown();
                     renderGlobalInventory();
                     renderRarePets();
@@ -1449,7 +1442,6 @@
                 }
             };
 
-            // ─── Render account list ───
             function renderAccountList(accounts) {
                 const list = document.getElementById('account-list');
                 if (!accounts || accounts.length === 0) {
@@ -1467,12 +1459,12 @@
                 `).join('');
             }
 
-            // ─── View account detail ───
             window.viewAccount = async function(username) {
                 const section = document.getElementById('account-detail-section');
                 section.style.display = 'block';
                 document.getElementById('detail-username').textContent = username;
                 section.scrollIntoView({ behavior: 'smooth' });
+                currentAnalyticsUsername = username;
 
                 try {
                     let accountData = accountDetailsCache[username];
@@ -1489,6 +1481,10 @@
                     const inventoryValue = calculateInventoryValue(accountData.pets);
                     document.getElementById('detail-inventory-value').textContent = 'Inventory value: ' + formatNumber(inventoryValue) + ' gems';
 
+                    // Update analytics
+                    updateAnalytics(username, accountData.totalPets || 0);
+
+                    // Render inventory table
                     const tbody = document.getElementById('detail-inventory-body');
                     const emptyDiv = document.getElementById('detail-empty');
                     if (!accountData.pets || accountData.pets.length === 0) {
@@ -1519,6 +1515,9 @@
                                 </tr>`;
                         }).join('');
                     }
+
+                    // Hide analytics panel when switching accounts
+                    document.getElementById('analytics-panel').style.display = 'none';
                 } catch (err) {
                     console.error(err);
                     document.getElementById('detail-empty').style.display = 'block';
@@ -1530,7 +1529,66 @@
                 document.getElementById('account-detail-section').style.display = 'none';
             };
 
-            // ─── Render global inventory ───
+            // ─── Analytics display ───
+            window.toggleAnalytics = function() {
+                const panel = document.getElementById('analytics-panel');
+                if (panel.style.display === 'none' || panel.style.display === '') {
+                    displayAnalytics(currentAnalyticsUsername);
+                    panel.style.display = 'block';
+                } else {
+                    panel.style.display = 'none';
+                }
+            };
+
+            function displayAnalytics(username) {
+                if (!username) return;
+                const data = loadAnalytics(username);
+                const container = document.getElementById('analytics-content');
+                if (!data) {
+                    container.innerHTML = '<p class="text-small">No analytics data yet. Open the account detail to start tracking.</p>';
+                    return;
+                }
+                const addedDate = new Date(data.addedDate).toLocaleDateString();
+                const change = data.currentPets - data.startingPets;
+                const changeStr = (change >= 0 ? '+' : '') + change;
+                const dayChange = get24hChange(data);
+                const dayChangeStr = dayChange !== null ? (dayChange >= 0 ? '+' : '') + dayChange : 'N/A';
+
+                let snapshotsHTML = data.snapshots.slice(-7).map(s => {
+                    const d = new Date(s.date).toLocaleDateString();
+                    return `<div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.03);">
+                        <span>${d}</span><span>${s.pets} Pets</span></div>`;
+                }).join('');
+
+                container.innerHTML = `
+                    <div class="stat-cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); margin-bottom:1rem;">
+                        <div class="stat-card" style="padding:1rem;">
+                            <div class="icon-title">📅 Account Added</div>
+                            <div class="main-value" style="font-size:1.2rem;">${addedDate}</div>
+                        </div>
+                        <div class="stat-card" style="padding:1rem;">
+                            <div class="icon-title">🐾 Starting Pets</div>
+                            <div class="main-value" style="font-size:1.8rem;">${data.startingPets}</div>
+                        </div>
+                        <div class="stat-card" style="padding:1rem;">
+                            <div class="icon-title">📈 Current Pets</div>
+                            <div class="main-value" style="font-size:1.8rem;">${data.currentPets}</div>
+                        </div>
+                        <div class="stat-card" style="padding:1rem;">
+                            <div class="icon-title">🔄 Total Change</div>
+                            <div class="main-value" style="font-size:1.8rem; color:${change >= 0 ? '#34d399' : '#ff6b6b'}">${changeStr}</div>
+                        </div>
+                        <div class="stat-card" style="padding:1rem;">
+                            <div class="icon-title">⏱️ Last 24h</div>
+                            <div class="main-value" style="font-size:1.8rem;">${dayChangeStr}</div>
+                        </div>
+                    </div>
+                    <h4 style="margin-bottom:0.5rem;">History (last 7 days)</h4>
+                    <div style="max-height:200px;overflow-y:auto;">${snapshotsHTML}</div>
+                `;
+            }
+
+            // ─── Inventory rendering ───
             function renderGlobalInventory() {
                 const tbody = document.getElementById('global-inventory-body');
                 if (allInventory.length === 0) {
@@ -1538,31 +1596,22 @@
                     return;
                 }
                 let filtered = [...allInventory];
-
-                // Account filter
                 const accountFilter = document.getElementById('account-filter').value;
-                if (accountFilter) {
-                    filtered = filtered.filter(p => p.owners.includes(accountFilter));
-                }
-                // Search
+                if (accountFilter) filtered = filtered.filter(p => p.owners.includes(accountFilter));
                 const searchTerm = document.getElementById('inventory-search').value.toLowerCase();
                 if (searchTerm) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
-                // Rarity filter
-                const rarityFilter = document.getElementById('rarity-filter').value;
-                if (rarityFilter) filtered = filtered.filter(p => p.rarity === rarityFilter);
-                // Variant filter
                 const variantFilter = document.getElementById('variant-filter').value;
                 if (variantFilter) filtered = filtered.filter(p => p.variant === variantFilter);
-                // Favourites filter
                 if (favFilterActive) filtered = filtered.filter(p => isFavourited(p.name, p.variant));
 
                 filtered.sort((a, b) => {
                     let cmp = 0;
                     switch (currentSort.field) {
                         case 'name': cmp = a.name.localeCompare(b.name); break;
+                        case 'amount': cmp = a.amount - b.amount; break;
+                        case 'owners': cmp = a.owners.join(',').localeCompare(b.owners.join(',')); break;
                         case 'rarity': cmp = getRarityRank(b.rarity) - getRarityRank(a.rarity); break;
                         case 'variant': cmp = (a.variant || '').localeCompare(b.variant || ''); break;
-                        case 'amount': cmp = a.amount - b.amount; break;
                         case 'value': cmp = a.value - b.value; break;
                         case 'totalValue': cmp = a.totalValue - b.totalValue; break;
                         default: cmp = getRarityRank(b.rarity) - getRarityRank(a.rarity);
@@ -1597,7 +1646,6 @@
                 renderGlobalInventory();
             };
 
-            // ─── Render rare pets ───
             function renderRarePets() {
                 const grid = document.getElementById('rare-pets-grid');
                 const rarePets = allInventory.filter(p => isRarePet(p.rarity));
@@ -1617,15 +1665,13 @@
                 `).join('');
             }
 
-            // ─── Favourites (pet name + variant combination) ───
+            // ─── Favourites ───
             window.toggleFavourite = function(petName, variant) {
                 toggleFavByKey(petName, variant);
                 renderGlobalInventory();
                 renderRarePets();
-                const detailSection = document.getElementById('account-detail-section');
-                if (detailSection.style.display !== 'none') {
-                    const username = document.getElementById('detail-username').textContent;
-                    if (username !== '—') viewAccount(username);
+                if (document.getElementById('account-detail-section').style.display !== 'none') {
+                    viewAccount(currentAnalyticsUsername);
                 }
             };
 
@@ -1719,90 +1765,58 @@
             // ─── Trackers Page ───
             window.copyTrackerScript = function() {
                 const btn = document.getElementById('copy-script-btn');
-                const scriptPlaceholder = '-- Tracker script will be available here soon --';
-                navigator.clipboard.writeText(scriptPlaceholder).then(() => {
+                navigator.clipboard.writeText('-- Tracker script coming soon --').then(() => {
                     btn.textContent = '✅ Copied!';
                     btn.classList.add('copied');
                     setTimeout(() => {
                         btn.textContent = '📋 Copy Tracker Script';
                         btn.classList.remove('copied');
                     }, 2000);
-                }).catch(() => {
-                    showToast('⚠ Failed to copy. Please try again.');
                 });
             };
-
             window.viewTrackerInstructions = function() {
-                const instructions = document.getElementById('tracker-instructions');
-                if (instructions.style.display === 'none') {
-                    instructions.style.display = 'block';
-                } else {
-                    instructions.style.display = 'none';
-                }
+                const el = document.getElementById('tracker-instructions');
+                el.style.display = el.style.display === 'none' ? 'block' : 'none';
             };
 
             // ─── Account Manager ───
             window.openAccountManager = async function() {
-                const modal = document.getElementById('account-manager-modal');
-                modal.style.display = 'flex';
+                document.getElementById('account-manager-modal').style.display = 'flex';
                 const list = document.getElementById('account-manager-list');
-
-                // Use cached data if available, otherwise fetch
-                if (!globalOverviewData) {
-                    await loadGlobalOverview();
-                }
-
                 try {
                     const accounts = await API.getSaberAccounts();
                     allAccounts = accounts || [];
-
                     if (allAccounts.length === 0) {
                         list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-secondary);"><p>No accounts connected yet.</p></div>';
                         return;
                     }
-
-                    list.innerHTML = allAccounts.map(acc => {
-                        let statusHTML = '';
-                        if (acc.online) {
-                            statusHTML = `
-                                <span class="badge online">Online</span>
-                                <span class="text-small">Online now</span>
-                            `;
-                        } else {
-                            statusHTML = `
-                                <span class="badge offline">Offline</span>
-                                <span class="text-small">Last seen: recently</span>
-                            `;
-                        }
-                        return `
-                            <div class="account-row" style="cursor:default;">
-                                <div class="account-info">
-                                    <span class="account-name">${escapeHTML(acc.username)}</span>
-                                    ${statusHTML}
-                                </div>
-                                <div style="display:flex;gap:0.5rem;align-items:center;">
-                                    <span class="stat-value">${acc.pets || 0} pets</span>
-                                    <button class="btn-danger" onclick="removeAccount('${escapeHTML(acc.username)}')">Remove</button>
-                                </div>
+                    list.innerHTML = allAccounts.map(acc => `
+                        <div class="account-row" style="cursor:default;">
+                            <div class="account-info">
+                                <span class="account-name">${escapeHTML(acc.username)}</span>
+                                ${acc.online ? '<span class="badge online">Online</span>' : '<span class="badge offline">Offline</span>'}
                             </div>
-                        `;
-                    }).join('');
+                            <div style="display:flex;gap:0.5rem;align-items:center;">
+                                <span class="stat-value">${acc.pets || 0} pets</span>
+                                <button class="btn-danger" onclick="removeAccount('${escapeHTML(acc.username)}')">Remove</button>
+                            </div>
+                        </div>
+                    `).join('');
                 } catch (err) {
-                    console.error(err);
                     list.innerHTML = '<div style="text-align:center;padding:2rem;color:#ff6b6b;"><p>Failed to load accounts.</p></div>';
                 }
             };
-
             window.closeAccountManager = function() {
                 document.getElementById('account-manager-modal').style.display = 'none';
             };
-
             window.removeAccount = function(username) {
-                if (confirm(`Are you sure you want to remove "${username}"? This will stop tracking this account.`)) {
-                    showToast(`Account "${username}" removal requested. (Backend endpoint coming soon)`);
-                    // Future: call API to remove account
+                if (confirm(`Remove "${username}"? This will stop tracking.`)) {
+                    showToast(`Account "${username}" removal requested. (API call coming soon)`);
                 }
             };
+            document.getElementById('account-manager-modal').addEventListener('click', function(e) {
+                if (e.target === this) closeAccountManager();
+            });
 
             // ─── Helpers ───
             function escapeHTML(str) {
@@ -1816,20 +1830,14 @@
                 return cls ? `<span class="badge ${cls}">${rarity}</span>` : rarity;
             }
 
-            // ─── Close modal on overlay click ───
-            document.getElementById('account-manager-modal').addEventListener('click', function(e) {
-                if (e.target === this) closeAccountManager();
-            });
-
-            // ─── Initialise ───
+            // ─── Initialize ───
             switchPage('dashboard');
             globalStats.style.display = 'grid';
+            gamesOverview.style.display = 'block';
             document.getElementById('game-selection').style.display = 'block';
             document.getElementById('ps99-dashboard').style.display = 'none';
             document.getElementById('saber-dashboard').style.display = 'none';
             observeFadeUps();
-
-            // Load global account stats immediately
             loadGlobalOverview();
         })();
     </script>
