@@ -1163,7 +1163,7 @@
             let previousOnlineCount = 0;
             let autoRefreshInterval = null;
             let globalOverviewData = null;
-            let inventoryLoaded = false;  // keeps inventory open during auto-refresh
+            let inventoryLoaded = false;
 
             // ─── Favourite key helpers ───
             function makeFavKey(petName, variant) {
@@ -1181,6 +1181,50 @@
                     favourites.push(key);
                 }
                 localStorage.setItem('mrc_favourites_v2', JSON.stringify(favourites));
+            }
+
+            // ─── Image resolution with caching ───
+            const imageUrlCache = new Map();
+
+            async function resolveImageUrl(rawUrl) {
+                if (imageUrlCache.has(rawUrl)) return imageUrlCache.get(rawUrl);
+                try {
+                    const res = await fetch(rawUrl);
+                    if (!res.ok) throw new Error('Failed to fetch thumbnail');
+                    const data = await res.json();
+                    const imageUrl = data?.data?.[0]?.imageUrl;
+                    if (!imageUrl) throw new Error('No imageUrl in response');
+                    imageUrlCache.set(rawUrl, imageUrl);
+                    return imageUrl;
+                } catch (err) {
+                    console.warn('Image resolve failed for', rawUrl, err);
+                    imageUrlCache.set(rawUrl, null);
+                    return null;
+                }
+            }
+
+            // Lazy‑load images with IntersectionObserver
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const rawUrl = img.dataset.rawUrl;
+                        if (rawUrl) {
+                            resolveImageUrl(rawUrl).then(imageUrl => {
+                                if (imageUrl) {
+                                    img.src = imageUrl;
+                                }
+                            });
+                        }
+                        imageObserver.unobserve(img);
+                    }
+                });
+            }, { rootMargin: '200px' });
+
+            function observeNewInventoryImages() {
+                const grid = document.getElementById('global-inventory-grid');
+                if (!grid) return;
+                grid.querySelectorAll('img[data-raw-url]').forEach(img => imageObserver.observe(img));
             }
 
             // ─── Cursor glow ───
@@ -1322,7 +1366,7 @@
                 });
             });
 
-            // ─── Load global overview (called on dashboard entry) ───
+            // ─── Load global overview ───
             async function loadGlobalOverview() {
                 try {
                     const overview = await API.getSaberOverview();
@@ -1344,7 +1388,7 @@
             // ─── Game selection ───
             window.selectGame = function(game) {
                 currentGame = game;
-                inventoryLoaded = false;  // reset inventory flag when switching games
+                inventoryLoaded = false;
                 const gameSelection = document.getElementById('game-selection');
                 const ps99Dash = document.getElementById('ps99-dashboard');
                 const saberDash = document.getElementById('saber-dashboard');
@@ -1411,7 +1455,6 @@
                     renderAccountList(allAccounts);
                     updateAccountFilterDropdown();
 
-                    // Do NOT reset inventory if already loaded (keeps it open during auto-refresh)
                     if (!inventoryLoaded) {
                         document.getElementById('global-inventory-grid').innerHTML =
                             `<div style="text-align:center;padding:2rem;grid-column:1/-1;">
@@ -1535,18 +1578,17 @@
                     return b.value - a.value;
                 });
 
-                // Apply additional user sort (if any) – currently not used, but we could add a sort selector later
-                // For now Void/rarity/value is the only sort.
-
                 grid.innerHTML = filtered.map(pet => {
-                    const imgUrl = getPetImageUrl(pet.name);
+                    const rawUrl = getPetImageUrl(pet.name); // Thumbnail API URL
                     const fav = isFavourited(pet.name, pet.variant);
+                    // Use transparent SVG placeholder, real image loaded lazily
+                    const imgHTML = rawUrl
+                        ? `<img data-raw-url="${escapeHTML(rawUrl)}" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3C/svg%3E" alt="${escapeHTML(pet.name)}" loading="lazy">`
+                        : `<div style="width:100%;height:100px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:2rem;">🔍</div>`;
+
                     return `
                         <div class="pet-card">
-                            ${imgUrl
-                                ? `<img src="${imgUrl}" alt="${escapeHTML(pet.name)}" loading="lazy">`
-                                : `<div style="width:100%;height:100px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:2rem;">🔍</div>`
-                            }
+                            ${imgHTML}
                             <span class="pet-name">${escapeHTML(pet.name)}${pet.variant ? ` (${escapeHTML(pet.variant)})` : ''}</span>
                             <span class="pet-value">${formatNumber(pet.value)}</span>
                             <span class="pet-amount">Qty: ${pet.amount}</span>
@@ -1554,30 +1596,122 @@
                         </div>
                     `;
                 }).join('');
+
+                // Re‑observe newly added images
+                observeNewInventoryImages();
             }
 
-            // ─── Filter trigger (from UI) ───
+            // ─── Filter trigger ───
             window.filterInventory = function() {
                 if (inventoryLoaded) renderInventoryGrid();
             };
 
             window.sortInventory = function(field) {
-                // (placeholder for future sort selector)
                 if (currentSort.field === field) currentSort.asc = !currentSort.asc;
                 else { currentSort.field = field; currentSort.asc = false; }
                 if (inventoryLoaded) renderInventoryGrid();
             };
 
             // ─── Render account list ───
-            function renderAccountList(accounts) { /* unchanged */ }
+            function renderAccountList(accounts) {
+                const list = document.getElementById('account-list');
+                if (!accounts || accounts.length === 0) {
+                    list.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--text-secondary);"><p>No accounts tracked yet.</p></div>`;
+                    return;
+                }
+                list.innerHTML = accounts.map(acc => `
+                    <div class="account-row" onclick="viewAccount('${escapeHTML(acc.username)}')">
+                        <div class="account-info">
+                            <span class="account-name">${escapeHTML(acc.username)}</span>
+                            <span class="badge ${acc.online ? 'online' : 'offline'}">${acc.online ? 'Online' : 'Offline'}</span>
+                        </div>
+                        <span class="stat-value">${acc.pets || 0} pets</span>
+                    </div>
+                `).join('');
+            }
 
             // ─── View account detail ───
-            window.viewAccount = async function(username) { /* unchanged */ };
+            window.viewAccount = async function(username) {
+                const section = document.getElementById('account-detail-section');
+                section.style.display = 'block';
+                document.getElementById('detail-username').textContent = username;
+                section.scrollIntoView({ behavior: 'smooth' });
 
-            window.closeAccountDetail = function() { /* unchanged */ };
+                try {
+                    let accountData = accountDetailsCache[username];
+                    if (!accountData) {
+                        accountData = await API.getSaberAccount(username);
+                        accountDetailsCache[username] = accountData;
+                    }
+
+                    document.getElementById('detail-status').textContent = accountData.online ? 'Online' : 'Offline';
+                    document.getElementById('detail-status').className = 'badge ' + (accountData.online ? 'online' : 'offline');
+                    document.getElementById('detail-last-update').textContent = 'Last update: ' +
+                        (accountData.lastUpdate ? new Date(accountData.lastUpdate).toLocaleString() : 'Never');
+                    document.getElementById('detail-total-pets').textContent = 'Total pets: ' + (accountData.totalPets || 0);
+                    const inventoryValue = calculateInventoryValue(accountData.pets);
+                    document.getElementById('detail-inventory-value').textContent = 'Inventory value: ' + formatNumber(inventoryValue) + ' gems';
+
+                    const tbody = document.getElementById('detail-inventory-body');
+                    const emptyDiv = document.getElementById('detail-empty');
+                    if (!accountData.pets || accountData.pets.length === 0) {
+                        tbody.innerHTML = '';
+                        emptyDiv.style.display = 'block';
+                    } else {
+                        emptyDiv.style.display = 'none';
+                        const sortedPets = [...accountData.pets].sort((a, b) => {
+                            const aFav = isFavourited(a.name, a.variant);
+                            const bFav = isFavourited(b.name, b.variant);
+                            if (aFav && !bFav) return -1;
+                            if (!aFav && bFav) return 1;
+                            return getRarityRank(b.rarity) - getRarityRank(a.rarity);
+                        });
+                        tbody.innerHTML = sortedPets.map(pet => {
+                            const value = getPetValue(pet.name);
+                            const totalValue = value * (pet.amount || 1);
+                            const fav = isFavourited(pet.name, pet.variant);
+                            return `
+                                <tr>
+                                    <td class="pet-name">${fav ? '⭐ ' : ''}${escapeHTML(pet.name)}</td>
+                                    <td>${rarityBadge(pet.rarity)}</td>
+                                    <td>${escapeHTML(pet.variant || '—')}</td>
+                                    <td>${pet.amount || 1}</td>
+                                    <td>${formatNumber(value)}</td>
+                                    <td>${formatNumber(totalValue)}</td>
+                                    <td><span class="fav-star ${fav ? 'favourited' : ''}" onclick="event.stopPropagation();toggleFavourite('${escapeHTML(pet.name)}', '${escapeHTML(pet.variant || '')}')">★</span></td>
+                                </tr>`;
+                        }).join('');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    document.getElementById('detail-empty').style.display = 'block';
+                    document.getElementById('detail-empty').querySelector('p').textContent = 'Failed to load account data.';
+                }
+            };
+
+            window.closeAccountDetail = function() {
+                document.getElementById('account-detail-section').style.display = 'none';
+            };
 
             // ─── Render rare pets ───
-            function renderRarePets() { /* unchanged */ }
+            function renderRarePets() {
+                const grid = document.getElementById('rare-pets-grid');
+                const rarePets = allInventory.filter(p => isRarePet(p.rarity));
+                if (rarePets.length === 0) {
+                    grid.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-secondary);grid-column:1/-1;"><p>No rare pets found.</p></div>';
+                    return;
+                }
+                grid.innerHTML = rarePets.map(pet => `
+                    <div class="stat-card" style="padding:1rem;">
+                        <div class="icon-title">${pet.rarity === 'Secret' ? '🔮' : '✨'} ${escapeHTML(pet.rarity)}</div>
+                        <div class="main-value" style="font-size:1.3rem;">${escapeHTML(pet.name)}${pet.variant ? ' (' + escapeHTML(pet.variant) + ')' : ''}</div>
+                        <div style="font-size:0.8125rem;color:var(--text-secondary);">
+                            Owned by: ${pet.owners.join(', ')}<br>
+                            Amount: ${pet.amount} · Value: ${formatNumber(pet.value)} each
+                        </div>
+                    </div>
+                `).join('');
+            }
 
             // ─── Favourites ───
             window.toggleFavourite = function(petName, variant) {
@@ -1605,25 +1739,164 @@
             };
 
             // ─── Pet search ───
-            window.searchPet = async function() { /* unchanged */ };
+            window.searchPet = async function() {
+                const query = document.getElementById('pet-search-input').value.trim();
+                if (!query) return;
+                const resultsDiv = document.getElementById('pet-search-results');
+                const emptyDiv = document.getElementById('pet-search-empty');
+                const queryName = document.getElementById('search-query-name');
+                const totalOwned = document.getElementById('search-total-owned');
+                const totalValue = document.getElementById('search-total-value');
+                const accountList = document.getElementById('search-account-list');
+                try {
+                    const result = await API.searchSaberPet(query);
+                    resultsDiv.style.display = 'block';
+                    emptyDiv.style.display = 'none';
+                    queryName.textContent = result.pet;
+                    totalOwned.textContent = result.totalOwned;
+                    totalValue.textContent = formatNumber((result.totalOwned || 0) * getPetValue(result.pet));
+                    accountList.innerHTML = (result.accounts || []).length === 0
+                        ? '<div style="padding:1rem;color:var(--text-secondary);">No accounts own this pet.</div>'
+                        : result.accounts.map(acc => `
+                            <div class="account-row" onclick="viewAccount('${escapeHTML(acc.username)}')">
+                                <div class="account-info"><span class="account-name">${escapeHTML(acc.username)}</span></div>
+                                <span class="stat-value">Amount: ${acc.amount}</span>
+                            </div>`).join('');
+                } catch (err) {
+                    resultsDiv.style.display = 'block';
+                    emptyDiv.style.display = 'none';
+                    accountList.innerHTML = '<div style="padding:1rem;color:#ff6b6b;">Pet not found or search failed.</div>';
+                }
+            };
 
             // ─── Event history ───
-            window.addEvent = function(eventData) { /* unchanged */ };
-            function renderEventHistory() { /* unchanged */ }
+            window.addEvent = function(eventData) {
+                eventHistory.unshift({ time: new Date().toLocaleTimeString(), ...eventData });
+                if (eventHistory.length > 50) eventHistory.pop();
+                renderEventHistory();
+            };
+            function renderEventHistory() {
+                const list = document.getElementById('event-history-list');
+                if (eventHistory.length === 0) {
+                    list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-secondary);"><p>Event history will appear here as trackers send data.</p></div>';
+                    return;
+                }
+                list.innerHTML = eventHistory.map(ev => `
+                    <div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.8125rem;">
+                        <span style="color:var(--text-secondary);min-width:70px;">${ev.time}</span>
+                        <span style="color:var(--text-primary);">${escapeHTML(ev.username || 'Unknown')}</span>
+                        <span style="color:var(--accent);">${ev.eventType || ev.type}</span>
+                        <span style="color:var(--text-secondary);">${escapeHTML(ev.details || '')}</span>
+                    </div>`).join('');
+            }
 
             // ─── Notifications ───
-            window.requestNotificationPermission = function() { /* unchanged */ };
-            function sendNotification(title, body) { /* unchanged */ }
-            function showToast(message) { /* unchanged */ }
+            window.requestNotificationPermission = function() {
+                if ('Notification' in window) {
+                    Notification.requestPermission().then(perm => {
+                        showToast(perm === 'granted' ? '✅ Notifications enabled!' : '❌ Notifications denied.');
+                    });
+                } else showToast('⚠ Your browser does not support notifications.');
+            };
+            function sendNotification(title, body) {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification(title, { body, icon: '/favicon.ico' });
+                }
+            }
+            function showToast(message) {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                container.appendChild(toast);
+                setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 4000);
+            }
 
             // ─── Trackers Page ───
-            window.copyTrackerScript = function() { /* unchanged */ };
-            window.viewTrackerInstructions = function() { /* unchanged */ };
+            window.copyTrackerScript = function() {
+                const btn = document.getElementById('copy-script-btn');
+                const scriptPlaceholder = '-- Tracker script will be available here soon --';
+                navigator.clipboard.writeText(scriptPlaceholder).then(() => {
+                    btn.textContent = '✅ Copied!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = '📋 Copy Tracker Script';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    showToast('⚠ Failed to copy. Please try again.');
+                });
+            };
+
+            window.viewTrackerInstructions = function() {
+                const instructions = document.getElementById('tracker-instructions');
+                if (instructions.style.display === 'none') {
+                    instructions.style.display = 'block';
+                } else {
+                    instructions.style.display = 'none';
+                }
+            };
 
             // ─── Account Manager ───
-            window.openAccountManager = async function() { /* unchanged */ };
-            window.closeAccountManager = function() { /* unchanged */ };
-            window.removeAccount = function(username) { /* unchanged */ };
+            window.openAccountManager = async function() {
+                const modal = document.getElementById('account-manager-modal');
+                modal.style.display = 'flex';
+                const list = document.getElementById('account-manager-list');
+
+                if (!globalOverviewData) {
+                    await loadGlobalOverview();
+                }
+
+                try {
+                    const accounts = await API.getSaberAccounts();
+                    allAccounts = accounts || [];
+
+                    if (allAccounts.length === 0) {
+                        list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-secondary);"><p>No accounts connected yet.</p></div>';
+                        return;
+                    }
+
+                    list.innerHTML = allAccounts.map(acc => {
+                        let statusHTML = '';
+                        if (acc.online) {
+                            statusHTML = `
+                                <span class="badge online">Online</span>
+                                <span class="text-small">Online now</span>
+                            `;
+                        } else {
+                            statusHTML = `
+                                <span class="badge offline">Offline</span>
+                                <span class="text-small">Last seen: recently</span>
+                            `;
+                        }
+                        return `
+                            <div class="account-row" style="cursor:default;">
+                                <div class="account-info">
+                                    <span class="account-name">${escapeHTML(acc.username)}</span>
+                                    ${statusHTML}
+                                </div>
+                                <div style="display:flex;gap:0.5rem;align-items:center;">
+                                    <span class="stat-value">${acc.pets || 0} pets</span>
+                                    <button class="btn-danger" onclick="removeAccount('${escapeHTML(acc.username)}')">Remove</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } catch (err) {
+                    console.error(err);
+                    list.innerHTML = '<div style="text-align:center;padding:2rem;color:#ff6b6b;"><p>Failed to load accounts.</p></div>';
+                }
+            };
+
+            window.closeAccountManager = function() {
+                document.getElementById('account-manager-modal').style.display = 'none';
+            };
+
+            window.removeAccount = function(username) {
+                if (confirm(`Are you sure you want to remove "${username}"? This will stop tracking this account.`)) {
+                    showToast(`Account "${username}" removal requested. (Backend endpoint coming soon)`);
+                }
+            };
 
             // ─── Helpers ───
             function escapeHTML(str) {
