@@ -852,7 +852,7 @@
                     </div>
                 </section>
 
-                <!-- Global Pet Inventory -->
+                <!-- Global Pet Inventory (on-demand loading) -->
                 <section class="glass-card fade-up delay-3" style="padding:1.5rem;margin-bottom:2rem;" id="global-inventory-section">
                     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
                         <h3 style="font-size:1.125rem;">All Pet Inventory</h3>
@@ -893,7 +893,9 @@
                                 </tr>
                             </thead>
                             <tbody id="global-inventory-body">
-                                <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-secondary);">Loading inventory...</td></tr>
+                                <tr><td colspan="8" style="text-align:center;padding:2rem;">
+                                    <button class="btn btn-accent" onclick="loadFullInventory()">📦 Load Pet Inventory</button>
+                                </td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -904,7 +906,7 @@
                     <h3 style="font-size:1.125rem; margin-bottom:1rem;">⭐ Rare Pets</h3>
                     <div class="stat-cards-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));" id="rare-pets-grid">
                         <div style="text-align:center;padding:2rem;color:var(--text-secondary);grid-column:1/-1;">
-                            <p>Loading rare pets...</p>
+                            Click "Load Inventory" to see rare pets.
                         </div>
                     </div>
                 </section>
@@ -1012,12 +1014,12 @@
         (function() {
             // ─── Globals ───
             let allAccounts = [];
-            let allInventory = []; // aggregated across all accounts
-            let accountDetailsCache = {}; // cache for account details
+            let allInventory = [];
+            let accountDetailsCache = {};
             let currentSort = { field: 'rarity', asc: false };
             let favourites = JSON.parse(localStorage.getItem('mrc_favourites') || '[]');
             let favFilterActive = false;
-            let currentGame = null; // 'saber' or 'ps99'
+            let currentGame = null;
             let eventHistory = [];
             let previousOnlineCount = 0;
             let autoRefreshInterval = null;
@@ -1149,7 +1151,6 @@
                     globalStats.style.display = 'grid';
                 } else {
                     globalStats.style.display = 'none';
-                    // Hide game dashboards when leaving
                     document.getElementById('ps99-dashboard').style.display = 'none';
                     document.getElementById('saber-dashboard').style.display = 'none';
                     document.getElementById('game-selection').style.display = 'block';
@@ -1194,94 +1195,121 @@
                 stopAutoRefresh();
             };
 
-            // ─── Auto-refresh ───
+            // ─── Auto‑refresh (only overview + accounts) ───
             function startAutoRefresh() {
                 stopAutoRefresh();
                 autoRefreshInterval = setInterval(() => {
-                    if (currentGame === 'saber') {
-                        loadSaberData(true); // silent refresh
-                    }
+                    if (currentGame === 'saber') loadSaberData(true);
                 }, 8000);
             }
-
             function stopAutoRefresh() {
-                if (autoRefreshInterval) {
-                    clearInterval(autoRefreshInterval);
-                    autoRefreshInterval = null;
-                }
+                if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; }
             }
 
-            // ─── Load Saber data ───
+            // ─── Load Saber data (overview + accounts only) ───
             async function loadSaberData(silent = false) {
                 try {
-                    const refreshIndicator = document.getElementById('refresh-indicator');
-                    if (!silent) {
-                        refreshIndicator.textContent = 'Loading...';
-                    } else {
-                        refreshIndicator.textContent = 'Auto-refreshing...';
-                    }
+                    const refresh = document.getElementById('refresh-indicator');
+                    refresh.textContent = silent ? 'Auto‑refreshing...' : 'Loading...';
 
-                    // Fetch overview + accounts in parallel
                     const [overview, accounts] = await Promise.all([
                         API.getSaberOverview(),
                         API.getSaberAccounts()
                     ]);
 
-                    // Update global stats
-                    document.getElementById('stat-total-accounts').textContent = overview.totalAccounts || 0;
-                    document.getElementById('stat-online').textContent = overview.onlineAccounts || 0;
-                    document.getElementById('stat-offline').textContent = overview.offlineAccounts || 0;
-                    document.getElementById('stat-total-pets').textContent = formatNumber(overview.totalPets || 0);
+                    document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
+                    document.getElementById('stat-online').textContent = overview.onlineAccounts;
+                    document.getElementById('stat-offline').textContent = overview.offlineAccounts;
+                    document.getElementById('stat-total-pets').textContent = formatNumber(overview.totalPets);
+                    document.getElementById('saber-total-gems').textContent = formatNumber(overview.totalGems);
+                    document.getElementById('saber-total-pets-card').textContent = formatNumber(overview.totalPets);
 
-                    // Saber-specific stats
-                    document.getElementById('saber-total-gems').textContent = formatNumber(overview.totalGems || 0);
-                    document.getElementById('saber-total-pets-card').textContent = formatNumber(overview.totalPets || 0);
-
-                    // Check for online/offline changes for notifications
                     if (previousOnlineCount > 0 && overview.onlineAccounts !== previousOnlineCount) {
                         const diff = overview.onlineAccounts - previousOnlineCount;
-                        if (diff > 0) {
-                            showToast(`🟢 ${diff} account(s) came online`);
-                        } else {
-                            showToast(`🔴 ${Math.abs(diff)} account(s) went offline`);
-                        }
+                        showToast(diff > 0 ? `🟢 ${diff} account(s) came online` : `🔴 ${Math.abs(diff)} account(s) went offline`);
                     }
                     previousOnlineCount = overview.onlineAccounts;
 
-                    // Store accounts
                     allAccounts = accounts || [];
                     renderAccountList(allAccounts);
-                    updateRarePetsCount();
 
-                    // Build aggregated inventory from all accounts
-                    await buildAggregatedInventory();
+                    // Don't auto-build inventory – show a Load button
+                    document.getElementById('global-inventory-body').innerHTML =
+                        `<tr><td colspan="8" style="text-align:center;padding:2rem;">
+                            <button class="btn btn-accent" onclick="loadFullInventory()">📦 Load Pet Inventory</button>
+                        </td></tr>`;
+                    document.getElementById('rare-pets-grid').innerHTML =
+                        `<div style="text-align:center;padding:2rem;color:var(--text-secondary);grid-column:1/-1;">
+                            Click "Load Inventory" to see rare pets.
+                        </div>`;
+                    document.getElementById('saber-rare-pets-count').textContent = '—';
 
-                    if (!silent) {
-                        refreshIndicator.textContent = '✓ Live';
-                        setTimeout(() => { refreshIndicator.textContent = ''; }, 2000);
-                    } else {
-                        refreshIndicator.textContent = '';
-                    }
-
-                    observeFadeUps();
+                    refresh.textContent = '✓ Live';
+                    setTimeout(() => refresh.textContent = '', 2000);
                 } catch (err) {
-                    console.error('Failed to load Saber data:', err);
-                    document.getElementById('refresh-indicator').textContent = '⚠ Error loading data';
-                    setTimeout(() => {
-                        document.getElementById('refresh-indicator').textContent = '';
-                    }, 3000);
+                    console.error(err);
+                    document.getElementById('refresh-indicator').textContent = '⚠ Error';
                 }
             }
+
+            // ─── On‑demand inventory loading ───
+            window.loadFullInventory = async function() {
+                const tbody = document.getElementById('global-inventory-body');
+                const rareGrid = document.getElementById('rare-pets-grid');
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;">Loading inventory…</td></tr>';
+                rareGrid.innerHTML = '<div style="text-align:center;padding:2rem;grid-column:1/-1;">Loading…</div>';
+
+                try {
+                    const details = await Promise.all(
+                        allAccounts.map(acc =>
+                            API.getSaberAccount(acc.username).then(data => {
+                                accountDetailsCache[acc.username] = data;
+                                return data;
+                            }).catch(() => null)
+                        )
+                    );
+
+                    const invMap = {};
+                    for (const data of details) {
+                        if (!data || !data.pets) continue;
+                        for (const pet of data.pets) {
+                            const key = `${pet.name}|${pet.rarity || ''}|${pet.variant || ''}`;
+                            if (!invMap[key]) {
+                                invMap[key] = {
+                                    name: pet.name,
+                                    rarity: pet.rarity || 'Unknown',
+                                    variant: pet.variant || '',
+                                    amount: 0,
+                                    owners: new Set(),
+                                    value: getPetValue(pet.name),
+                                };
+                            }
+                            invMap[key].amount += (pet.amount || 1);
+                            invMap[key].owners.add(data.username);
+                        }
+                    }
+                    allInventory = Object.values(invMap).map(item => ({
+                        ...item,
+                        owners: Array.from(item.owners),
+                        totalValue: item.value * item.amount,
+                    }));
+
+                    const rareCount = allInventory.filter(p => isRarePet(p.rarity)).reduce((s, p) => s + p.amount, 0);
+                    document.getElementById('saber-rare-pets-count').textContent = rareCount;
+
+                    renderGlobalInventory();
+                    renderRarePets();
+                } catch (err) {
+                    console.error(err);
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:#ff6b6b;">Failed to load inventory. Please try again.</td></tr>';
+                }
+            };
 
             // ─── Render account list ───
             function renderAccountList(accounts) {
                 const list = document.getElementById('account-list');
                 if (!accounts || accounts.length === 0) {
-                    list.innerHTML = `
-                        <div style="text-align:center;padding:2rem;color:var(--text-secondary);">
-                            <p>No accounts tracked yet.</p>
-                            <p class="text-small">Run your Saber Simulator tracker to add accounts.</p>
-                        </div>`;
+                    list.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--text-secondary);"><p>No accounts tracked yet.</p></div>`;
                     return;
                 }
                 list.innerHTML = accounts.map(acc => `
@@ -1290,9 +1318,7 @@
                             <span class="account-name">${escapeHTML(acc.username)}</span>
                             <span class="badge ${acc.online ? 'online' : 'offline'}">${acc.online ? 'Online' : 'Offline'}</span>
                         </div>
-                        <div style="display:flex;gap:2rem;flex-wrap:wrap;">
-                            <span class="stat-value">${acc.pets || 0} pets</span>
-                        </div>
+                        <span class="stat-value">${acc.pets || 0} pets</span>
                     </div>
                 `).join('');
             }
@@ -1302,12 +1328,9 @@
                 const section = document.getElementById('account-detail-section');
                 section.style.display = 'block';
                 document.getElementById('detail-username').textContent = username;
-
-                // Scroll to detail
                 section.scrollIntoView({ behavior: 'smooth' });
 
                 try {
-                    // Check cache first
                     let accountData = accountDetailsCache[username];
                     if (!accountData) {
                         accountData = await API.getSaberAccount(username);
@@ -1319,29 +1342,23 @@
                     document.getElementById('detail-last-update').textContent = 'Last update: ' +
                         (accountData.lastUpdate ? new Date(accountData.lastUpdate).toLocaleString() : 'Never');
                     document.getElementById('detail-total-pets').textContent = 'Total pets: ' + (accountData.totalPets || 0);
-
                     const inventoryValue = calculateInventoryValue(accountData.pets);
                     document.getElementById('detail-inventory-value').textContent = 'Inventory value: ' + formatNumber(inventoryValue) + ' gems';
 
-                    // Render pet inventory
                     const tbody = document.getElementById('detail-inventory-body');
                     const emptyDiv = document.getElementById('detail-empty');
-
                     if (!accountData.pets || accountData.pets.length === 0) {
                         tbody.innerHTML = '';
                         emptyDiv.style.display = 'block';
                     } else {
                         emptyDiv.style.display = 'none';
                         const sortedPets = [...accountData.pets].sort((a, b) => {
-                            // Favourites first
                             const aFav = favourites.includes(a.name);
                             const bFav = favourites.includes(b.name);
                             if (aFav && !bFav) return -1;
                             if (!aFav && bFav) return 1;
-                            // Then by rarity
                             return getRarityRank(b.rarity) - getRarityRank(a.rarity);
                         });
-
                         tbody.innerHTML = sortedPets.map(pet => {
                             const value = getPetValue(pet.name);
                             const totalValue = value * (pet.amount || 1);
@@ -1359,7 +1376,7 @@
                         }).join('');
                     }
                 } catch (err) {
-                    console.error('Failed to load account:', err);
+                    console.error(err);
                     document.getElementById('detail-empty').style.display = 'block';
                     document.getElementById('detail-empty').querySelector('p').textContent = 'Failed to load account data.';
                 }
@@ -1369,53 +1386,6 @@
                 document.getElementById('account-detail-section').style.display = 'none';
             };
 
-            // ─── Build aggregated inventory ───
-            async function buildAggregatedInventory() {
-                const inventoryMap = {};
-                // Fetch all account details
-                const promises = allAccounts.map(acc =>
-                    API.getSaberAccount(acc.username).then(data => {
-                        accountDetailsCache[acc.username] = data;
-                        return data;
-                    }).catch(() => null)
-                );
-                const results = await Promise.all(promises);
-
-                for (const data of results) {
-                    if (!data || !data.pets) continue;
-                    for (const pet of data.pets) {
-                        const key = `${pet.name}|${pet.rarity || ''}|${pet.variant || ''}`;
-                        if (!inventoryMap[key]) {
-                            inventoryMap[key] = {
-                                name: pet.name,
-                                rarity: pet.rarity || 'Unknown',
-                                variant: pet.variant || '',
-                                amount: 0,
-                                owners: new Set(),
-                                value: getPetValue(pet.name),
-                            };
-                        }
-                        inventoryMap[key].amount += (pet.amount || 1);
-                        inventoryMap[key].owners.add(data.username);
-                    }
-                }
-
-                allInventory = Object.values(inventoryMap).map(item => ({
-                    ...item,
-                    owners: Array.from(item.owners),
-                    totalValue: item.value * item.amount,
-                }));
-
-                updateRarePetsCount();
-                renderGlobalInventory();
-                renderRarePets();
-            }
-
-            function updateRarePetsCount() {
-                const rareCount = allInventory.filter(p => isRarePet(p.rarity)).reduce((sum, p) => sum + p.amount, 0);
-                document.getElementById('saber-rare-pets-count').textContent = rareCount || 0;
-            }
-
             // ─── Render global inventory ───
             function renderGlobalInventory() {
                 const tbody = document.getElementById('global-inventory-body');
@@ -1423,28 +1393,15 @@
                     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-secondary);">No pets tracked yet.</td></tr>';
                     return;
                 }
-
                 let filtered = [...allInventory];
-                // Apply search
                 const searchTerm = document.getElementById('inventory-search').value.toLowerCase();
-                if (searchTerm) {
-                    filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
-                }
-                // Apply rarity filter
+                if (searchTerm) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
                 const rarityFilter = document.getElementById('rarity-filter').value;
-                if (rarityFilter) {
-                    filtered = filtered.filter(p => p.rarity === rarityFilter);
-                }
-                // Apply variant filter
+                if (rarityFilter) filtered = filtered.filter(p => p.rarity === rarityFilter);
                 const variantFilter = document.getElementById('variant-filter').value;
-                if (variantFilter) {
-                    filtered = filtered.filter(p => p.variant === variantFilter);
-                }
-                // Apply favourites filter
-                if (favFilterActive) {
-                    filtered = filtered.filter(p => favourites.includes(p.name));
-                }
-                // Sort
+                if (variantFilter) filtered = filtered.filter(p => p.variant === variantFilter);
+                if (favFilterActive) filtered = filtered.filter(p => favourites.includes(p.name));
+
                 filtered.sort((a, b) => {
                     let cmp = 0;
                     switch (currentSort.field) {
@@ -1456,7 +1413,6 @@
                         case 'totalValue': cmp = a.totalValue - b.totalValue; break;
                         default: cmp = getRarityRank(b.rarity) - getRarityRank(a.rarity);
                     }
-                    // Favourites always on top
                     const aFav = favourites.includes(a.name);
                     const bFav = favourites.includes(b.name);
                     if (aFav && !bFav) return -1;
@@ -1480,17 +1436,10 @@
                 }).join('');
             }
 
-            window.filterInventory = function() {
-                renderGlobalInventory();
-            };
-
+            window.filterInventory = renderGlobalInventory;
             window.sortInventory = function(field) {
-                if (currentSort.field === field) {
-                    currentSort.asc = !currentSort.asc;
-                } else {
-                    currentSort.field = field;
-                    currentSort.asc = false;
-                }
+                if (currentSort.field === field) currentSort.asc = !currentSort.asc;
+                else { currentSort.field = field; currentSort.asc = false; }
                 renderGlobalInventory();
             };
 
@@ -1499,14 +1448,12 @@
                 const grid = document.getElementById('rare-pets-grid');
                 const rarePets = allInventory.filter(p => isRarePet(p.rarity));
                 if (rarePets.length === 0) {
-                    grid.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-secondary);grid-column:1/-1;"><p>No rare pets found yet.</p></div>';
+                    grid.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-secondary);grid-column:1/-1;"><p>No rare pets found.</p></div>';
                     return;
                 }
                 grid.innerHTML = rarePets.map(pet => `
                     <div class="stat-card" style="padding:1rem;">
-                        <div class="icon-title">
-                            ${pet.rarity === 'Secret' ? '🔮' : '✨'} ${escapeHTML(pet.rarity)}
-                        </div>
+                        <div class="icon-title">${pet.rarity === 'Secret' ? '🔮' : '✨'} ${escapeHTML(pet.rarity)}</div>
                         <div class="main-value" style="font-size:1.3rem;">${escapeHTML(pet.name)}</div>
                         <div style="font-size:0.8125rem;color:var(--text-secondary);">
                             Owned by: ${pet.owners.join(', ')}<br>
@@ -1519,23 +1466,15 @@
             // ─── Favourites ───
             window.toggleFavourite = function(petName) {
                 const idx = favourites.indexOf(petName);
-                if (idx >= 0) {
-                    favourites.splice(idx, 1);
-                } else {
-                    favourites.push(petName);
-                }
+                if (idx >= 0) favourites.splice(idx, 1);
+                else favourites.push(petName);
                 localStorage.setItem('mrc_favourites', JSON.stringify(favourites));
-                // Refresh displays
                 renderGlobalInventory();
                 renderRarePets();
-                // Also refresh detail view if open
                 const detailSection = document.getElementById('account-detail-section');
                 if (detailSection.style.display !== 'none') {
                     const username = document.getElementById('detail-username').textContent;
-                    if (username && username !== '—') {
-                        accountDetailsCache[username] = null; // clear cache
-                        window.viewAccount(username);
-                    }
+                    if (username !== '—') viewAccount(username);
                 }
             };
 
@@ -1556,34 +1495,26 @@
             window.searchPet = async function() {
                 const query = document.getElementById('pet-search-input').value.trim();
                 if (!query) return;
-
                 const resultsDiv = document.getElementById('pet-search-results');
                 const emptyDiv = document.getElementById('pet-search-empty');
                 const queryName = document.getElementById('search-query-name');
                 const totalOwned = document.getElementById('search-total-owned');
                 const totalValue = document.getElementById('search-total-value');
                 const accountList = document.getElementById('search-account-list');
-
                 try {
                     const result = await API.searchSaberPet(query);
                     resultsDiv.style.display = 'block';
                     emptyDiv.style.display = 'none';
                     queryName.textContent = result.pet;
-                    totalOwned.textContent = result.totalOwned || 0;
+                    totalOwned.textContent = result.totalOwned;
                     totalValue.textContent = formatNumber((result.totalOwned || 0) * getPetValue(result.pet));
-
-                    if (!result.accounts || result.accounts.length === 0) {
-                        accountList.innerHTML = '<div style="padding:1rem;color:var(--text-secondary);">No accounts own this pet.</div>';
-                    } else {
-                        accountList.innerHTML = result.accounts.map(acc => `
+                    accountList.innerHTML = (result.accounts || []).length === 0
+                        ? '<div style="padding:1rem;color:var(--text-secondary);">No accounts own this pet.</div>'
+                        : result.accounts.map(acc => `
                             <div class="account-row" onclick="viewAccount('${escapeHTML(acc.username)}')">
-                                <div class="account-info">
-                                    <span class="account-name">${escapeHTML(acc.username)}</span>
-                                </div>
+                                <div class="account-info"><span class="account-name">${escapeHTML(acc.username)}</span></div>
                                 <span class="stat-value">Amount: ${acc.amount}</span>
-                            </div>
-                        `).join('');
-                    }
+                            </div>`).join('');
                 } catch (err) {
                     resultsDiv.style.display = 'block';
                     emptyDiv.style.display = 'none';
@@ -1593,14 +1524,10 @@
 
             // ─── Event history ───
             window.addEvent = function(eventData) {
-                eventHistory.unshift({
-                    time: new Date().toLocaleTimeString(),
-                    ...eventData
-                });
-                if (eventHistory.length > 50) eventHistory.pop(); // keep last 50
+                eventHistory.unshift({ time: new Date().toLocaleTimeString(), ...eventData });
+                if (eventHistory.length > 50) eventHistory.pop();
                 renderEventHistory();
             };
-
             function renderEventHistory() {
                 const list = document.getElementById('event-history-list');
                 if (eventHistory.length === 0) {
@@ -1613,40 +1540,29 @@
                         <span style="color:var(--text-primary);">${escapeHTML(ev.username || 'Unknown')}</span>
                         <span style="color:var(--accent);">${ev.eventType || ev.type}</span>
                         <span style="color:var(--text-secondary);">${escapeHTML(ev.details || '')}</span>
-                    </div>
-                `).join('');
+                    </div>`).join('');
             }
 
             // ─── Notifications ───
             window.requestNotificationPermission = function() {
                 if ('Notification' in window) {
                     Notification.requestPermission().then(perm => {
-                        if (perm === 'granted') {
-                            showToast('✅ Notifications enabled!');
-                        } else {
-                            showToast('❌ Notifications denied.');
-                        }
+                        showToast(perm === 'granted' ? '✅ Notifications enabled!' : '❌ Notifications denied.');
                     });
-                } else {
-                    showToast('⚠ Your browser does not support notifications.');
-                }
+                } else showToast('⚠ Your browser does not support notifications.');
             };
-
             function sendNotification(title, body) {
                 if ('Notification' in window && Notification.permission === 'granted') {
                     new Notification(title, { body, icon: '/favicon.ico' });
                 }
             }
-
             function showToast(message) {
                 const container = document.getElementById('toast-container');
                 const toast = document.createElement('div');
                 toast.className = 'toast';
                 toast.textContent = message;
                 container.appendChild(toast);
-                setTimeout(() => {
-                    if (toast.parentNode) toast.parentNode.removeChild(toast);
-                }, 4000);
+                setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 4000);
             }
 
             // ─── Helpers ───
@@ -1655,24 +1571,19 @@
                 div.textContent = str;
                 return div.innerHTML;
             }
-
             function rarityBadge(rarity) {
                 if (!rarity) return '—';
                 const cls = rarity === 'Secret' ? 'secret' : rarity === 'Mythical' ? 'mythical' : '';
                 return cls ? `<span class="badge ${cls}">${rarity}</span>` : rarity;
             }
 
-            // ─── Initialize ───
+            // ─── Initialise ───
             switchPage('dashboard');
             globalStats.style.display = 'grid';
             document.getElementById('game-selection').style.display = 'block';
             document.getElementById('ps99-dashboard').style.display = 'none';
             document.getElementById('saber-dashboard').style.display = 'none';
             observeFadeUps();
-
-            // Expose for external use
-            window.refreshSaberData = loadSaberData;
-            window.getFavourites = () => favourites;
         })();
     </script>
 </body>
