@@ -614,17 +614,29 @@
             border-radius: 8px;
             background: rgba(255,255,255,0.02);
         }
+        .pet-card .no-image {
+            width: 100%;
+            height: 100px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 0.25rem;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+        }
+        .pet-card .no-image .icon {
+            font-size: 1.8rem;
+            opacity: 0.5;
+        }
         .pet-card .pet-name {
             font-weight: 600;
             font-size: 0.8rem;
             text-align: center;
             color: var(--text-primary);
             line-height: 1.2;
-        }
-        .pet-card .pet-value {
-            font-size: 0.75rem;
-            color: var(--accent);
-            font-weight: 500;
         }
         .pet-card .pet-amount {
             font-size: 0.7rem;
@@ -949,7 +961,6 @@
                         <span class="badge" id="detail-status">—</span>
                         <span class="text-small" id="detail-last-update">Last update: —</span>
                         <span class="text-small" id="detail-total-pets">Total pets: —</span>
-                        <span class="text-small" id="detail-inventory-value">Inventory value: —</span>
                     </div>
                     <h4 style="font-size:0.9375rem;margin-bottom:0.75rem;color:var(--text-secondary);">Pet Inventory</h4>
                     <div style="overflow-x:auto;">
@@ -960,8 +971,6 @@
                                     <th>Rarity</th>
                                     <th>Variant</th>
                                     <th>Amount</th>
-                                    <th>Value (each)</th>
-                                    <th>Total Value</th>
                                     <th>Fav</th>
                                 </tr>
                             </thead>
@@ -982,22 +991,13 @@
                                 <option value="">All Accounts</option>
                             </select>
                             <input type="text" class="search-input" placeholder="Search pets..." id="inventory-search" oninput="filterInventory()">
-                            <select class="filter-select" id="rarity-filter" onchange="filterInventory()">
-                                <option value="">All Rarities</option>
-                                <option value="Secret">Secret</option>
-                                <option value="Mythical">Mythical</option>
-                                <option value="Legendary">Legendary</option>
-                                <option value="Epic">Epic</option>
-                                <option value="Rare">Rare</option>
-                                <option value="Common">Common</option>
-                            </select>
                             <select class="filter-select" id="variant-filter" onchange="filterInventory()">
                                 <option value="">All Variants</option>
-                                <option value="Rainbow">Rainbow</option>
-                                <option value="Golden">Golden</option>
                                 <option value="Void">Void</option>
-                                <option value="Shadow">Shadow</option>
-                                <option value="Crystal">Crystal</option>
+                                <option value="Rainbow">Rainbow</option>
+                                <option value="Shiny">Shiny</option>
+                                <option value="Golden">Golden</option>
+                                <option value="Normal">Normal</option>
                             </select>
                             <button class="btn-fav" id="fav-filter-btn" onclick="toggleFavFilter()">⭐ Favourites</button>
                         </div>
@@ -1030,7 +1030,6 @@
                         <div style="margin-bottom:0.75rem;">
                             <span class="text-body">Results for: </span><strong id="search-query-name" style="color:var(--text-primary);"></strong>
                             <span class="text-body"> — Total owned: </span><strong id="search-total-owned" style="color:var(--accent);"></strong>
-                            <span class="text-body"> — Est. total value: </span><strong id="search-total-value" style="color:#34d399;"></strong>
                         </div>
                         <div class="account-list" id="search-account-list"></div>
                     </div>
@@ -1162,6 +1161,7 @@
             let autoRefreshInterval = null;
             let globalOverviewData = null;
             let inventoryLoaded = false;
+            let lastOverviewSnapshot = null; // for change detection
 
             // ─── Favourite key helpers ───
             function makeFavKey(petName, variant) {
@@ -1181,21 +1181,21 @@
                 localStorage.setItem('mrc_favourites_v2', JSON.stringify(favourites));
             }
 
+            // ─── Variant priority (lower = higher) ───
+            const VARIANT_PRIORITY = { 'Void':1, 'Rainbow':2, 'Shiny':3, 'Golden':4, 'Normal':5 };
+            function getVariantPriority(variant) {
+                return VARIANT_PRIORITY[variant] || 99;
+            }
+
             // ─── Image URL helper (uses API-supplied URL or falls back to petImages.js) ───
             function getEffectiveImageUrl(apiImageUrl, petName) {
-                // 1. If the API provided a direct image URL, use it
                 if (apiImageUrl) return apiImageUrl;
-
-                // 2. Fallback to petImages.js mapping (which stores Roblox thumbnail API URLs)
                 const rawUrl = getPetImageUrl(petName);
                 if (!rawUrl) return null;
-
-                // 3. Convert thumbnail API URL to a direct Roblox image URL
                 const match = rawUrl.match(/assetIds=(\d+)/);
                 if (match) {
                     return `https://www.roblox.com/asset-thumbnail/image?assetId=${match[1]}&width=420&height=420&format=png`;
                 }
-                // If it doesn't look like a thumbnail API URL, use it as-is (already direct)
                 return rawUrl;
             }
 
@@ -1388,18 +1388,18 @@
                 stopAutoRefresh();
             };
 
-            // ─── Auto‑refresh ───
+            // ─── Auto‑refresh (15 seconds) ───
             function startAutoRefresh() {
                 stopAutoRefresh();
                 autoRefreshInterval = setInterval(() => {
                     if (currentGame === 'saber') loadSaberData(true);
-                }, 8000);
+                }, 15000);
             }
             function stopAutoRefresh() {
                 if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; }
             }
 
-            // ─── Load Saber data ───
+            // ─── Load Saber data (only updates if stats changed) ───
             async function loadSaberData(silent = false) {
                 try {
                     const refresh = document.getElementById('refresh-indicator');
@@ -1409,6 +1409,16 @@
                         API.getSaberOverview(),
                         API.getSaberAccounts()
                     ]);
+
+                    // Check if anything meaningful changed
+                    const newSnapshot = `${overview.totalAccounts}|${overview.onlineAccounts}|${overview.offlineAccounts}|${overview.totalPets}|${overview.totalGems}`;
+                    if (lastOverviewSnapshot === newSnapshot) {
+                        // No change – keep UI untouched
+                        refresh.textContent = silent ? '' : '✓ Live';
+                        setTimeout(() => refresh.textContent = '', 2000);
+                        return;
+                    }
+                    lastOverviewSnapshot = newSnapshot;
 
                     globalOverviewData = overview;
                     document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
@@ -1487,15 +1497,12 @@
                                     variant: pet.variant || '',
                                     amount: 0,
                                     owners: new Set(),
-                                    value: getPetValue(pet.name),
-                                    // Store the first image info we find
                                     imageUrl: pet.imageUrl || null,
                                     imageAssetId: pet.imageAssetId || null,
                                 };
                             }
                             invMap[key].amount += (pet.amount || 1);
                             invMap[key].owners.add(data.username);
-                            // Keep the first non-null image URL
                             if (!invMap[key].imageUrl && pet.imageUrl) {
                                 invMap[key].imageUrl = pet.imageUrl;
                                 invMap[key].imageAssetId = pet.imageAssetId;
@@ -1505,7 +1512,6 @@
                     allInventory = Object.values(invMap).map(item => ({
                         ...item,
                         owners: Array.from(item.owners),
-                        totalValue: item.value * item.amount,
                     }));
 
                     const rareCount = allInventory.filter(p => isRarePet(p.rarity)).reduce((s, p) => s + p.amount, 0);
@@ -1531,45 +1537,38 @@
 
                 let filtered = [...allInventory];
 
-                // Account filter
                 const accountFilter = document.getElementById('account-filter').value;
                 if (accountFilter) {
                     filtered = filtered.filter(p => p.owners.includes(accountFilter));
                 }
-                // Search
                 const searchTerm = document.getElementById('inventory-search').value.toLowerCase();
                 if (searchTerm) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
-                // Rarity filter
-                const rarityFilter = document.getElementById('rarity-filter').value;
-                if (rarityFilter) filtered = filtered.filter(p => p.rarity === rarityFilter);
-                // Variant filter
                 const variantFilter = document.getElementById('variant-filter').value;
                 if (variantFilter) filtered = filtered.filter(p => p.variant === variantFilter);
-                // Favourites filter
                 if (favFilterActive) filtered = filtered.filter(p => isFavourited(p.name, p.variant));
 
-                // Sort: Void variant first, then rarity desc, then value desc
+                // Sort: variant priority, then rarity desc, then amount desc
                 filtered.sort((a, b) => {
-                    const aVoid = a.variant === 'Void' ? 1 : 0;
-                    const bVoid = b.variant === 'Void' ? 1 : 0;
-                    if (aVoid !== bVoid) return bVoid - aVoid;
+                    const vA = getVariantPriority(a.variant);
+                    const vB = getVariantPriority(b.variant);
+                    if (vA !== vB) return vA - vB;
                     const rarityCmp = getRarityRank(b.rarity) - getRarityRank(a.rarity);
                     if (rarityCmp !== 0) return rarityCmp;
-                    return b.value - a.value;
+                    return b.amount - a.amount;
                 });
 
                 grid.innerHTML = filtered.map(pet => {
                     const imgSrc = getEffectiveImageUrl(pet.imageUrl, pet.name);
                     const fav = isFavourited(pet.name, pet.variant);
                     const imgHTML = imgSrc
-                        ? `<img src="${imgSrc}" alt="${escapeHTML(pet.name)}" loading="lazy">`
-                        : `<div style="width:100%;height:100px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:2rem;">🔍</div>`;
+                        ? `<img src="${imgSrc}" alt="${escapeHTML(pet.name)}" loading="lazy" onerror="this.style.display='none';this.parentNode.querySelector('.no-image').style.display='flex';">
+                           <div class="no-image"><span class="icon">📷</span> No Image</div>`
+                        : `<div class="no-image" style="display:flex;"><span class="icon">📷</span> No Image</div>`;
 
                     return `
                         <div class="pet-card">
                             ${imgHTML}
                             <span class="pet-name">${escapeHTML(pet.name)}${pet.variant ? ` (${escapeHTML(pet.variant)})` : ''}</span>
-                            <span class="pet-value">${formatNumber(pet.value)}</span>
                             <span class="pet-amount">Qty: ${pet.amount}</span>
                             <span class="fav-star ${fav ? 'favourited' : ''}" onclick="event.stopPropagation();toggleFavourite('${escapeHTML(pet.name)}', '${escapeHTML(pet.variant || '')}')">★</span>
                         </div>
@@ -1583,8 +1582,7 @@
             };
 
             window.sortInventory = function(field) {
-                if (currentSort.field === field) currentSort.asc = !currentSort.asc;
-                else { currentSort.field = field; currentSort.asc = false; }
+                // Kept for potential future use; currently not linked
                 if (inventoryLoaded) renderInventoryGrid();
             };
 
@@ -1625,8 +1623,6 @@
                     document.getElementById('detail-last-update').textContent = 'Last update: ' +
                         (accountData.lastUpdate ? new Date(accountData.lastUpdate).toLocaleString() : 'Never');
                     document.getElementById('detail-total-pets').textContent = 'Total pets: ' + (accountData.totalPets || 0);
-                    const inventoryValue = calculateInventoryValue(accountData.pets);
-                    document.getElementById('detail-inventory-value').textContent = 'Inventory value: ' + formatNumber(inventoryValue) + ' gems';
 
                     const tbody = document.getElementById('detail-inventory-body');
                     const emptyDiv = document.getElementById('detail-empty');
@@ -1636,15 +1632,12 @@
                     } else {
                         emptyDiv.style.display = 'none';
                         const sortedPets = [...accountData.pets].sort((a, b) => {
-                            const aFav = isFavourited(a.name, a.variant);
-                            const bFav = isFavourited(b.name, b.variant);
-                            if (aFav && !bFav) return -1;
-                            if (!aFav && bFav) return 1;
+                            const vA = getVariantPriority(a.variant);
+                            const vB = getVariantPriority(b.variant);
+                            if (vA !== vB) return vA - vB;
                             return getRarityRank(b.rarity) - getRarityRank(a.rarity);
                         });
                         tbody.innerHTML = sortedPets.map(pet => {
-                            const value = getPetValue(pet.name);
-                            const totalValue = value * (pet.amount || 1);
                             const fav = isFavourited(pet.name, pet.variant);
                             return `
                                 <tr>
@@ -1652,8 +1645,6 @@
                                     <td>${rarityBadge(pet.rarity)}</td>
                                     <td>${escapeHTML(pet.variant || '—')}</td>
                                     <td>${pet.amount || 1}</td>
-                                    <td>${formatNumber(value)}</td>
-                                    <td>${formatNumber(totalValue)}</td>
                                     <td><span class="fav-star ${fav ? 'favourited' : ''}" onclick="event.stopPropagation();toggleFavourite('${escapeHTML(pet.name)}', '${escapeHTML(pet.variant || '')}')">★</span></td>
                                 </tr>`;
                         }).join('');
@@ -1683,7 +1674,7 @@
                         <div class="main-value" style="font-size:1.3rem;">${escapeHTML(pet.name)}${pet.variant ? ' (' + escapeHTML(pet.variant) + ')' : ''}</div>
                         <div style="font-size:0.8125rem;color:var(--text-secondary);">
                             Owned by: ${pet.owners.join(', ')}<br>
-                            Amount: ${pet.amount} · Value: ${formatNumber(pet.value)} each
+                            Amount: ${pet.amount}
                         </div>
                     </div>
                 `).join('');
@@ -1722,7 +1713,6 @@
                 const emptyDiv = document.getElementById('pet-search-empty');
                 const queryName = document.getElementById('search-query-name');
                 const totalOwned = document.getElementById('search-total-owned');
-                const totalValue = document.getElementById('search-total-value');
                 const accountList = document.getElementById('search-account-list');
                 try {
                     const result = await API.searchSaberPet(query);
@@ -1730,7 +1720,6 @@
                     emptyDiv.style.display = 'none';
                     queryName.textContent = result.pet;
                     totalOwned.textContent = result.totalOwned;
-                    totalValue.textContent = formatNumber((result.totalOwned || 0) * getPetValue(result.pet));
                     accountList.innerHTML = (result.accounts || []).length === 0
                         ? '<div style="padding:1rem;color:var(--text-secondary);">No accounts own this pet.</div>'
                         : result.accounts.map(acc => `
