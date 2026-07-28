@@ -220,7 +220,7 @@
     <div id="cursor-glow"></div>
     <div class="grid-overlay"></div>
 
-    <!-- Sidebar (unchanged) -->
+    <!-- Sidebar -->
     <aside class="sidebar">
         <a href="index.html" class="sidebar-logo">
             <svg width="30" height="30" viewBox="0 0 32 32" fill="none" style="flex-shrink:0;">
@@ -253,12 +253,13 @@
     </aside>
 
     <main class="main-content">
-        <!-- Welcome and global stats unchanged -->
+        <!-- Welcome Header -->
         <section style="margin-bottom:2.5rem;">
             <h1 style="font-size:clamp(2rem,5vw,2.5rem);color:var(--text-primary);">Welcome back, User</h1>
             <p class="text-body">Manage your trackers and monitor your Roblox accounts. <span id="refresh-indicator" style="color:var(--accent);font-size:0.75rem;"></span></p>
         </section>
 
+        <!-- Global Account Stats -->
         <div class="stat-cards-grid fade-up delay-1" id="global-stats">
             <div class="stat-card">
                 <div class="icon-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Total Accounts</div>
@@ -274,6 +275,7 @@
             </div>
         </div>
 
+        <!-- Games Overview -->
         <div class="fade-up delay-2" style="margin-bottom:2.5rem;" id="games-overview">
             <h2 style="font-size:1.5rem; margin-bottom:1rem;">Games Overview</h2>
             <div class="stat-cards-grid">
@@ -287,8 +289,9 @@
             </div>
         </div>
 
-        <!-- Dashboard page -->
+        <!-- Dashboard Page -->
         <div class="page active" id="page-dashboard">
+            <!-- Game Selection -->
             <div id="game-selection">
                 <h2 style="font-size:1.5rem;margin-bottom:1.5rem;">Select a Game</h2>
                 <div class="stat-cards-grid">
@@ -296,6 +299,8 @@
                     <div class="game-card" onclick="selectGame('saber')"><div class="game-icon">🗡️</div><div class="game-title">Saber Simulator</div></div>
                 </div>
             </div>
+
+            <!-- PS99 Dashboard -->
             <div id="ps99-dashboard" style="display:none;">
                 <button class="back-btn" onclick="backToGameSelection()">← Back</button>
                 <h2>🐾 Pet Simulator 99</h2><div class="glass-card" style="padding:3rem;text-align:center;"><p>Coming soon.</p></div>
@@ -306,24 +311,41 @@
                 <button class="back-btn" onclick="backToGameSelection()">← Back</button>
                 <h2 style="font-size:1.5rem; margin-bottom:1.5rem;">🗡️ Saber Simulator</h2>
 
-                <!-- Saber stats cards (unchanged) -->
+                <!-- Saber Stats -->
                 <div class="stat-cards-grid">
                     <div class="stat-card"><div class="icon-title">💎 Total Gems</div><div class="main-value" id="saber-total-gems">—</div></div>
                     <div class="stat-card"><div class="icon-title">🐾 Total Pets</div><div class="main-value" id="saber-total-pets-card">—</div></div>
                     <div class="stat-card"><div class="icon-title">⭐ Rare Pets</div><div class="main-value" id="saber-rare-pets-count">—</div></div>
                 </div>
 
-                <!-- Accounts list (unchanged) -->
+                <!-- Accounts List -->
                 <section class="glass-card fade-up delay-2" style="padding:1.5rem;margin-bottom:2rem;">
-                    <h3>Tracked Accounts</h3><div class="account-list" id="account-list">Loading…</div>
+                    <h3>Tracked Accounts</h3>
+                    <div class="account-list" id="account-list">
+                        <div style="text-align:center;padding:2rem;color:var(--text-secondary);">Loading…</div>
+                    </div>
                 </section>
 
-                <!-- Account detail (unchanged) -->
+                <!-- Account Detail (hidden) -->
                 <section class="glass-card fade-up" style="padding:1.5rem;margin-bottom:2rem;display:none;" id="account-detail-section">
-                    <!-- ... detail content ... -->
+                    <button class="back-btn" onclick="closeAccountDetail()">← Back to accounts</button>
+                    <h3 id="detail-username">—</h3>
+                    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1rem;">
+                        <span class="badge" id="detail-status">—</span>
+                        <span class="text-small" id="detail-last-update">Last update: —</span>
+                        <span class="text-small" id="detail-total-pets">Total pets: —</span>
+                        <span class="text-small" id="detail-inventory-value">Inventory value: —</span>
+                    </div>
+                    <button class="btn btn-accent" style="margin-bottom:1rem;" onclick="toggleAnalytics()">📊 Analytics</button>
+                    <div class="analytics-panel" id="analytics-panel" style="display:none;">
+                        <h4>Account Analytics</h4>
+                        <div id="analytics-content">Loading…</div>
+                    </div>
+                    <h4 style="margin-top:1.5rem;">Pet Inventory</h4>
+                    <div class="pet-grid" id="detail-inventory-grid"></div>
                 </section>
 
-                <!-- Inventory section (redesigned) -->
+                <!-- Global Inventory (redesigned) -->
                 <section class="glass-card fade-up delay-3" style="padding:1.5rem;margin-bottom:2rem;">
                     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
                         <h3>All Pet Inventory</h3>
@@ -359,7 +381,7 @@
                     </div>
                 </section>
 
-                <!-- Rare pets section (keep as before) -->
+                <!-- Rare Pets -->
                 <section class="glass-card fade-up delay-4" style="padding:1.5rem;margin-bottom:2rem;">
                     <h3>⭐ Rare Pets</h3>
                     <div class="stat-cards-grid" id="rare-pets-grid">
@@ -367,11 +389,37 @@
                     </div>
                 </section>
 
-                <!-- Pet search, event history unchanged -->
+                <!-- Pet Search -->
+                <section class="glass-card fade-up delay-5" style="padding:1.5rem;margin-bottom:2rem;">
+                    <h3>🔍 Global Pet Search</h3>
+                    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;margin-bottom:1rem;">
+                        <input type="text" class="search-input" placeholder="Search pet by name..." id="pet-search-input">
+                        <button class="btn btn-accent" style="padding:0.5rem 1.25rem;font-size:0.8125rem;" onclick="searchPet()">Search</button>
+                    </div>
+                    <div id="pet-search-results" style="display:none;">
+                        <div style="margin-bottom:0.75rem;">
+                            <span class="text-body">Results for: </span><strong id="search-query-name"></strong>
+                            <span class="text-body"> — Total owned: </span><strong id="search-total-owned"></strong>
+                            <span class="text-body"> — Est. total value: </span><strong id="search-total-value"></strong>
+                        </div>
+                        <div class="account-list" id="search-account-list"></div>
+                    </div>
+                    <div id="pet-search-empty" style="text-align:center;padding:1.5rem;color:var(--text-secondary);">
+                        <p>Search for a pet to see which accounts own it.</p>
+                    </div>
+                </section>
+
+                <!-- Event History -->
+                <section class="glass-card fade-up delay-6" style="padding:1.5rem;margin-bottom:2rem;">
+                    <h3>📋 Event History</h3>
+                    <div id="event-history-list" style="max-height:300px;overflow-y:auto;">
+                        <div style="text-align:center;padding:2rem;color:var(--text-secondary);">No events yet.</div>
+                    </div>
+                </section>
             </div>
         </div>
 
-        <!-- Trackers, Games, Settings pages unchanged -->
+        <!-- Trackers Page -->
         <div class="page" id="page-trackers">
             <h2>My Trackers</h2>
             <div class="glass-card" style="padding:1.5rem;margin-bottom:1.5rem;">
@@ -387,14 +435,27 @@
                     <p class="text-small">Instructions coming soon.</p>
                 </div>
             </div>
+            <div class="glass-card" style="padding:2rem;text-align:center;">
+                <p class="text-body">More trackers coming soon.</p>
+            </div>
         </div>
+
+        <!-- Games Page -->
         <div class="page" id="page-games">
             <h2>Supported Games</h2>
             <div class="stat-cards-grid">
-                <div class="glass-card" style="padding:1.5rem;text-align:center;"><div style="font-size:2rem;">🗡️</div><h3>Saber Simulator</h3><span class="badge online" style="margin-top:0.5rem;">Live</span></div>
-                <div class="glass-card" style="padding:1.5rem;text-align:center;opacity:0.6;"><div style="font-size:2rem;">🐾</div><h3>Pet Simulator 99</h3><span class="badge offline" style="margin-top:0.5rem;">Soon</span></div>
+                <div class="glass-card" style="padding:1.5rem;text-align:center;">
+                    <div style="font-size:2rem;">🗡️</div><h3>Saber Simulator</h3>
+                    <span class="badge online" style="margin-top:0.5rem;">Live</span>
+                </div>
+                <div class="glass-card" style="padding:1.5rem;text-align:center;opacity:0.6;">
+                    <div style="font-size:2rem;">🐾</div><h3>Pet Simulator 99</h3>
+                    <span class="badge offline" style="margin-top:0.5rem;">Soon</span>
+                </div>
             </div>
         </div>
+
+        <!-- Settings Page -->
         <div class="page" id="page-settings">
             <h2>Settings</h2>
             <div class="glass-card" style="padding:1.5rem;">
@@ -407,16 +468,26 @@
         </div>
     </main>
 
+    <!-- Account Manager Modal -->
+    <div class="modal-overlay" id="account-manager-modal" style="display:none;">
+        <div class="modal" style="position:relative;">
+            <button class="modal-close" onclick="closeAccountManager()">✕</button>
+            <h2>Manage Accounts</h2>
+            <div id="account-manager-list"></div>
+        </div>
+    </div>
+
     <div id="toast-container"></div>
     <canvas id="particles-canvas" style="position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.7;"></canvas>
 
+    <!-- External Scripts -->
     <script src="api.js"></script>
     <script src="petValues.js"></script>
     <script src="petImages.js"></script>
 
     <script>
         (function() {
-            // Globals
+            // ─── Globals ───
             let allAccounts = [];
             let allInventory = [];
             let accountDetailsCache = {};
@@ -426,59 +497,160 @@
             let currentGame = null;
             let previousOnlineCount = 0;
             let autoRefreshInterval = null;
+            let currentAnalyticsUsername = null;
 
-            // Favourite helper
-            function isFav(pet) { return favourites.includes(`${pet.name}|${pet.variant || ''}`); }
-
-            // Sorting: Void first, then rarity/value
-            function sortInventory(a, b) {
-                const aVoid = a.variant === 'Void' ? 1 : 0;
-                const bVoid = b.variant === 'Void' ? 1 : 0;
-                if (aVoid !== bVoid) return bVoid - aVoid;
-                const ra = getRarityRank(a.rarity);
-                const rb = getRarityRank(b.rarity);
-                if (ra !== rb) return rb - ra;
-                return b.value - a.value;
+            // Favourite helpers
+            function makeFavKey(petName, variant) { return `${petName}|${variant || ''}`; }
+            function isFav(pet) { return favourites.includes(makeFavKey(pet.name, pet.variant)); }
+            function toggleFavByKey(petName, variant) {
+                const key = makeFavKey(petName, variant);
+                const idx = favourites.indexOf(key);
+                if (idx >= 0) favourites.splice(idx, 1);
+                else favourites.push(key);
+                localStorage.setItem('mrc_favourites_v2', JSON.stringify(favourites));
             }
 
-            // Render inventory grid
-            function renderGlobalInventory() {
-                if (!inventoryLoaded) return;
-                const grid = document.getElementById('global-inventory-grid');
-                if (!allInventory.length) {
-                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-secondary);">No pets found.</div>';
-                    return;
+            // Analytics helpers
+            function getAnalyticsKey(username) { return `mrc_analytics_${username}`; }
+            function loadAnalytics(username) {
+                const raw = localStorage.getItem(getAnalyticsKey(username));
+                return raw ? JSON.parse(raw) : null;
+            }
+            function saveAnalytics(username, data) {
+                localStorage.setItem(getAnalyticsKey(username), JSON.stringify(data));
+            }
+            function initAnalytics(username, currentPets) {
+                const now = Date.now();
+                const data = { addedDate: now, startingPets: currentPets, currentPets, snapshots: [{ date: now, pets: currentPets }] };
+                saveAnalytics(username, data);
+                return data;
+            }
+            function updateAnalytics(username, currentPets) {
+                let data = loadAnalytics(username);
+                if (!data) data = initAnalytics(username, currentPets);
+                data.currentPets = currentPets;
+                const lastSnapshot = data.snapshots[data.snapshots.length - 1];
+                const today = new Date().toDateString();
+                if (new Date(lastSnapshot.date).toDateString() !== today) {
+                    data.snapshots.push({ date: Date.now(), pets: currentPets });
                 }
-
-                let filtered = [...allInventory];
-                const account = document.getElementById('account-filter').value;
-                if (account) filtered = filtered.filter(p => p.owners.includes(account));
-                const search = document.getElementById('inventory-search').value.toLowerCase();
-                if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
-                const variant = document.getElementById('variant-filter').value;
-                if (variant) filtered = filtered.filter(p => p.variant === variant);
-                const rarity = document.getElementById('rarity-filter').value;
-                if (rarity) filtered = filtered.filter(p => p.rarity === rarity);
-                if (favFilterActive) filtered = filtered.filter(p => isFav(p));
-
-                filtered.sort(sortInventory);
-
-                grid.innerHTML = filtered.map(pet => {
-                    const imgSrc = getPetImageUrl(pet.name) || '';
-                    return `
-                        <div class="pet-card">
-                            ${imgSrc ? `<img src="${imgSrc}" loading="lazy" alt="${pet.name}" onerror="this.style.display='none'">` : '<div style="width:100%;aspect-ratio:1;background:rgba(255,255,255,0.05);border-radius:12px;"></div>'}
-                            <div class="name">${pet.name}</div>
-                            <div class="value">${formatNumber(pet.value)}</div>
-                            <div class="quantity">×${pet.amount}</div>
-                        </div>`;
-                }).join('');
+                saveAnalytics(username, data);
+                return data;
+            }
+            function get24hChange(data) {
+                if (!data || !data.snapshots.length) return null;
+                const now = Date.now();
+                const oneDay = 24 * 60 * 60 * 1000;
+                let closest = null;
+                for (const snap of data.snapshots) {
+                    if (now - snap.date <= oneDay && (closest === null || snap.date > closest.date)) closest = snap;
+                }
+                if (closest) return data.currentPets - closest.pets;
+                return data.currentPets - data.startingPets;
             }
 
-            // Page switching unchanged (abbreviated for brevity)
-            function switchPage(name) { /* ... */ }
+            // ─── Cursor glow ───
+            const glow = document.getElementById('cursor-glow');
+            document.addEventListener('mousemove', (e) => {
+                glow.style.left = e.clientX + 'px';
+                glow.style.top = e.clientY + 'px';
+                glow.style.opacity = '1';
+            });
+            document.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
 
-            // Global overview loader (call on dashboard entry)
+            // ─── Particles ───
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            let particles = [];
+            let animFrame;
+            let mouse = { x: -200, y: -200 };
+
+            function resize() {
+                canvas.width = window.innerWidth * dpr;
+                canvas.height = window.innerHeight * dpr;
+                canvas.style.width = window.innerWidth + 'px';
+                canvas.style.height = window.innerHeight + 'px';
+                ctx.scale(dpr, dpr);
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            const particleCount = 55;
+            particles = Array.from({ length: particleCount }, () => ({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                r: Math.random() * 1.6 + 0.5,
+                vx: (Math.random() - 0.5) * 0.22,
+                vy: (Math.random() - 0.5) * 0.22,
+                opacity: Math.random() * 0.5 + 0.2,
+            }));
+
+            window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+            function animate() {
+                const w = window.innerWidth, h = window.innerHeight;
+                ctx.clearRect(0, 0, w, h);
+                for (let p of particles) {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < -20) p.x = w + 20; if (p.x > w + 20) p.x = -20;
+                    if (p.y < -20) p.y = h + 20; if (p.y > h + 20) p.y = -20;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(180,200,240,${p.opacity * 0.55})`;
+                    ctx.fill();
+                    for (let q of particles) {
+                        const dx = p.x - q.x, dy = p.y - q.y, dist = Math.sqrt(dx*dx+dy*dy);
+                        if (dist < 90) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+                            ctx.strokeStyle = `rgba(160,200,240,${0.04 * (1 - dist/90)})`;
+                            ctx.lineWidth = 0.5; ctx.stroke();
+                        }
+                    }
+                    const dmx = mouse.x - p.x, dmy = mouse.y - p.y, dm = Math.sqrt(dmx*dmx+dmy*dmy);
+                    if (dm < 200 && dm > 0) {
+                        const force = 0.015 * (1 - dm/200);
+                        p.vx += (dmx/dm) * force; p.vy += (dmy/dm) * force;
+                        const speed = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+                        if (speed > 0.5) { p.vx = (p.vx/speed)*0.5; p.vy = (p.vy/speed)*0.5; }
+                    }
+                }
+                animFrame = requestAnimationFrame(animate);
+            }
+            animFrame = requestAnimationFrame(animate);
+            window.addEventListener('beforeunload', () => cancelAnimationFrame(animFrame));
+
+            // ─── Fade-up observer ───
+            const fadeObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); fadeObserver.unobserve(entry.target); } });
+            }, { threshold: 0.1 });
+            function observeFadeUps() { document.querySelectorAll('.fade-up').forEach(el => fadeObserver.observe(el)); }
+
+            // ─── Page switching ───
+            const pages = {
+                dashboard: document.getElementById('page-dashboard'),
+                trackers: document.getElementById('page-trackers'),
+                games: document.getElementById('page-games'),
+                settings: document.getElementById('page-settings')
+            };
+            const navLinks = document.querySelectorAll('.nav-link');
+            function switchPage(name) {
+                Object.values(pages).forEach(p => p.classList.remove('active'));
+                pages[name].classList.add('active');
+                navLinks.forEach(l => { l.classList.remove('active'); if (l.dataset.page === name) l.classList.add('active'); });
+                if (name === 'dashboard') {
+                    document.getElementById('global-stats').style.display = 'grid';
+                    document.getElementById('games-overview').style.display = 'block';
+                    loadGlobalOverview();
+                } else {
+                    document.getElementById('global-stats').style.display = 'none';
+                    document.getElementById('games-overview').style.display = 'none';
+                }
+                observeFadeUps();
+            }
+            navLinks.forEach(link => link.addEventListener('click', e => { e.preventDefault(); switchPage(link.dataset.page); }));
+
+            // ─── Global overview ───
             async function loadGlobalOverview() {
                 try {
                     const overview = await API.getSaberOverview();
@@ -486,10 +658,14 @@
                     document.getElementById('stat-online').textContent = overview.onlineAccounts;
                     document.getElementById('stat-offline').textContent = overview.offlineAccounts;
                     document.getElementById('saber-online-count').innerHTML = `🟢 ${overview.onlineAccounts} Online`;
+                    if (previousOnlineCount > 0 && overview.onlineAccounts !== previousOnlineCount) {
+                        showToast(overview.onlineAccounts > previousOnlineCount ? `🟢 ${overview.onlineAccounts - previousOnlineCount} came online` : `🔴 ${previousOnlineCount - overview.onlineAccounts} went offline`);
+                    }
+                    previousOnlineCount = overview.onlineAccounts;
                 } catch(e) { console.error(e); }
             }
 
-            // Select game
+            // ─── Game selection ───
             window.selectGame = function(game) {
                 currentGame = game;
                 document.getElementById('game-selection').style.display = 'none';
@@ -503,7 +679,6 @@
                     document.getElementById('ps99-dashboard').style.display = 'block';
                 }
             };
-
             window.backToGameSelection = function() {
                 document.getElementById('ps99-dashboard').style.display = 'none';
                 document.getElementById('saber-dashboard').style.display = 'none';
@@ -514,11 +689,12 @@
 
             function startAutoRefresh() {
                 stopAutoRefresh();
-                autoRefreshInterval = setInterval(() => { if (currentGame==='saber') loadSaberData(true); }, 8000);
+                autoRefreshInterval = setInterval(() => { if (currentGame === 'saber') loadSaberData(true); }, 8000);
             }
             function stopAutoRefresh() { clearInterval(autoRefreshInterval); }
 
-            async function loadSaberData(silent=false) {
+            // ─── Load Saber data ───
+            async function loadSaberData(silent = false) {
                 const refresh = document.getElementById('refresh-indicator');
                 refresh.textContent = silent ? 'Refreshing...' : 'Loading...';
                 try {
@@ -531,30 +707,19 @@
                     document.getElementById('saber-online-count').innerHTML = `🟢 ${overview.onlineAccounts} Online`;
                     allAccounts = accounts || [];
                     renderAccountList();
-
-                    // Update account filter dropdown without touching inventory grid
-                    const select = document.getElementById('account-filter');
-                    const currentVal = select.value;
-                    select.innerHTML = '<option value="">All Accounts</option>';
-                    allAccounts.forEach(a => select.innerHTML += `<option value="${a.username}">${a.username}</option>`);
-                    select.value = currentVal;
-
+                    updateAccountFilterDropdown();
                     if (!inventoryLoaded) {
                         document.getElementById('global-inventory-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;"><button class="btn btn-accent" onclick="loadFullInventory()">📦 Load Pet Inventory</button></div>';
-                        document.getElementById('rare-pets-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;">Click "Load Inventory" to see rare pets.</div>';
                     }
                     refresh.textContent = '✓ Live';
                     setTimeout(() => refresh.textContent = '', 2000);
-                } catch(e) {
-                    console.error(e);
-                    refresh.textContent = '⚠ Error';
-                }
+                } catch(e) { console.error(e); refresh.textContent = '⚠ Error'; }
             }
 
             function renderAccountList() {
                 const list = document.getElementById('account-list');
                 if (!allAccounts.length) {
-                    list.innerHTML = '<div style="padding:2rem;text-align:center;">No accounts yet.</div>';
+                    list.innerHTML = '<div style="text-align:center;padding:2rem;">No accounts yet.</div>';
                     return;
                 }
                 list.innerHTML = allAccounts.map(a => `
@@ -564,6 +729,86 @@
                     </div>`).join('');
             }
 
+            function updateAccountFilterDropdown() {
+                const select = document.getElementById('account-filter');
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">All Accounts</option>';
+                allAccounts.forEach(a => select.innerHTML += `<option value="${a.username}">${a.username}</option>`);
+                select.value = currentVal;
+            }
+
+            // ─── View Account Detail ───
+            window.viewAccount = async function(username) {
+                const section = document.getElementById('account-detail-section');
+                section.style.display = 'block';
+                document.getElementById('detail-username').textContent = username;
+                currentAnalyticsUsername = username;
+                section.scrollIntoView({ behavior: 'smooth' });
+                try {
+                    let data = accountDetailsCache[username];
+                    if (!data) { data = await API.getSaberAccount(username); accountDetailsCache[username] = data; }
+                    document.getElementById('detail-status').textContent = data.online ? 'Online' : 'Offline';
+                    document.getElementById('detail-status').className = 'badge ' + (data.online ? 'online' : 'offline');
+                    document.getElementById('detail-last-update').textContent = 'Last update: ' + (data.lastUpdate ? new Date(data.lastUpdate).toLocaleString() : 'Never');
+                    document.getElementById('detail-total-pets').textContent = 'Total pets: ' + (data.totalPets || 0);
+                    const invValue = calculateInventoryValue(data.pets);
+                    document.getElementById('detail-inventory-value').textContent = 'Inventory value: ' + formatNumber(invValue) + ' gems';
+                    updateAnalytics(username, data.totalPets || 0);
+                    // Render detail inventory grid
+                    const grid = document.getElementById('detail-inventory-grid');
+                    if (!data.pets || !data.pets.length) {
+                        grid.innerHTML = '<div style="text-align:center;padding:2rem;">No pets yet.</div>';
+                    } else {
+                        const sorted = [...data.pets].sort((a,b) => {
+                            const aVoid = a.variant==='Void'?1:0, bVoid = b.variant==='Void'?1:0;
+                            if (aVoid!==bVoid) return bVoid-aVoid;
+                            const ra=getRarityRank(a.rarity), rb=getRarityRank(b.rarity);
+                            if (ra!==rb) return rb-ra;
+                            return getPetValue(b.name) - getPetValue(a.name);
+                        });
+                        grid.innerHTML = sorted.map(pet => {
+                            const img = getPetImageUrl(pet.name);
+                            return `<div class="pet-card">
+                                ${img ? `<img src="${img}" loading="lazy" onerror="this.style.display='none'">` : '<div style="width:100%;aspect-ratio:1;background:rgba(255,255,255,0.05);border-radius:12px;"></div>'}
+                                <div class="name">${pet.name}</div>
+                                <div class="value">${formatNumber(getPetValue(pet.name))}</div>
+                                <div class="quantity">×${pet.amount||1}</div>
+                            </div>`;
+                        }).join('');
+                    }
+                    document.getElementById('analytics-panel').style.display = 'none';
+                } catch(e) { console.error(e); }
+            };
+            window.closeAccountDetail = function() { document.getElementById('account-detail-section').style.display = 'none'; };
+
+            // ─── Analytics display ───
+            window.toggleAnalytics = function() {
+                const panel = document.getElementById('analytics-panel');
+                if (panel.style.display === 'none' || panel.style.display === '') {
+                    displayAnalytics(currentAnalyticsUsername);
+                    panel.style.display = 'block';
+                } else panel.style.display = 'none';
+            };
+            function displayAnalytics(username) {
+                const data = loadAnalytics(username);
+                const container = document.getElementById('analytics-content');
+                if (!data) { container.innerHTML = '<p>No analytics yet.</p>'; return; }
+                const change = data.currentPets - data.startingPets;
+                const dayChange = get24hChange(data);
+                container.innerHTML = `
+                    <div class="stat-cards-grid" style="margin-bottom:1rem;">
+                        <div class="stat-card"><div class="icon-title">📅 Added</div><div class="main-value" style="font-size:1rem;">${new Date(data.addedDate).toLocaleDateString()}</div></div>
+                        <div class="stat-card"><div class="icon-title">🐾 Start</div><div class="main-value">${data.startingPets}</div></div>
+                        <div class="stat-card"><div class="icon-title">📈 Current</div><div class="main-value">${data.currentPets}</div></div>
+                        <div class="stat-card"><div class="icon-title">🔄 Change</div><div class="main-value" style="color:${change>=0?'#34d399':'#ff6b6b'}">${change>=0?'+'+change:change}</div></div>
+                        <div class="stat-card"><div class="icon-title">⏱️ 24h</div><div class="main-value">${dayChange!==null?(dayChange>=0?'+'+dayChange:dayChange):'N/A'}</div></div>
+                    </div>
+                    <h4>Snapshots</h4>
+                    <div style="max-height:200px;overflow-y:auto;">${data.snapshots.slice(-7).map(s=>`<div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.03);"><span>${new Date(s.date).toLocaleDateString()}</span><span>${s.pets} Pets</span></div>`).join('')}</div>
+                `;
+            }
+
+            // ─── Global inventory ───
             window.loadFullInventory = async function() {
                 const grid = document.getElementById('global-inventory-grid');
                 grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;"><div class="spinner"></div>Loading inventory…</div>';
@@ -586,17 +831,120 @@
                     const rare = allInventory.filter(p => isRarePet(p.rarity));
                     document.getElementById('saber-rare-pets-count').textContent = rare.reduce((s,p)=>s+p.amount,0);
                     document.getElementById('rare-pets-grid').innerHTML = rare.map(p => `
-                        <div class="stat-card"><div class="icon-title">${p.rarity==='Secret'?'🔮':'✨'} ${p.rarity}</div><div class="main-value" style="font-size:1.3rem;">${p.name}</div><div>${p.owners.join(', ')} · ×${p.amount}</div></div>`).join('') || '<div>None</div>';
+                        <div class="stat-card"><div class="icon-title">${p.rarity==='Secret'?'🔮':'✨'} ${p.rarity}</div><div class="main-value" style="font-size:1.3rem;">${p.name}</div><div style="font-size:0.8125rem;">${p.owners.join(', ')} · ×${p.amount}</div></div>
+                    `).join('') || '<div style="grid-column:1/-1;text-align:center;">None</div>';
                 } catch(e) {
                     console.error(e);
                     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#ff6b6b;">Failed to load inventory.</div>';
                 }
             };
 
-            // Init
+            function renderGlobalInventory() {
+                if (!inventoryLoaded) return;
+                const grid = document.getElementById('global-inventory-grid');
+                if (!allInventory.length) {
+                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-secondary);">No pets tracked.</div>';
+                    return;
+                }
+                let filtered = [...allInventory];
+                const account = document.getElementById('account-filter').value;
+                if (account) filtered = filtered.filter(p => p.owners.includes(account));
+                const search = document.getElementById('inventory-search').value.toLowerCase();
+                if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
+                const variant = document.getElementById('variant-filter').value;
+                if (variant) filtered = filtered.filter(p => p.variant === variant);
+                const rarity = document.getElementById('rarity-filter').value;
+                if (rarity) filtered = filtered.filter(p => p.rarity === rarity);
+                if (favFilterActive) filtered = filtered.filter(p => isFav(p));
+
+                // Sort: Void first, then rarity/value
+                filtered.sort((a, b) => {
+                    const aVoid = a.variant === 'Void' ? 1 : 0;
+                    const bVoid = b.variant === 'Void' ? 1 : 0;
+                    if (aVoid !== bVoid) return bVoid - aVoid;
+                    const ra = getRarityRank(a.rarity), rb = getRarityRank(b.rarity);
+                    if (ra !== rb) return rb - ra;
+                    return b.value - a.value;
+                });
+
+                grid.innerHTML = filtered.map(pet => {
+                    const img = getPetImageUrl(pet.name);
+                    return `<div class="pet-card">
+                        ${img ? `<img src="${img}" loading="lazy" onerror="this.style.display='none'">` : '<div style="width:100%;aspect-ratio:1;background:rgba(255,255,255,0.05);border-radius:12px;"></div>'}
+                        <div class="name">${pet.name}</div>
+                        <div class="value">${formatNumber(pet.value)}</div>
+                        <div class="quantity">×${pet.amount}</div>
+                    </div>`;
+                }).join('');
+            }
+
+            window.toggleFavFilter = function() {
+                favFilterActive = !favFilterActive;
+                document.getElementById('fav-filter-btn').classList.toggle('active', favFilterActive);
+                document.getElementById('fav-filter-btn').textContent = favFilterActive ? '⭐ Favourites (on)' : '⭐ Favourites';
+                renderGlobalInventory();
+            };
+
+            // ─── Pet search ───
+            window.searchPet = async function() {
+                const query = document.getElementById('pet-search-input').value.trim();
+                if (!query) return;
+                const resDiv = document.getElementById('pet-search-results');
+                const emptyDiv = document.getElementById('pet-search-empty');
+                try {
+                    const result = await API.searchSaberPet(query);
+                    resDiv.style.display = 'block'; emptyDiv.style.display = 'none';
+                    document.getElementById('search-query-name').textContent = result.pet;
+                    document.getElementById('search-total-owned').textContent = result.totalOwned;
+                    document.getElementById('search-total-value').textContent = formatNumber((result.totalOwned||0) * getPetValue(result.pet));
+                    document.getElementById('search-account-list').innerHTML = result.accounts.map(a => `
+                        <div class="account-row" onclick="viewAccount('${a.username}')"><div class="account-info"><span class="account-name">${a.username}</span></div><span class="stat-value">Amount: ${a.amount}</span></div>
+                    `).join('') || '<div>None</div>';
+                } catch(e) { resDiv.style.display = 'block'; emptyDiv.style.display = 'none'; document.getElementById('search-account-list').innerHTML = '<div>Not found.</div>'; }
+            };
+
+            // ─── Notifications & toasts ───
+            window.requestNotificationPermission = function() {
+                if ('Notification' in window) Notification.requestPermission().then(p => showToast(p === 'granted' ? '✅ Enabled' : '❌ Denied'));
+                else showToast('⚠ Not supported');
+            };
+            function showToast(msg) {
+                const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+                document.getElementById('toast-container').appendChild(t);
+                setTimeout(() => t.remove(), 4000);
+            }
+
+            // ─── Trackers page helpers ───
+            window.copyTrackerScript = function() {
+                const btn = document.querySelector('#page-trackers .btn-accent');
+                navigator.clipboard.writeText('-- Tracker script coming soon --').then(() => {
+                    btn.textContent = '✅ Copied!'; btn.classList.add('copied');
+                    setTimeout(() => { btn.textContent = '📋 Copy Tracker Script'; btn.classList.remove('copied'); }, 2000);
+                });
+            };
+
+            // ─── Account Manager ───
+            window.openAccountManager = async function() {
+                document.getElementById('account-manager-modal').style.display = 'flex';
+                const list = document.getElementById('account-manager-list');
+                if (!allAccounts.length) { list.innerHTML = '<div>No accounts.</div>'; return; }
+                list.innerHTML = allAccounts.map(a => `
+                    <div class="account-row"><div class="account-info"><span class="account-name">${a.username}</span><span class="badge ${a.online?'online':'offline'}">${a.online?'Online':'Offline'}</span></div><div style="display:flex;gap:0.5rem;align-items:center;"><span class="stat-value">${a.pets} pets</span><button class="btn-danger" onclick="removeAccount('${a.username}')">Remove</button></div></div>
+                `).join('');
+            };
+            window.closeAccountManager = function() { document.getElementById('account-manager-modal').style.display = 'none'; };
+            window.removeAccount = function(username) {
+                if (confirm(`Remove "${username}"?`)) showToast(`Account "${username}" removal requested.`);
+            };
+            document.getElementById('account-manager-modal').addEventListener('click', function(e) { if (e.target === this) closeAccountManager(); });
+
+            // ─── Init ───
             switchPage('dashboard');
+            document.getElementById('global-stats').style.display = 'grid';
+            document.getElementById('games-overview').style.display = 'block';
             document.getElementById('game-selection').style.display = 'block';
             loadGlobalOverview();
+            observeFadeUps();
         })();
     </script>
 </body>
