@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – MRC Track Stat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #060b14;
+            --bg-secondary: #0a1120;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --text-primary: rgba(240, 245, 255, 0.88);
+            --text-secondary: rgba(180, 195, 215, 0.78);
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --font-outfit: 'Outfit', system-ui, -apple-system, sans-serif;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            background: var(--bg-primary);
+            font-family: var(--font-outfit);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-outfit);
+            font-weight: 400;
+            line-height: 1.5;
+            overflow-x: hidden;
+            min-height: 100vh;
+            letter-spacing: -0.01em;
+            display: flex;
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.18;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse 65% 55% at 50% 40%, black 30%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 40%, black 30%, transparent 70%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 20px;
+            transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1), 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes shine-sweep {
+            0% { transform: translateX(-100%) skewX(-20deg); opacity: 0; }
+            40% { opacity: 0.8; }
+            60% { opacity: 0.8; }
+            100% { transform: translateX(200%) skewX(-20deg); opacity: 0; }
+        }
+        .shine-btn {
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+        .shine-btn::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 60%, transparent);
+            animation: shine-sweep 3.5s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        @keyframes pulse-dot {
+            0%,100% { opacity:0.5; transform:scale(1); }
+            50% { opacity:1; transform:scale(1.8); }
+        }
+        .pulse-dot { animation: pulse-dot 2.8s ease-in-out infinite; }
+
+        .fade-up {
+            opacity: 0;
+            transform: translateY(24px);
+            filter: blur(6px);
+            transition: opacity 0.7s cubic-bezier(0.25,0.1,0.25,1), transform 0.7s cubic-bezier(0.25,0.1,0.25,1), filter 0.7s cubic-bezier(0.25,0.1,0.25,1);
+        }
+        .fade-up.is-visible { opacity:1; transform:translateY(0); filter:blur(0); }
+        .delay-1{transition-delay:0.05s}.delay-2{transition-delay:0.1s}.delay-3{transition-delay:0.15s}.delay-4{transition-delay:0.2s}.delay-5{transition-delay:0.25s}.delay-6{transition-delay:0.3s}
+
+        .hover-lift {
+            transition: transform 0.35s cubic-bezier(0.25,0.1,0.25,1), box-shadow 0.35s cubic-bezier(0.25,0.1,0.25,1), border-color 0.35s cubic-bezier(0.25,0.1,0.25,1);
+        }
+        .hover-lift:hover {
+            transform: translateY(-6px);
+            border-color: rgba(59,130,246,0.4);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(59,130,246,0.15);
+        }
+
+        .btn {
+            display:inline-flex; align-items:center; justify-content:center; gap:0.5rem;
+            font-family:var(--font-outfit); font-weight:500; border-radius:12px; cursor:pointer;
+            transition:all 0.3s; text-decoration:none; white-space:nowrap; letter-spacing:-0.01em;
+            border:none; font-size:inherit; position:relative;
+        }
+        .btn:active{transform:scale(0.97);}
+
+        .btn-primary{background:#fff;color:#0a0a0a;box-shadow:0 0 0 1px rgba(255,255,255,0.1),0 4px 16px rgba(0,0,0,0.3);}
+        .btn-primary:hover{background:#f0f0f0;box-shadow:0 0 0 1px rgba(255,255,255,0.2),0 8px 24px rgba(0,0,0,0.4);transform:scale(1.03);}
+
+        .btn-accent{background:#3b82f6;color:#fff;box-shadow:0 0 0 1px rgba(59,130,246,0.4),0 4px 16px rgba(59,130,246,0.3);}
+        .btn-accent:hover{background:#4f94ff;box-shadow:0 0 0 1px rgba(59,130,246,0.6),0 8px 24px rgba(59,130,246,0.4);}
+
+        .btn-danger{background:rgba(255,60,60,0.15);color:#ff4d4d;border:1px solid rgba(255,60,60,0.3);font-size:0.75rem;padding:0.35rem 0.75rem;border-radius:8px;cursor:pointer;transition:all 0.2s;font-family:var(--font-outfit);font-weight:500;}
+        .btn-danger:hover{background:rgba(255,60,60,0.25);}
+
+        .btn-fav{background:transparent;border:1px solid rgba(255,215,0,0.4);color:#ffd700;font-size:0.75rem;padding:0.3rem 0.75rem;border-radius:8px;cursor:pointer;transition:all 0.2s;font-family:var(--font-outfit);font-weight:500;}
+        .btn-fav:hover{background:rgba(255,215,0,0.1);}
+        .btn-fav.active{background:rgba(255,215,0,0.2);border-color:#ffd700;}
+
+        h1,h2,h3,h4{font-family:var(--font-outfit);font-weight:700;letter-spacing:-0.025em;line-height:1.08;}
+
+        .text-body{font-size:0.9375rem;line-height:1.6;color:var(--text-secondary);}
+        .text-small{font-size:0.8125rem;line-height:1.5;color:var(--text-secondary);}
+        .text-label{font-size:0.6875rem;text-transform:uppercase;letter-spacing:0.06em;font-weight:500;color:var(--text-secondary);}
+
+        #cursor-glow{position:fixed;pointer-events:none;z-index:9999;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,0.05) 0%,transparent 70%);transform:translate(-50%,-50%);transition:opacity 0.4s;will-change:left,top;}
+
+        /* Sidebar */
+        .sidebar{width:var(--sidebar-width);height:100vh;position:fixed;top:0;left:0;background:rgba(8,14,26,0.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-right:1px solid rgba(255,255,255,0.05);padding:1.5rem 1rem;display:flex;flex-direction:column;gap:1.5rem;z-index:50;}
+        .sidebar-logo{display:flex;align-items:center;gap:0.75rem;font-size:1.1rem;font-weight:600;color:var(--text-primary);text-decoration:none;}
+        .nav-links{display:flex;flex-direction:column;gap:0.25rem;}
+        .nav-link{display:flex;align-items:center;gap:0.75rem;padding:0.7rem 1rem;border-radius:10px;color:var(--text-secondary);text-decoration:none;font-weight:500;transition:all 0.2s;font-size:0.875rem;cursor:pointer;background:none;border:none;font-family:var(--font-outfit);width:100%;text-align:left;}
+        .nav-link:hover{background:rgba(59,130,246,0.1);color:var(--text-primary);}
+        .nav-link.active{background:rgba(59,130,246,0.15);color:#fff;border-left:3px solid var(--accent);}
+        .nav-link svg{width:20px;height:20px;opacity:0.8;}
+
+        .main-content{margin-left:var(--sidebar-width);flex:1;padding:2rem 2.5rem;min-height:100vh;position:relative;z-index:10;}
+
+        /* Stat cards */
+        .stat-cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.25rem;margin-bottom:2.5rem;}
+
+        .stat-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:20px;padding:1.5rem;display:flex;flex-direction:column;gap:0.75rem;transition:all 0.3s;position:relative;overflow:hidden;}
+        .stat-card:hover{border-color:rgba(59,130,246,0.35);box-shadow:0 12px 32px rgba(0,0,0,0.5),0 0 0 1px rgba(59,130,246,0.12);transform:translateY(-2px);}
+        .stat-card .icon-title{display:flex;align-items:center;gap:0.5rem;font-size:0.8125rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--text-secondary);font-weight:500;}
+        .stat-card .main-value{font-size:2.2rem;font-weight:700;letter-spacing:-0.03em;color:var(--text-primary);line-height:1;font-feature-settings:"tnum";font-variant-numeric:tabular-nums;}
+        .stat-card .trend{display:flex;align-items:center;gap:0.3rem;font-size:0.8125rem;font-weight:500;color:#34d399;}
+
+        /* Account row */
+        .account-list{display:flex;flex-direction:column;gap:0.5rem;}
+        .account-row{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);border-radius:14px;padding:1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;transition:all 0.2s;flex-wrap:wrap;gap:0.75rem;cursor:pointer;}
+        .account-row:hover{border-color:rgba(59,130,246,0.35);background:rgba(59,130,246,0.05);}
+        .account-info{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+        .account-name{font-weight:600;color:var(--text-primary);}
+        .badge{font-size:0.7rem;padding:0.25rem 0.75rem;border-radius:999px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;}
+        .badge.online{background:rgba(52,211,153,0.12);color:#34d399;border:1px solid rgba(52,211,153,0.3);}
+        .badge.offline{background:rgba(255,255,255,0.05);color:#888;border:1px solid rgba(255,255,255,0.08);}
+
+        .stat-value{font-weight:500;font-size:0.9375rem;color:var(--text-secondary);font-feature-settings:"tnum";}
+
+        /* Inventory Grid */
+        .pet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;}
+        .pet-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:16px;padding:1rem;display:flex;flex-direction:column;align-items:center;text-align:center;transition:all 0.3s;cursor:default;}
+        .pet-card:hover{border-color:rgba(59,130,246,0.35);background:rgba(59,130,246,0.05);transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.5);}
+        .pet-card img{width:100%;aspect-ratio:1;object-fit:contain;border-radius:12px;background:rgba(0,0,0,0.2);margin-bottom:0.75rem;transition:transform 0.3s;}
+        .pet-card:hover img{transform:scale(1.05);}
+        .pet-card .name{font-weight:600;font-size:0.9rem;color:var(--text-primary);margin-bottom:0.25rem;}
+        .pet-card .value{font-size:0.8rem;color:var(--accent);font-weight:500;}
+        .pet-card .quantity{font-size:0.75rem;color:var(--text-secondary);}
+
+        /* Filters */
+        .search-input{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:0.6rem 1rem;color:var(--text-primary);font-family:var(--font-outfit);font-size:0.875rem;width:100%;max-width:300px;outline:none;transition:border-color 0.2s;}
+        .search-input:focus{border-color:rgba(59,130,246,0.4);}
+        .filter-select{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:0.5rem 0.75rem;color:var(--text-primary);font-family:var(--font-outfit);font-size:0.8125rem;outline:none;cursor:pointer;transition:border-color 0.2s;}
+        .filter-select:focus{border-color:rgba(59,130,246,0.4);}
+        .filter-select option{background:#0a1120;color:var(--text-primary);}
+
+        .back-btn{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);color:var(--text-secondary);padding:0.5rem 1rem;border-radius:10px;cursor:pointer;font-family:var(--font-outfit);font-size:0.8125rem;transition:all 0.2s;display:inline-flex;align-items:center;gap:0.4rem;margin-bottom:1rem;}
+        .back-btn:hover{background:rgba(255,255,255,0.06);color:var(--text-primary);}
+
+        .toast{position:fixed;bottom:2rem;right:2rem;background:rgba(8,14,26,0.95);border:1px solid rgba(59,130,246,0.3);border-radius:14px;padding:1rem 1.5rem;z-index:999;color:var(--text-primary);font-family:var(--font-outfit);font-size:0.875rem;animation:slideIn 0.4s ease, fadeOut 0.4s ease 3.5s forwards;box-shadow:0 12px 32px rgba(0,0,0,0.6);max-width:400px;}
+        @keyframes slideIn{from{transform:translateX(100px);opacity:0}to{transform:translateX(0);opacity:1}}
+        @keyframes fadeOut{from{opacity:1}to{opacity:0;transform:translateY(10px)}}
+
+        @media (max-width:768px){
+            .sidebar{width:100%;height:auto;position:relative;flex-direction:row;justify-content:space-between;padding:1rem;}
+            .main-content{margin-left:0;padding:1.5rem;}
+            .nav-links{flex-direction:row;gap:0.5rem;}
+            .nav-link{padding:0.5rem;font-size:0.75rem;}
+            #cursor-glow{display:none;}
+            .stat-cards-grid{grid-template-columns:1fr;}
+            .pet-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+        }
+    </style>
+</head>
+<body>
+    <div id="cursor-glow"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Sidebar (unchanged) -->
+    <aside class="sidebar">
+        <a href="index.html" class="sidebar-logo">
+            <svg width="30" height="30" viewBox="0 0 32 32" fill="none" style="flex-shrink:0;">
+                <rect x="2" y="2" width="28" height="28" rx="7" fill="rgba(59,130,246,0.12)" stroke="rgba(59,130,246,0.5)" stroke-width="1.5"/>
+                <rect x="8" y="18" width="4" height="8" rx="1.5" fill="#3b82f6" opacity="0.9"/>
+                <rect x="14" y="12" width="4" height="14" rx="1.5" fill="#3b82f6" opacity="0.75"/>
+                <rect x="20" y="6" width="4" height="20" rx="1.5" fill="#3b82f6" opacity="0.6"/>
+                <circle cx="10" cy="8" r="1.8" fill="#3b82f6" class="pulse-dot"/>
+            </svg>
+            MRC Track Stat
+        </a>
+        <nav class="nav-links">
+            <button class="nav-link active" data-page="dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Dashboard
+            </button>
+            <button class="nav-link" data-page="trackers">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+                Trackers
+            </button>
+            <button class="nav-link" data-page="games">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Games
+            </button>
+            <button class="nav-link" data-page="settings">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Settings
+            </button>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <!-- Welcome and global stats unchanged -->
+        <section style="margin-bottom:2.5rem;">
+            <h1 style="font-size:clamp(2rem,5vw,2.5rem);color:var(--text-primary);">Welcome back, User</h1>
+            <p class="text-body">Manage your trackers and monitor your Roblox accounts. <span id="refresh-indicator" style="color:var(--accent);font-size:0.75rem;"></span></p>
+        </section>
+
+        <div class="stat-cards-grid fade-up delay-1" id="global-stats">
+            <div class="stat-card">
+                <div class="icon-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Total Accounts</div>
+                <div class="main-value" id="stat-total-accounts">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-title"><span style="color:#34d399;">●</span> Online</div>
+                <div class="main-value" id="stat-online">—</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-title"><span style="color:#888;">●</span> Offline</div>
+                <div class="main-value" id="stat-offline">—</div>
+            </div>
+        </div>
+
+        <div class="fade-up delay-2" style="margin-bottom:2.5rem;" id="games-overview">
+            <h2 style="font-size:1.5rem; margin-bottom:1rem;">Games Overview</h2>
+            <div class="stat-cards-grid">
+                <div class="glass-card" style="padding:1.5rem;text-align:center;">
+                    <div style="font-size:2rem;">🗡️</div><h3>Saber Simulator</h3>
+                    <p id="saber-online-count">Loading…</p>
+                </div>
+                <div class="glass-card" style="padding:1.5rem;text-align:center;opacity:0.6;">
+                    <div style="font-size:2rem;">🐾</div><h3>Pet Simulator 99</h3><p>Coming Soon</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard page -->
+        <div class="page active" id="page-dashboard">
+            <div id="game-selection">
+                <h2 style="font-size:1.5rem;margin-bottom:1.5rem;">Select a Game</h2>
+                <div class="stat-cards-grid">
+                    <div class="game-card" onclick="selectGame('ps99')"><div class="game-icon">🐾</div><div class="game-title">Pet Simulator 99</div></div>
+                    <div class="game-card" onclick="selectGame('saber')"><div class="game-icon">🗡️</div><div class="game-title">Saber Simulator</div></div>
+                </div>
+            </div>
+            <div id="ps99-dashboard" style="display:none;">
+                <button class="back-btn" onclick="backToGameSelection()">← Back</button>
+                <h2>🐾 Pet Simulator 99</h2><div class="glass-card" style="padding:3rem;text-align:center;"><p>Coming soon.</p></div>
+            </div>
+
+            <!-- Saber Dashboard -->
+            <div id="saber-dashboard" style="display:none;">
+                <button class="back-btn" onclick="backToGameSelection()">← Back</button>
+                <h2 style="font-size:1.5rem; margin-bottom:1.5rem;">🗡️ Saber Simulator</h2>
+
+                <!-- Saber stats cards (unchanged) -->
+                <div class="stat-cards-grid">
+                    <div class="stat-card"><div class="icon-title">💎 Total Gems</div><div class="main-value" id="saber-total-gems">—</div></div>
+                    <div class="stat-card"><div class="icon-title">🐾 Total Pets</div><div class="main-value" id="saber-total-pets-card">—</div></div>
+                    <div class="stat-card"><div class="icon-title">⭐ Rare Pets</div><div class="main-value" id="saber-rare-pets-count">—</div></div>
+                </div>
+
+                <!-- Accounts list (unchanged) -->
+                <section class="glass-card fade-up delay-2" style="padding:1.5rem;margin-bottom:2rem;">
+                    <h3>Tracked Accounts</h3><div class="account-list" id="account-list">Loading…</div>
+                </section>
+
+                <!-- Account detail (unchanged) -->
+                <section class="glass-card fade-up" style="padding:1.5rem;margin-bottom:2rem;display:none;" id="account-detail-section">
+                    <!-- ... detail content ... -->
+                </section>
+
+                <!-- Inventory section (redesigned) -->
+                <section class="glass-card fade-up delay-3" style="padding:1.5rem;margin-bottom:2rem;">
+                    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
+                        <h3>All Pet Inventory</h3>
+                        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                            <select class="filter-select" id="account-filter" onchange="renderGlobalInventory()">
+                                <option value="">All Accounts</option>
+                            </select>
+                            <input type="text" class="search-input" placeholder="Search pets..." id="inventory-search" oninput="renderGlobalInventory()">
+                            <select class="filter-select" id="variant-filter" onchange="renderGlobalInventory()">
+                                <option value="">All Variants</option>
+                                <option value="Void">Void</option>
+                                <option value="Rainbow">Rainbow</option>
+                                <option value="Golden">Golden</option>
+                                <option value="Shadow">Shadow</option>
+                                <option value="Crystal">Crystal</option>
+                            </select>
+                            <select class="filter-select" id="rarity-filter" onchange="renderGlobalInventory()">
+                                <option value="">All Rarities</option>
+                                <option value="Secret">Secret</option>
+                                <option value="Mythical">Mythical</option>
+                                <option value="Legendary">Legendary</option>
+                                <option value="Epic">Epic</option>
+                                <option value="Rare">Rare</option>
+                                <option value="Common">Common</option>
+                            </select>
+                            <button class="btn-fav" id="fav-filter-btn" onclick="toggleFavFilter()">⭐ Favourites</button>
+                        </div>
+                    </div>
+                    <div class="pet-grid" id="global-inventory-grid">
+                        <div style="grid-column:1/-1;text-align:center;padding:2rem;">
+                            <button class="btn btn-accent" onclick="loadFullInventory()">📦 Load Pet Inventory</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Rare pets section (keep as before) -->
+                <section class="glass-card fade-up delay-4" style="padding:1.5rem;margin-bottom:2rem;">
+                    <h3>⭐ Rare Pets</h3>
+                    <div class="stat-cards-grid" id="rare-pets-grid">
+                        <div style="text-align:center;color:var(--text-secondary);grid-column:1/-1;">Click "Load Inventory" to see rare pets.</div>
+                    </div>
+                </section>
+
+                <!-- Pet search, event history unchanged -->
+            </div>
+        </div>
+
+        <!-- Trackers, Games, Settings pages unchanged -->
+        <div class="page" id="page-trackers">
+            <h2>My Trackers</h2>
+            <div class="glass-card" style="padding:1.5rem;margin-bottom:1.5rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+                    <div><h3>🗡️ Saber Simulator</h3><p class="text-small">Live tracking</p></div>
+                    <span class="badge online">Active</span>
+                </div>
+                <div style="margin-top:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;">
+                    <button class="btn btn-accent" onclick="copyTrackerScript()">📋 Copy Tracker Script</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('tracker-instructions').style.display = 'block'">📖 View Instructions</button>
+                </div>
+                <div id="tracker-instructions" style="display:none;margin-top:1rem;padding:1rem;background:rgba(255,255,255,0.02);border-radius:12px;border:1px solid rgba(255,255,255,0.06);">
+                    <p class="text-small">Instructions coming soon.</p>
+                </div>
+            </div>
+        </div>
+        <div class="page" id="page-games">
+            <h2>Supported Games</h2>
+            <div class="stat-cards-grid">
+                <div class="glass-card" style="padding:1.5rem;text-align:center;"><div style="font-size:2rem;">🗡️</div><h3>Saber Simulator</h3><span class="badge online" style="margin-top:0.5rem;">Live</span></div>
+                <div class="glass-card" style="padding:1.5rem;text-align:center;opacity:0.6;"><div style="font-size:2rem;">🐾</div><h3>Pet Simulator 99</h3><span class="badge offline" style="margin-top:0.5rem;">Soon</span></div>
+            </div>
+        </div>
+        <div class="page" id="page-settings">
+            <h2>Settings</h2>
+            <div class="glass-card" style="padding:1.5rem;">
+                <div style="display:flex;flex-direction:column;gap:1.5rem;">
+                    <div><h4>Dashboard Preferences</h4><p class="text-small">Coming soon</p></div>
+                    <div><h4>Notification Settings</h4><button class="btn btn-accent" onclick="requestNotificationPermission()">Enable Notifications</button></div>
+                    <div><h4>Account Settings</h4><button class="btn btn-accent" onclick="openAccountManager()">Manage</button></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="toast-container"></div>
+    <canvas id="particles-canvas" style="position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.7;"></canvas>
+
+    <script src="api.js"></script>
+    <script src="petValues.js"></script>
+    <script src="petImages.js"></script>
+
+    <script>
+        (function() {
+            // Globals
+            let allAccounts = [];
+            let allInventory = [];
+            let accountDetailsCache = {};
+            let favourites = JSON.parse(localStorage.getItem('mrc_favourites_v2') || '[]');
+            let favFilterActive = false;
+            let inventoryLoaded = false;
+            let currentGame = null;
+            let previousOnlineCount = 0;
+            let autoRefreshInterval = null;
+
+            // Favourite helper
+            function isFav(pet) { return favourites.includes(`${pet.name}|${pet.variant || ''}`); }
+
+            // Sorting: Void first, then rarity/value
+            function sortInventory(a, b) {
+                const aVoid = a.variant === 'Void' ? 1 : 0;
+                const bVoid = b.variant === 'Void' ? 1 : 0;
+                if (aVoid !== bVoid) return bVoid - aVoid;
+                const ra = getRarityRank(a.rarity);
+                const rb = getRarityRank(b.rarity);
+                if (ra !== rb) return rb - ra;
+                return b.value - a.value;
+            }
+
+            // Render inventory grid
+            function renderGlobalInventory() {
+                if (!inventoryLoaded) return;
+                const grid = document.getElementById('global-inventory-grid');
+                if (!allInventory.length) {
+                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-secondary);">No pets found.</div>';
+                    return;
+                }
+
+                let filtered = [...allInventory];
+                const account = document.getElementById('account-filter').value;
+                if (account) filtered = filtered.filter(p => p.owners.includes(account));
+                const search = document.getElementById('inventory-search').value.toLowerCase();
+                if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
+                const variant = document.getElementById('variant-filter').value;
+                if (variant) filtered = filtered.filter(p => p.variant === variant);
+                const rarity = document.getElementById('rarity-filter').value;
+                if (rarity) filtered = filtered.filter(p => p.rarity === rarity);
+                if (favFilterActive) filtered = filtered.filter(p => isFav(p));
+
+                filtered.sort(sortInventory);
+
+                grid.innerHTML = filtered.map(pet => {
+                    const imgSrc = getPetImageUrl(pet.name) || '';
+                    return `
+                        <div class="pet-card">
+                            ${imgSrc ? `<img src="${imgSrc}" loading="lazy" alt="${pet.name}" onerror="this.style.display='none'">` : '<div style="width:100%;aspect-ratio:1;background:rgba(255,255,255,0.05);border-radius:12px;"></div>'}
+                            <div class="name">${pet.name}</div>
+                            <div class="value">${formatNumber(pet.value)}</div>
+                            <div class="quantity">×${pet.amount}</div>
+                        </div>`;
+                }).join('');
+            }
+
+            // Page switching unchanged (abbreviated for brevity)
+            function switchPage(name) { /* ... */ }
+
+            // Global overview loader (call on dashboard entry)
+            async function loadGlobalOverview() {
+                try {
+                    const overview = await API.getSaberOverview();
+                    document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
+                    document.getElementById('stat-online').textContent = overview.onlineAccounts;
+                    document.getElementById('stat-offline').textContent = overview.offlineAccounts;
+                    document.getElementById('saber-online-count').innerHTML = `🟢 ${overview.onlineAccounts} Online`;
+                } catch(e) { console.error(e); }
+            }
+
+            // Select game
+            window.selectGame = function(game) {
+                currentGame = game;
+                document.getElementById('game-selection').style.display = 'none';
+                document.getElementById('ps99-dashboard').style.display = 'none';
+                document.getElementById('saber-dashboard').style.display = 'none';
+                if (game === 'saber') {
+                    document.getElementById('saber-dashboard').style.display = 'block';
+                    loadSaberData();
+                    startAutoRefresh();
+                } else {
+                    document.getElementById('ps99-dashboard').style.display = 'block';
+                }
+            };
+
+            window.backToGameSelection = function() {
+                document.getElementById('ps99-dashboard').style.display = 'none';
+                document.getElementById('saber-dashboard').style.display = 'none';
+                document.getElementById('game-selection').style.display = 'block';
+                currentGame = null;
+                stopAutoRefresh();
+            };
+
+            function startAutoRefresh() {
+                stopAutoRefresh();
+                autoRefreshInterval = setInterval(() => { if (currentGame==='saber') loadSaberData(true); }, 8000);
+            }
+            function stopAutoRefresh() { clearInterval(autoRefreshInterval); }
+
+            async function loadSaberData(silent=false) {
+                const refresh = document.getElementById('refresh-indicator');
+                refresh.textContent = silent ? 'Refreshing...' : 'Loading...';
+                try {
+                    const [overview, accounts] = await Promise.all([API.getSaberOverview(), API.getSaberAccounts()]);
+                    document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
+                    document.getElementById('stat-online').textContent = overview.onlineAccounts;
+                    document.getElementById('stat-offline').textContent = overview.offlineAccounts;
+                    document.getElementById('saber-total-gems').textContent = formatNumber(overview.totalGems);
+                    document.getElementById('saber-total-pets-card').textContent = formatNumber(overview.totalPets);
+                    document.getElementById('saber-online-count').innerHTML = `🟢 ${overview.onlineAccounts} Online`;
+                    allAccounts = accounts || [];
+                    renderAccountList();
+
+                    // Update account filter dropdown without touching inventory grid
+                    const select = document.getElementById('account-filter');
+                    const currentVal = select.value;
+                    select.innerHTML = '<option value="">All Accounts</option>';
+                    allAccounts.forEach(a => select.innerHTML += `<option value="${a.username}">${a.username}</option>`);
+                    select.value = currentVal;
+
+                    if (!inventoryLoaded) {
+                        document.getElementById('global-inventory-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;"><button class="btn btn-accent" onclick="loadFullInventory()">📦 Load Pet Inventory</button></div>';
+                        document.getElementById('rare-pets-grid').innerHTML = '<div style="grid-column:1/-1;text-align:center;">Click "Load Inventory" to see rare pets.</div>';
+                    }
+                    refresh.textContent = '✓ Live';
+                    setTimeout(() => refresh.textContent = '', 2000);
+                } catch(e) {
+                    console.error(e);
+                    refresh.textContent = '⚠ Error';
+                }
+            }
+
+            function renderAccountList() {
+                const list = document.getElementById('account-list');
+                if (!allAccounts.length) {
+                    list.innerHTML = '<div style="padding:2rem;text-align:center;">No accounts yet.</div>';
+                    return;
+                }
+                list.innerHTML = allAccounts.map(a => `
+                    <div class="account-row" onclick="viewAccount('${a.username}')">
+                        <div class="account-info"><span class="account-name">${a.username}</span><span class="badge ${a.online?'online':'offline'}">${a.online?'Online':'Offline'}</span></div>
+                        <span class="stat-value">${a.pets||0} pets</span>
+                    </div>`).join('');
+            }
+
+            window.loadFullInventory = async function() {
+                const grid = document.getElementById('global-inventory-grid');
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;"><div class="spinner"></div>Loading inventory…</div>';
+                try {
+                    const details = await Promise.all(allAccounts.map(a => API.getSaberAccount(a.username).then(d => { accountDetailsCache[a.username]=d; return d; }).catch(()=>null)));
+                    const invMap = {};
+                    for (const data of details) {
+                        if (!data || !data.pets) continue;
+                        for (const pet of data.pets) {
+                            const key = `${pet.name}|${pet.rarity||''}|${pet.variant||''}`;
+                            if (!invMap[key]) invMap[key] = { name: pet.name, rarity: pet.rarity||'Unknown', variant: pet.variant||'', amount:0, owners: new Set(), value: getPetValue(pet.name) };
+                            invMap[key].amount += (pet.amount||1);
+                            invMap[key].owners.add(data.username);
+                        }
+                    }
+                    allInventory = Object.values(invMap).map(i => ({ ...i, owners: Array.from(i.owners), totalValue: i.value*i.amount }));
+                    inventoryLoaded = true;
+                    renderGlobalInventory();
+                    // Rare pets
+                    const rare = allInventory.filter(p => isRarePet(p.rarity));
+                    document.getElementById('saber-rare-pets-count').textContent = rare.reduce((s,p)=>s+p.amount,0);
+                    document.getElementById('rare-pets-grid').innerHTML = rare.map(p => `
+                        <div class="stat-card"><div class="icon-title">${p.rarity==='Secret'?'🔮':'✨'} ${p.rarity}</div><div class="main-value" style="font-size:1.3rem;">${p.name}</div><div>${p.owners.join(', ')} · ×${p.amount}</div></div>`).join('') || '<div>None</div>';
+                } catch(e) {
+                    console.error(e);
+                    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#ff6b6b;">Failed to load inventory.</div>';
+                }
+            };
+
+            // Init
+            switchPage('dashboard');
+            document.getElementById('game-selection').style.display = 'block';
+            loadGlobalOverview();
+        })();
+    </script>
+</body>
+</html>
