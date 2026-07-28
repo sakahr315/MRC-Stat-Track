@@ -204,6 +204,22 @@
             box-shadow: 0 0 0 1px rgba(47, 143, 251, 0.5), 0 8px 24px rgba(47, 143, 251, 0.35);
         }
 
+        .btn-danger {
+            background: rgba(255, 60, 60, 0.15);
+            color: #ff4d4d;
+            border: 1px solid rgba(255, 60, 60, 0.3);
+            font-size: 0.75rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-outfit);
+            font-weight: 500;
+        }
+        .btn-danger:hover {
+            background: rgba(255, 60, 60, 0.25);
+        }
+
         .btn-fav {
             background: transparent;
             border: 1px solid rgba(255, 215, 0, 0.4);
@@ -606,6 +622,50 @@
             color: var(--text-primary);
         }
 
+        /* Modal overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .modal {
+            background: rgba(20,20,20,0.95);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 201;
+        }
+        .modal h2 {
+            margin-bottom: 1.5rem;
+        }
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .modal-close:hover {
+            background: rgba(255,255,255,0.06);
+            color: var(--text-primary);
+        }
+
         /* Notification toast */
         .toast {
             position: fixed;
@@ -651,6 +711,13 @@
         .back-btn:hover {
             background: rgba(255,255,255,0.06);
             color: var(--text-primary);
+        }
+
+        /* Copy button feedback */
+        .copied {
+            background: #34d399 !important;
+            color: #000 !important;
+            border-color: #34d399 !important;
         }
 
         @media (max-width: 768px) {
@@ -734,7 +801,7 @@
             <p class="text-body">Manage your trackers and monitor your Roblox accounts. <span id="refresh-indicator" style="color:var(--accent);font-size:0.75rem;"></span></p>
         </section>
 
-        <!-- Global Account Tracking (always visible on Dashboard) -->
+        <!-- Global Account Tracking (always visible on Dashboard, loads automatically) -->
         <div class="stat-cards-grid fade-up delay-1" id="global-stats">
             <div class="stat-card">
                 <div class="icon-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Total Accounts</div>
@@ -750,11 +817,6 @@
                 <div class="icon-title"><span style="color:#888;">●</span> Offline</div>
                 <div class="main-value" id="stat-offline">—</div>
                 <div class="trend">—</div>
-            </div>
-            <div class="stat-card">
-                <div class="icon-title"><span>🐾</span> Total Pets</div>
-                <div class="main-value" id="stat-total-pets">—</div>
-                <div class="trend">Tracked</div>
             </div>
         </div>
 
@@ -806,7 +868,7 @@
                     <div class="stat-card">
                         <div class="icon-title"><span>⭐</span> Rare Pets</div>
                         <div class="main-value" id="saber-rare-pets-count">—</div>
-                        <div class="trend">Secret/Mythical</div>
+                        <div class="trend">Secret/Triple Moon</div>
                     </div>
                 </div>
 
@@ -852,11 +914,14 @@
                     </div>
                 </section>
 
-                <!-- Global Pet Inventory (on-demand loading) -->
+                <!-- Global Pet Inventory (on-demand loading with account selector) -->
                 <section class="glass-card fade-up delay-3" style="padding:1.5rem;margin-bottom:2rem;" id="global-inventory-section">
                     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
                         <h3 style="font-size:1.125rem;">All Pet Inventory</h3>
                         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+                            <select class="filter-select" id="account-filter" onchange="filterInventory()">
+                                <option value="">All Accounts</option>
+                            </select>
                             <input type="text" class="search-input" placeholder="Search pets..." id="inventory-search" oninput="filterInventory()">
                             <select class="filter-select" id="rarity-filter" onchange="filterInventory()">
                                 <option value="">All Rarities</option>
@@ -946,9 +1011,24 @@
         <!-- Trackers Page -->
         <div class="page" id="page-trackers">
             <h2 style="font-size:1.5rem; margin-bottom:1.5rem;">My Trackers</h2>
+            <div class="glass-card fade-up delay-1" style="padding:1.5rem;margin-bottom:1.5rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
+                    <div>
+                        <h3 style="font-size:1.125rem;">🗡️ Saber Simulator</h3>
+                        <p class="text-small" style="margin-top:0.25rem;">Live tracking — Gems, Pets, Inventory</p>
+                    </div>
+                    <span class="badge online">Active</span>
+                </div>
+                <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+                    <button class="btn btn-accent" style="padding:0.5rem 1rem;font-size:0.8125rem;" onclick="copyTrackerScript()" id="copy-script-btn">📋 Copy Tracker Script</button>
+                    <button class="btn btn-secondary" style="padding:0.5rem 1rem;font-size:0.8125rem;" onclick="viewTrackerInstructions()">📖 View Instructions</button>
+                </div>
+                <div id="tracker-instructions" style="display:none;margin-top:1rem;padding:1rem;background:rgba(255,255,255,0.02);border-radius:12px;border:1px solid rgba(255,255,255,0.06);">
+                    <p class="text-small" style="margin-bottom:0.5rem;">Tracker script and setup instructions will be available here. Check back soon!</p>
+                </div>
+            </div>
             <div class="glass-card" style="padding:2rem; text-align:center;">
-                <p class="text-body">No active trackers yet. Create one from the Dashboard.</p>
-                <button class="btn btn-accent shine-btn" style="margin-top:1rem; padding:0.5rem 1.5rem;" onclick="switchPage('dashboard')">Go to Dashboard</button>
+                <p class="text-body">More trackers coming soon — Pet Simulator 99, Grow a Garden 2, and more.</p>
             </div>
         </div>
 
@@ -993,12 +1073,25 @@
                     <div>
                         <h4 style="margin-bottom:0.5rem;">Account Settings</h4>
                         <p class="text-small">Connected accounts, security</p>
-                        <button class="btn btn-secondary" style="margin-top:0.5rem; padding:0.4rem 1rem; font-size:0.8125rem;" disabled>Manage</button>
+                        <button class="btn btn-accent" style="margin-top:0.5rem; padding:0.4rem 1rem; font-size:0.8125rem;" onclick="openAccountManager()">Manage</button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Account Manager Modal -->
+    <div class="modal-overlay" id="account-manager-modal" style="display:none;">
+        <div class="modal" style="position:relative;">
+            <button class="modal-close" onclick="closeAccountManager()" style="position:absolute;top:0.75rem;right:0.75rem;">✕</button>
+            <h2>Manage Accounts</h2>
+            <div id="account-manager-list" style="display:flex;flex-direction:column;gap:0.5rem;">
+                <div style="text-align:center;padding:2rem;color:var(--text-secondary);">
+                    <p>Loading accounts...</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Toast container -->
     <div id="toast-container"></div>
@@ -1017,12 +1110,32 @@
             let allInventory = [];
             let accountDetailsCache = {};
             let currentSort = { field: 'rarity', asc: false };
-            let favourites = JSON.parse(localStorage.getItem('mrc_favourites') || '[]');
+            // Favourites now stored as "petName|variant" keys
+            let favourites = JSON.parse(localStorage.getItem('mrc_favourites_v2') || '[]');
             let favFilterActive = false;
             let currentGame = null;
             let eventHistory = [];
             let previousOnlineCount = 0;
             let autoRefreshInterval = null;
+            let globalOverviewData = null;
+
+            // ─── Favourite key helpers ───
+            function makeFavKey(petName, variant) {
+                return `${petName}|${variant || ''}`;
+            }
+            function isFavourited(petName, variant) {
+                return favourites.includes(makeFavKey(petName, variant));
+            }
+            function toggleFavByKey(petName, variant) {
+                const key = makeFavKey(petName, variant);
+                const idx = favourites.indexOf(key);
+                if (idx >= 0) {
+                    favourites.splice(idx, 1);
+                } else {
+                    favourites.push(key);
+                }
+                localStorage.setItem('mrc_favourites_v2', JSON.stringify(favourites));
+            }
 
             // ─── Cursor glow ───
             const glow = document.getElementById('cursor-glow');
@@ -1149,11 +1262,10 @@
                 });
                 if (pageName === 'dashboard') {
                     globalStats.style.display = 'grid';
+                    // Load global overview immediately
+                    loadGlobalOverview();
                 } else {
                     globalStats.style.display = 'none';
-                    document.getElementById('ps99-dashboard').style.display = 'none';
-                    document.getElementById('saber-dashboard').style.display = 'none';
-                    document.getElementById('game-selection').style.display = 'block';
                 }
                 observeFadeUps();
             }
@@ -1164,6 +1276,25 @@
                     switchPage(link.dataset.page);
                 });
             });
+
+            // ─── Load global overview (called on dashboard entry, no game selection needed) ───
+            async function loadGlobalOverview() {
+                try {
+                    const overview = await API.getSaberOverview();
+                    globalOverviewData = overview;
+                    document.getElementById('stat-total-accounts').textContent = overview.totalAccounts || 0;
+                    document.getElementById('stat-online').textContent = overview.onlineAccounts || 0;
+                    document.getElementById('stat-offline').textContent = overview.offlineAccounts || 0;
+
+                    if (previousOnlineCount > 0 && overview.onlineAccounts !== previousOnlineCount) {
+                        const diff = overview.onlineAccounts - previousOnlineCount;
+                        showToast(diff > 0 ? `🟢 ${diff} account(s) came online` : `🔴 ${Math.abs(diff)} account(s) went offline`);
+                    }
+                    previousOnlineCount = overview.onlineAccounts;
+                } catch (err) {
+                    console.error('Failed to load global overview:', err);
+                }
+            }
 
             // ─── Game selection ───
             window.selectGame = function(game) {
@@ -1195,7 +1326,7 @@
                 stopAutoRefresh();
             };
 
-            // ─── Auto‑refresh (only overview + accounts) ───
+            // ─── Auto‑refresh ───
             function startAutoRefresh() {
                 stopAutoRefresh();
                 autoRefreshInterval = setInterval(() => {
@@ -1206,7 +1337,7 @@
                 if (autoRefreshInterval) { clearInterval(autoRefreshInterval); autoRefreshInterval = null; }
             }
 
-            // ─── Load Saber data (overview + accounts only) ───
+            // ─── Load Saber data ───
             async function loadSaberData(silent = false) {
                 try {
                     const refresh = document.getElementById('refresh-indicator');
@@ -1217,10 +1348,11 @@
                         API.getSaberAccounts()
                     ]);
 
+                    // Update global stats
+                    globalOverviewData = overview;
                     document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
                     document.getElementById('stat-online').textContent = overview.onlineAccounts;
                     document.getElementById('stat-offline').textContent = overview.offlineAccounts;
-                    document.getElementById('stat-total-pets').textContent = formatNumber(overview.totalPets);
                     document.getElementById('saber-total-gems').textContent = formatNumber(overview.totalGems);
                     document.getElementById('saber-total-pets-card').textContent = formatNumber(overview.totalPets);
 
@@ -1232,8 +1364,8 @@
 
                     allAccounts = accounts || [];
                     renderAccountList(allAccounts);
+                    updateAccountFilterDropdown();
 
-                    // Don't auto-build inventory – show a Load button
                     document.getElementById('global-inventory-body').innerHTML =
                         `<tr><td colspan="8" style="text-align:center;padding:2rem;">
                             <button class="btn btn-accent" onclick="loadFullInventory()">📦 Load Pet Inventory</button>
@@ -1250,6 +1382,17 @@
                     console.error(err);
                     document.getElementById('refresh-indicator').textContent = '⚠ Error';
                 }
+            }
+
+            // ─── Update account filter dropdown ───
+            function updateAccountFilterDropdown() {
+                const select = document.getElementById('account-filter');
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">All Accounts</option>';
+                allAccounts.forEach(acc => {
+                    select.innerHTML += `<option value="${escapeHTML(acc.username)}">${escapeHTML(acc.username)}</option>`;
+                });
+                select.value = currentVal;
             }
 
             // ─── On‑demand inventory loading ───
@@ -1297,6 +1440,7 @@
                     const rareCount = allInventory.filter(p => isRarePet(p.rarity)).reduce((s, p) => s + p.amount, 0);
                     document.getElementById('saber-rare-pets-count').textContent = rareCount;
 
+                    updateAccountFilterDropdown();
                     renderGlobalInventory();
                     renderRarePets();
                 } catch (err) {
@@ -1353,8 +1497,8 @@
                     } else {
                         emptyDiv.style.display = 'none';
                         const sortedPets = [...accountData.pets].sort((a, b) => {
-                            const aFav = favourites.includes(a.name);
-                            const bFav = favourites.includes(b.name);
+                            const aFav = isFavourited(a.name, a.variant);
+                            const bFav = isFavourited(b.name, b.variant);
                             if (aFav && !bFav) return -1;
                             if (!aFav && bFav) return 1;
                             return getRarityRank(b.rarity) - getRarityRank(a.rarity);
@@ -1362,16 +1506,16 @@
                         tbody.innerHTML = sortedPets.map(pet => {
                             const value = getPetValue(pet.name);
                             const totalValue = value * (pet.amount || 1);
-                            const isFav = favourites.includes(pet.name);
+                            const fav = isFavourited(pet.name, pet.variant);
                             return `
                                 <tr>
-                                    <td class="pet-name">${isFav ? '⭐ ' : ''}${escapeHTML(pet.name)}</td>
+                                    <td class="pet-name">${fav ? '⭐ ' : ''}${escapeHTML(pet.name)}</td>
                                     <td>${rarityBadge(pet.rarity)}</td>
                                     <td>${escapeHTML(pet.variant || '—')}</td>
                                     <td>${pet.amount || 1}</td>
                                     <td>${formatNumber(value)}</td>
                                     <td>${formatNumber(totalValue)}</td>
-                                    <td><span class="fav-star ${isFav ? 'favourited' : ''}" onclick="event.stopPropagation();toggleFavourite('${escapeHTML(pet.name)}')">★</span></td>
+                                    <td><span class="fav-star ${fav ? 'favourited' : ''}" onclick="event.stopPropagation();toggleFavourite('${escapeHTML(pet.name)}', '${escapeHTML(pet.variant || '')}')">★</span></td>
                                 </tr>`;
                         }).join('');
                     }
@@ -1394,13 +1538,23 @@
                     return;
                 }
                 let filtered = [...allInventory];
+
+                // Account filter
+                const accountFilter = document.getElementById('account-filter').value;
+                if (accountFilter) {
+                    filtered = filtered.filter(p => p.owners.includes(accountFilter));
+                }
+                // Search
                 const searchTerm = document.getElementById('inventory-search').value.toLowerCase();
                 if (searchTerm) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchTerm));
+                // Rarity filter
                 const rarityFilter = document.getElementById('rarity-filter').value;
                 if (rarityFilter) filtered = filtered.filter(p => p.rarity === rarityFilter);
+                // Variant filter
                 const variantFilter = document.getElementById('variant-filter').value;
                 if (variantFilter) filtered = filtered.filter(p => p.variant === variantFilter);
-                if (favFilterActive) filtered = filtered.filter(p => favourites.includes(p.name));
+                // Favourites filter
+                if (favFilterActive) filtered = filtered.filter(p => isFavourited(p.name, p.variant));
 
                 filtered.sort((a, b) => {
                     let cmp = 0;
@@ -1413,25 +1567,25 @@
                         case 'totalValue': cmp = a.totalValue - b.totalValue; break;
                         default: cmp = getRarityRank(b.rarity) - getRarityRank(a.rarity);
                     }
-                    const aFav = favourites.includes(a.name);
-                    const bFav = favourites.includes(b.name);
+                    const aFav = isFavourited(a.name, a.variant);
+                    const bFav = isFavourited(b.name, b.variant);
                     if (aFav && !bFav) return -1;
                     if (!aFav && bFav) return 1;
                     return currentSort.asc ? cmp : -cmp;
                 });
 
                 tbody.innerHTML = filtered.map(pet => {
-                    const isFav = favourites.includes(pet.name);
+                    const fav = isFavourited(pet.name, pet.variant);
                     return `
                         <tr>
-                            <td class="pet-name">${isFav ? '⭐ ' : ''}${escapeHTML(pet.name)}</td>
+                            <td class="pet-name">${fav ? '⭐ ' : ''}${escapeHTML(pet.name)}</td>
                             <td>${rarityBadge(pet.rarity)}</td>
                             <td>${escapeHTML(pet.variant || '—')}</td>
                             <td>${pet.amount}</td>
                             <td>${formatNumber(pet.value)}</td>
                             <td style="color:#34d399;">${formatNumber(pet.totalValue)}</td>
                             <td style="font-size:0.75rem;">${pet.owners.join(', ')}</td>
-                            <td><span class="fav-star ${isFav ? 'favourited' : ''}" onclick="toggleFavourite('${escapeHTML(pet.name)}')">★</span></td>
+                            <td><span class="fav-star ${fav ? 'favourited' : ''}" onclick="toggleFavourite('${escapeHTML(pet.name)}', '${escapeHTML(pet.variant || '')}')">★</span></td>
                         </tr>`;
                 }).join('');
             }
@@ -1454,7 +1608,7 @@
                 grid.innerHTML = rarePets.map(pet => `
                     <div class="stat-card" style="padding:1rem;">
                         <div class="icon-title">${pet.rarity === 'Secret' ? '🔮' : '✨'} ${escapeHTML(pet.rarity)}</div>
-                        <div class="main-value" style="font-size:1.3rem;">${escapeHTML(pet.name)}</div>
+                        <div class="main-value" style="font-size:1.3rem;">${escapeHTML(pet.name)}${pet.variant ? ' (' + escapeHTML(pet.variant) + ')' : ''}</div>
                         <div style="font-size:0.8125rem;color:var(--text-secondary);">
                             Owned by: ${pet.owners.join(', ')}<br>
                             Amount: ${pet.amount} · Value: ${formatNumber(pet.value)} each
@@ -1463,12 +1617,9 @@
                 `).join('');
             }
 
-            // ─── Favourites ───
-            window.toggleFavourite = function(petName) {
-                const idx = favourites.indexOf(petName);
-                if (idx >= 0) favourites.splice(idx, 1);
-                else favourites.push(petName);
-                localStorage.setItem('mrc_favourites', JSON.stringify(favourites));
+            // ─── Favourites (pet name + variant combination) ───
+            window.toggleFavourite = function(petName, variant) {
+                toggleFavByKey(petName, variant);
                 renderGlobalInventory();
                 renderRarePets();
                 const detailSection = document.getElementById('account-detail-section');
@@ -1565,6 +1716,94 @@
                 setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 4000);
             }
 
+            // ─── Trackers Page ───
+            window.copyTrackerScript = function() {
+                const btn = document.getElementById('copy-script-btn');
+                const scriptPlaceholder = '-- Tracker script will be available here soon --';
+                navigator.clipboard.writeText(scriptPlaceholder).then(() => {
+                    btn.textContent = '✅ Copied!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = '📋 Copy Tracker Script';
+                        btn.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    showToast('⚠ Failed to copy. Please try again.');
+                });
+            };
+
+            window.viewTrackerInstructions = function() {
+                const instructions = document.getElementById('tracker-instructions');
+                if (instructions.style.display === 'none') {
+                    instructions.style.display = 'block';
+                } else {
+                    instructions.style.display = 'none';
+                }
+            };
+
+            // ─── Account Manager ───
+            window.openAccountManager = async function() {
+                const modal = document.getElementById('account-manager-modal');
+                modal.style.display = 'flex';
+                const list = document.getElementById('account-manager-list');
+
+                // Use cached data if available, otherwise fetch
+                if (!globalOverviewData) {
+                    await loadGlobalOverview();
+                }
+
+                try {
+                    const accounts = await API.getSaberAccounts();
+                    allAccounts = accounts || [];
+
+                    if (allAccounts.length === 0) {
+                        list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-secondary);"><p>No accounts connected yet.</p></div>';
+                        return;
+                    }
+
+                    list.innerHTML = allAccounts.map(acc => {
+                        let statusHTML = '';
+                        if (acc.online) {
+                            statusHTML = `
+                                <span class="badge online">Online</span>
+                                <span class="text-small">Online now</span>
+                            `;
+                        } else {
+                            statusHTML = `
+                                <span class="badge offline">Offline</span>
+                                <span class="text-small">Last seen: recently</span>
+                            `;
+                        }
+                        return `
+                            <div class="account-row" style="cursor:default;">
+                                <div class="account-info">
+                                    <span class="account-name">${escapeHTML(acc.username)}</span>
+                                    ${statusHTML}
+                                </div>
+                                <div style="display:flex;gap:0.5rem;align-items:center;">
+                                    <span class="stat-value">${acc.pets || 0} pets</span>
+                                    <button class="btn-danger" onclick="removeAccount('${escapeHTML(acc.username)}')">Remove</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } catch (err) {
+                    console.error(err);
+                    list.innerHTML = '<div style="text-align:center;padding:2rem;color:#ff6b6b;"><p>Failed to load accounts.</p></div>';
+                }
+            };
+
+            window.closeAccountManager = function() {
+                document.getElementById('account-manager-modal').style.display = 'none';
+            };
+
+            window.removeAccount = function(username) {
+                if (confirm(`Are you sure you want to remove "${username}"? This will stop tracking this account.`)) {
+                    showToast(`Account "${username}" removal requested. (Backend endpoint coming soon)`);
+                    // Future: call API to remove account
+                }
+            };
+
             // ─── Helpers ───
             function escapeHTML(str) {
                 const div = document.createElement('div');
@@ -1577,6 +1816,11 @@
                 return cls ? `<span class="badge ${cls}">${rarity}</span>` : rarity;
             }
 
+            // ─── Close modal on overlay click ───
+            document.getElementById('account-manager-modal').addEventListener('click', function(e) {
+                if (e.target === this) closeAccountManager();
+            });
+
             // ─── Initialise ───
             switchPage('dashboard');
             globalStats.style.display = 'grid';
@@ -1584,6 +1828,9 @@
             document.getElementById('ps99-dashboard').style.display = 'none';
             document.getElementById('saber-dashboard').style.display = 'none';
             observeFadeUps();
+
+            // Load global account stats immediately
+            loadGlobalOverview();
         })();
     </script>
 </body>
