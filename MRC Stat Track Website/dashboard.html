@@ -58,8 +58,8 @@
         .variant-shiny { background: rgba(0,255,255,0.2); color: #80ffff; }
         .variant-golden { background: rgba(241,196,15,0.2); color: #f1c40f; }
         .variant-normal { background: rgba(255,255,255,0.1); color: #ccc; }
-        .variant-secret { background: rgba(255, 60, 60, 0.2); color: #ff4d4d; } /* for Secret rarity */
-        .variant-triplemoon { background: rgba(200, 60, 255, 0.2); color: #c03cff; } /* for Triple Moon rarity */
+        .variant-secret { background: rgba(255, 60, 60, 0.2); color: #ff4d4d; }
+        .variant-triplemoon { background: rgba(200, 60, 255, 0.2); color: #c03cff; }
         .badge-notowned { background: rgba(255,255,255,0.06); color: #666; font-size: 0.6rem; padding: 0.15rem 0.5rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; }
         .pet-card .amount { font-size: 0.75rem; color: var(--text-secondary); }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); z-index: 200; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s ease; }
@@ -365,52 +365,68 @@
                 }
             }
 
-            // Find amount for a specific pet name and rarity from allInventory
-            function getPetAmount(name, rarity) {
-                const found = allInventory.find(p => p.name === name && p.rarity === rarity);
-                return found ? found.amount : 0;
-            }
-
             function renderRarePets() {
-                // Define the two rare pets with their local image paths
+                // Define rare pets – matched by EXACT name only
                 const rarePets = [
                     {
                         name: 'Magmatic Vortex',
-                        rarity: 'Secret',
+                        rarityLabel: 'Secret',
                         section: 'secret-grid',
-                        imagePath: '/images/pets/magmatic-vortex.webp',
+                        localImagePath: '/images/pets/magmatic-vortex.webp',
                         variantClass: 'variant-secret'
                     },
                     {
                         name: 'The Nightmare',
-                        rarity: 'Triple Moon',
+                        rarityLabel: 'Triple Moon',
                         section: 'triple-moon-grid',
-                        imagePath: '/images/pets/the-nightmare.webp',
+                        localImagePath: '/images/pets/the-nightmare.webp',
                         variantClass: 'variant-triplemoon'
                     }
                 ];
 
-                // Clear both grids
                 document.getElementById('secret-grid').innerHTML = '';
                 document.getElementById('triple-moon-grid').innerHTML = '';
 
                 rarePets.forEach(petDef => {
-                    const amount = getPetAmount(petDef.name, petDef.rarity);
+                    // Find all matching pets by name (ignores rarity/variant)
+                    const matchingPets = allInventory.filter(p => p.name === petDef.name);
+                    const totalAmount = matchingPets.reduce((sum, p) => sum + p.amount, 0);
+
+                    // Use the first API-supplied imageUrl if available
+                    let apiImageUrl = null;
+                    for (const mp of matchingPets) {
+                        if (mp.imageUrl) { apiImageUrl = mp.imageUrl; break; }
+                    }
+
                     const grid = document.getElementById(petDef.section);
                     const card = document.createElement('div');
                     card.className = 'pet-card';
 
-                    // Image with local path, fallback on error
+                    // Image element
                     const img = document.createElement('img');
-                    img.src = petDef.imagePath;
                     img.alt = petDef.name;
                     img.loading = 'lazy';
+
+                    // Try API image first, then local file
+                    img.src = apiImageUrl || petDef.localImagePath;
+
+                    // Multi-step fallback if image fails
                     img.onerror = function() {
-                        this.style.display = 'none';
-                        const noImg = document.createElement('div');
-                        noImg.className = 'no-image';
-                        noImg.textContent = '📷';
-                        card.insertBefore(noImg, card.firstChild);
+                        const currentSrc = this.src;
+                        if (currentSrc === apiImageUrl && petDef.localImagePath && currentSrc !== petDef.localImagePath) {
+                            // API image failed → try local
+                            this.src = petDef.localImagePath;
+                        } else if (currentSrc === petDef.localImagePath && apiImageUrl && currentSrc !== apiImageUrl) {
+                            // Local failed → try API
+                            this.src = apiImageUrl;
+                        } else {
+                            // Both failed → show placeholder
+                            this.style.display = 'none';
+                            const noImg = document.createElement('div');
+                            noImg.className = 'no-image';
+                            noImg.textContent = '📷';
+                            card.insertBefore(noImg, card.firstChild);
+                        }
                     };
                     card.appendChild(img);
 
@@ -420,20 +436,20 @@
                     nameEl.textContent = petDef.name;
                     card.appendChild(nameEl);
 
-                    // Variant badge (using rarity)
+                    // Rarity badge
                     const badge = document.createElement('span');
                     badge.className = `variant-badge ${petDef.variantClass}`;
-                    badge.textContent = petDef.rarity;
+                    badge.textContent = petDef.rarityLabel;
                     card.appendChild(badge);
 
                     // Amount
                     const amountEl = document.createElement('div');
                     amountEl.className = 'amount';
-                    amountEl.textContent = `×${amount}`;
+                    amountEl.textContent = `×${totalAmount}`;
                     card.appendChild(amountEl);
 
-                    // Not owned badge if amount is 0
-                    if (amount === 0) {
+                    // "Not Owned" badge
+                    if (totalAmount === 0) {
                         const notOwned = document.createElement('span');
                         notOwned.className = 'badge-notowned';
                         notOwned.textContent = 'Not Owned';
