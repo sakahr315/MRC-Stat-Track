@@ -3,8 +3,6 @@
 
 const API_CONFIG = {
     saber: 'https://mrc-saber-api.sakahr315.workers.dev',
-    // Future games:
-    // ps99: 'https://mrc-ps99-api.sakahr315.workers.dev',
 };
 
 const API = {
@@ -21,7 +19,6 @@ const API = {
         return res.json();
     },
 
-    // ─── Saber Simulator ───
     async getSaberOverview() {
         return this.fetchJSON(`${API_CONFIG.saber}/api/saber/overview`);
     },
@@ -38,7 +35,6 @@ const API = {
         return this.fetchJSON(`${API_CONFIG.saber}/api/saber/search-pet?name=${encodeURIComponent(name)}`);
     },
 
-    // ─── API Key Management (for tracker generator) ───
     async generateTrackerKey(userId) {
         return this.fetchJSON(`${API_CONFIG.saber}/api/generate-key`, {
             method: 'POST',
@@ -56,5 +52,4 @@ const API = {
     },
 };
 
-// Export for use in other scripts
 if (typeof module !== 'undefined') module.exports = API;
