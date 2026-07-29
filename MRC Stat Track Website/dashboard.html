@@ -190,6 +190,51 @@
         .admin-table th { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); }
         .admin-table td { font-size: 0.85rem; }
 
+        /* API key reveal */
+        .api-key-masked {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            color: var(--text-primary);
+            font-family: var(--font-outfit);
+            font-size: 0.875rem;
+            width: 100%;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .api-key-masked:hover::after {
+            animation: none;
+            background: none;
+        }
+        .api-key-masked .full-key {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.8);
+            border-radius: 10px;
+            word-break: break-all;
+            font-size: 0.875rem;
+        }
+        .api-key-masked:hover .full-key {
+            display: flex;
+        }
+        .api-key-masked .masked-text {
+            transition: opacity 0.2s;
+        }
+        .api-key-masked:hover .masked-text {
+            opacity: 0;
+        }
+
         @media (max-width: 768px) {
             .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; }
             .main-content { margin-left: 0; padding: 1.5rem; }
@@ -354,11 +399,9 @@
                 <!-- API Key -->
                 <div style="margin-bottom:1.5rem;">
                     <h4>API Key</h4>
-                    <div class="api-key-container">
-                        <div class="api-key-masked" id="api-key-display">
-                            <span class="masked-text" id="masked-key-text">mrc_live_********</span>
-                            <span class="full-key" id="full-key-text"></span>
-                        </div>
+                    <div class="api-key-masked" id="api-key-display">
+                        <span class="masked-text" id="masked-key-text">mrc_live_********</span>
+                        <span class="full-key" id="full-key-text"></span>
                     </div>
                     <p class="text-small" style="margin-top:0.5rem;">
                         Hover to reveal. This key is used by your tracker. If compromised, contact an admin.
@@ -543,7 +586,7 @@
             // Copy tracker script
             window.copyTrackerScript = function() {
                 const code = document.getElementById('tracker-script-code').textContent;
-                if (!code || code === 'Loading...') return;
+                if (!code || code === 'Loading...' || code.startsWith('Error')) return;
                 navigator.clipboard.writeText(code).then(() => {
                     showToast('✅ Copied!');
                 });
