@@ -116,6 +116,12 @@
             border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; }
         .pet-card .amount { font-size: 0.75rem; color: var(--text-secondary); }
 
+        .daily-hatch {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #34d399;
+        }
+
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
             z-index: 200; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
@@ -165,7 +171,6 @@
         .connected-account-row .account-details { display: flex; flex-direction: column; gap: 0.1rem; }
         .connected-account-row .account-details .name-line { display: flex; align-items: center; gap: 0.5rem; }
 
-        /* Tracker code block */
         .tracker-code {
             background: rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.08);
@@ -184,13 +189,11 @@
             right: 0.5rem;
         }
 
-        /* Admin table */
         .admin-table { width: 100%; border-collapse: collapse; }
         .admin-table th, .admin-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .admin-table th { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); }
         .admin-table td { font-size: 0.85rem; }
 
-        /* API key reveal */
         .api-key-masked {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08);
@@ -517,6 +520,7 @@
             let accountDetailsCache = {};
             let currentGame = 'saber';
             let inventoryLoaded = false;
+            let dailyHatches = {};
 
             // Page switching
             const navLinks = document.querySelectorAll('.nav-link');
@@ -748,6 +752,16 @@
                 });
             };
 
+            // Daily hatches loader
+            async function loadDailyHatches() {
+                try {
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/daily-hatches');
+                    dailyHatches = await res.json();
+                } catch (e) {
+                    dailyHatches = {};
+                }
+            }
+
             // Load Saber data
             async function loadGameData() {
                 const loading = document.getElementById('rare-pets-loading');
@@ -794,6 +808,7 @@
                     allInventory = Object.values(invMap).map(item => ({ ...item, owners: Array.from(item.owners) }));
                     inventoryLoaded = true;
 
+                    await loadDailyHatches();
                     renderRarePets();
                     container.style.display = 'block';
                     loading.style.display = 'none';
@@ -805,10 +820,11 @@
             }
 
             const VARIANT_ORDER = ['Void', 'Rainbow', 'Shiny', 'Golden', 'Normal'];
+
             function renderRarePets() {
                 const rarePets = [
-                    { name: 'Magmatic Vortex', section: 'secret-grid', localImagePath: '/public/images/pets/magmatic-vortex.webp' },
-                    { name: 'The Nightmare', section: 'triple-moon-grid', localImagePath: '/public/images/pets/the-nightmare.webp' }
+                    { name: 'Magmatic Vortex', section: 'secret-grid', rarity: 'Secret', localImagePath: '/public/images/pets/magmatic-vortex.webp' },
+                    { name: 'The Nightmare', section: 'triple-moon-grid', rarity: 'Triple Moon', localImagePath: '/public/images/pets/the-nightmare.webp' }
                 ];
                 document.getElementById('secret-grid').innerHTML = '';
                 document.getElementById('triple-moon-grid').innerHTML = '';
@@ -817,8 +833,12 @@
                     VARIANT_ORDER.forEach(variant => {
                         const entry = allInventory.find(p => p.name === petDef.name && p.variant === variant);
                         const amount = entry ? entry.amount : 0;
+                        const key = `${petDef.name}|${petDef.rarity}|${variant}`;
+                        const dailyCount = dailyHatches[key] || 0;
+
                         const card = document.createElement('div');
                         card.className = 'pet-card';
+
                         const img = document.createElement('img');
                         img.src = petDef.localImagePath;
                         img.alt = petDef.name;
@@ -831,24 +851,36 @@
                             card.insertBefore(noImg, card.firstChild);
                         };
                         card.appendChild(img);
+
                         const nameEl = document.createElement('div');
                         nameEl.className = 'name';
                         nameEl.textContent = petDef.name;
                         card.appendChild(nameEl);
+
                         const badge = document.createElement('span');
                         badge.className = `variant-badge variant-${variant.toLowerCase()}`;
                         badge.textContent = variant;
                         card.appendChild(badge);
+
                         const amountEl = document.createElement('div');
                         amountEl.className = 'amount';
                         amountEl.textContent = `×${amount}`;
                         card.appendChild(amountEl);
+
                         if (amount === 0) {
                             const notOwned = document.createElement('span');
                             notOwned.className = 'badge-notowned';
                             notOwned.textContent = 'Not Owned';
                             card.appendChild(notOwned);
                         }
+
+                        if (dailyCount > 0) {
+                            const dailyBadge = document.createElement('span');
+                            dailyBadge.className = 'daily-hatch';
+                            dailyBadge.textContent = `+${dailyCount} Today`;
+                            card.appendChild(dailyBadge);
+                        }
+
                         grid.appendChild(card);
                     });
                 });
