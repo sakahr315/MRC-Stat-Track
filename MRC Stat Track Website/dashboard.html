@@ -124,7 +124,7 @@
 
     <!-- Main Content -->
     <main class="main-content" id="main-content">
-        <!-- Dashboard Page (default) -->
+        <!-- Dashboard Page -->
         <div id="page-dashboard">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;">
                 <div>
@@ -137,14 +137,14 @@
                 </div>
             </div>
 
-            <!-- Stats -->
-            <div class="stats-grid" id="global-stats">
+            <!-- Stats (only shown for Saber) -->
+            <div id="saber-stats" class="stats-grid">
                 <div class="stat-card"><div class="label">Total Accounts</div><div class="value" id="stat-total-accounts">—</div></div>
                 <div class="stat-card"><div class="label">Online</div><div class="value" id="stat-online">—</div></div>
                 <div class="stat-card"><div class="label">Offline</div><div class="value" id="stat-offline">—</div></div>
             </div>
 
-            <!-- Rare Pets (Saber) -->
+            <!-- Saber Simulator Content -->
             <div id="saber-content">
                 <div id="rare-pets-loading" class="glass-card" style="padding:1.5rem;margin-bottom:2rem;"><div class="skeleton" style="height:150px;"></div></div>
                 <div id="rare-pets-container" style="display:none;">
@@ -164,7 +164,7 @@
                 </div>
             </div>
 
-            <!-- PS99 Coming Soon -->
+            <!-- PS99 Coming Soon (hidden by default) -->
             <div id="ps99-content" style="display:none; text-align:center; padding:4rem 0;">
                 <div style="font-size:4rem; margin-bottom:1rem;">🐾</div>
                 <h1 style="font-size:2.5rem; margin-bottom:1rem;">Coming Soon</h1>
@@ -294,22 +294,26 @@
                 });
             });
 
-            // Game selection
+            // Game selection inside dashboard
             window.selectGame = function(game) {
                 currentGame = game;
                 document.getElementById('game-btn-saber').classList.toggle('btn-accent', game === 'saber');
                 document.getElementById('game-btn-ps99').classList.toggle('btn-accent', game === 'ps99');
+
+                // Show/hide Saber content
+                document.getElementById('saber-stats').style.display = game === 'saber' ? 'grid' : 'none';
                 document.getElementById('saber-content').style.display = game === 'saber' ? 'block' : 'none';
                 document.getElementById('ps99-content').style.display = game === 'ps99' ? 'block' : 'none';
+
                 if (game === 'saber') loadGameData();
             };
 
-            // Load game data
+            // Load Saber data
             async function loadGameData() {
                 const loading = document.getElementById('rare-pets-loading');
                 const container = document.getElementById('rare-pets-container');
                 const viewBtn = document.getElementById('view-inventory-btn-container');
-                const statsGrid = document.getElementById('global-stats');
+                const statsGrid = document.getElementById('saber-stats');
 
                 statsGrid.style.opacity = '0.5';
                 container.style.display = 'none';
@@ -444,8 +448,18 @@
                     await API.resetTrackerKey('test_user_123');
                     showToast('🔑 API Key reset. Generate a new tracker.');
                     document.getElementById('tracker-result').style.display = 'none';
+                    // Hide cooldown message
+                    document.getElementById('reset-cooldown').style.display = 'none';
+                    document.getElementById('settings-reset-cooldown').style.display = 'none';
                 } catch (e) {
-                    showToast('❌ ' + e.message);
+                    // If backend returns cooldown error, display it
+                    const msg = e.message || 'Reset failed.';
+                    showToast('❌ ' + msg);
+                    // Show cooldown message on both trackers and settings pages
+                    document.getElementById('reset-cooldown').style.display = 'block';
+                    document.getElementById('reset-cooldown').textContent = msg;
+                    document.getElementById('settings-reset-cooldown').style.display = 'block';
+                    document.getElementById('settings-reset-cooldown').textContent = msg;
                 }
             };
 
@@ -458,7 +472,9 @@
 
             // Initialize
             pages.dashboard.style.display = 'block';
+            document.getElementById('saber-stats').style.display = 'grid';
             document.getElementById('saber-content').style.display = 'block';
+            document.getElementById('ps99-content').style.display = 'none';
             loadGameData();
         })();
     </script>
