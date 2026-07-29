@@ -383,40 +383,54 @@
     <script src="petValues.js"></script>
     <script src="petImages.js"></script>
     <script>
+        // ─── Auth Guard ───
         (function() {
-            // ─── Auth ───
             const AUTH_TOKEN_KEY = 'auth_token';
-            let authToken = localStorage.getItem(AUTH_TOKEN_KEY);
-            let currentUser = null;
 
-            // Extract token from URL (after Discord redirect)
+            // Extract token from URL (after Discord OAuth callback)
             const urlParams = new URLSearchParams(window.location.search);
             const tokenFromUrl = urlParams.get('token');
             if (tokenFromUrl) {
-                authToken = tokenFromUrl;
                 localStorage.setItem(AUTH_TOKEN_KEY, tokenFromUrl);
+                // Clean URL
                 window.history.replaceState({}, document.title, '/dashboard.html');
             }
 
-            // Auth headers for API calls
-            function authHeaders() {
-                return authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
+            const authToken = localStorage.getItem(AUTH_TOKEN_KEY);
+            if (!authToken) {
+                // No token – redirect to login page
+                window.location.href = '/index.html';
+                return; // stop execution
             }
 
-            // Fetch helper with auth
-            async function apiFetch(url, options = {}) {
-                const headers = { ...options.headers, ...authHeaders() };
-                const res = await fetch(url, { ...options, headers });
-                if (res.status === 401) {
-                    // Token expired or invalid – clear and reload login
-                    localStorage.removeItem(AUTH_TOKEN_KEY);
-                    window.location.href = 'https://mrc-saber-api.sakahr315.workers.dev/auth/login';
-                    throw new Error('Unauthorized');
+            // Set up authenticated fetch
+            window.authToken = authToken;
+
+            // Override fetch globally for API calls to include the token
+            const originalFetch = window.fetch;
+            window.fetch = function(url, options = {}) {
+                const headers = new Headers(options.headers || {});
+                // Attach JWT to all requests to our API
+                if (url.toString().includes('mrc-saber-api.sakahr315.workers.dev')) {
+                    headers.set('Authorization', `Bearer ${authToken}`);
                 }
-                return res;
-            }
+                return originalFetch(url, { ...options, headers });
+            };
 
-            // Globals
+            // If any API call returns 401, clear token and redirect
+            window.addEventListener('unhandledrejection', function(event) {
+                if (event.reason && event.reason.message === 'Unauthorized') {
+                    localStorage.removeItem(AUTH_TOKEN_KEY);
+                    window.location.href = '/index.html';
+                }
+            });
+
+            // Now start the dashboard
+            initDashboard();
+        })();
+
+        function initDashboard() {
+            // ─── Globals ───
             let allAccounts = [];
             let allInventory = [];
             let accountDetailsCache = {};
@@ -444,40 +458,60 @@
                 });
             });
 
-            // Load user profile (called on settings page)
-            async function loadSettingsData() {
-                if (!authToken) return;
+            // Game selection inside dashboard
+            window.selectGame = function(game) {
+                currentGame = game;
+                document.getElementById('game-btn-saber').classList.toggle('btn-accent', game === 'saber');
+                document.getElementById('game-btn-ps99').classList.toggle('btn-accent', game === 'ps99');
+
+                document.getElementById('saber-stats').style.display = game === 'saber' ? 'grid' : 'none';
+                document.getElementById('saber-content').style.display = game === 'saber' ? 'block' : 'none';
+                document.getElementById('ps99-content').style.display = game === 'ps99' ? 'block' : 'none';
+
+                if (game === 'saber') loadGameData();
+            };
+
+            // Load user profile
+            async function loadUserProfile() {
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/user/profile');
-                    currentUser = await res.json();
-                    // Update Discord profile display
-                    document.getElementById('discord-username').textContent = currentUser.username;
-                    document.getElementById('discord-id').textContent = 'ID: ' + currentUser.discord_id;
-                    document.getElementById('user-plan').textContent = 'Plan: ' + currentUser.subscription;
-                    document.getElementById('masked-key').value = (currentUser.apiKeyPrefix || 'mrc_live_') + '********';
-                    if (currentUser.avatar) {
-                        document.getElementById('discord-avatar').src = `https://cdn.discordapp.com/avatars/${currentUser.discord_id}/${currentUser.avatar}.png`;
+                    const res = await fetch('https://mrc-saber-api.sakahr315.workers.dev/api/user/profile');
+                    if (!res.ok) throw new Error('Failed to load profile');
+                    const user = await res.json();
+                    document.getElementById('dashboard-username').textContent = user.username;
+                    // Also update settings page if visible
+                    const discordUsernameEl = document.getElementById('discord-username');
+                    if (discordUsernameEl) {
+                        discordUsernameEl.textContent = user.username;
+                        document.getElementById('discord-id').textContent = 'ID: ' + user.discord_id;
+                        document.getElementById('user-plan').textContent = 'Plan: ' + user.subscription;
+                        document.getElementById('masked-key').value = (user.apiKeyPrefix || 'mrc_live_') + '********';
+                        if (user.avatar) {
+                            document.getElementById('discord-avatar').src = `https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png`;
+                        }
+                        // Admin panel
+                        if (user.permissions === 'OWNER' || user.permissions === 'MANAGER') {
+                            document.getElementById('admin-panel').style.display = 'block';
+                            loadAdminUsers();
+                        }
                     }
-                    // Show admin panel if Owner/Manager
-                    if (currentUser.permissions === 'OWNER' || currentUser.permissions === 'MANAGER') {
-                        document.getElementById('admin-panel').style.display = 'block';
-                        loadAdminUsers();
-                    } else {
-                        document.getElementById('admin-panel').style.display = 'none';
-                    }
-                    // Load connected accounts
-                    loadConnectedAccounts();
                 } catch (e) {
-                    console.error('Failed to load profile', e);
+                    console.error('Profile load failed', e);
                 }
             }
 
-            // Connected accounts (Settings)
+            // Load settings data (calls profile + connected accounts)
+            window.loadSettingsData = async function() {
+                await loadUserProfile();
+                await loadConnectedAccounts();
+            };
+
+            // Connected accounts
             async function loadConnectedAccounts() {
                 const container = document.getElementById('connected-accounts-list');
                 container.innerHTML = '<p style="color:var(--text-secondary);">Loading accounts...</p>';
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/saber/accounts');
+                    const res = await fetch('https://mrc-saber-api.sakahr315.workers.dev/api/saber/accounts');
+                    if (!res.ok) throw new Error('Failed');
                     const accounts = await res.json();
                     allAccounts = accounts || [];
                     if (allAccounts.length === 0) {
@@ -509,7 +543,7 @@
             window.removeAccount = async function(username) {
                 if (!confirm(`Permanently remove "${username}" and all their inventory data? This cannot be undone.`)) return;
                 try {
-                    const res = await apiFetch(`https://mrc-saber-api.sakahr315.workers.dev/api/saber/account/${encodeURIComponent(username)}`, { method: 'DELETE' });
+                    const res = await fetch(`https://mrc-saber-api.sakahr315.workers.dev/api/saber/account/${encodeURIComponent(username)}`, { method: 'DELETE' });
                     const data = await res.json();
                     if (data.success) {
                         showToast(`✅ Removed ${username}`);
@@ -523,10 +557,10 @@
                 }
             };
 
-            // Admin panel
+            // Admin functions
             async function loadAdminUsers() {
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/users');
+                    const res = await fetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/users');
                     const users = await res.json();
                     const container = document.getElementById('admin-user-list');
                     container.innerHTML = users.map(u => `
@@ -554,10 +588,10 @@
 
             window.updateUser = async function(targetUserId, field, value) {
                 try {
-                    await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/update', {
+                    await fetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/update', {
                         method: 'POST',
-                        body: JSON.stringify({ targetUserId, field, value }),
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ targetUserId, field, value })
                     });
                     showToast('✅ User updated');
                     loadAdminUsers();
@@ -569,10 +603,10 @@
             window.resetUserKey = async function(targetUserId) {
                 if (!confirm('Reset API key for this user?')) return;
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/reset-key', {
+                    const res = await fetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/reset-key', {
                         method: 'POST',
-                        body: JSON.stringify({ targetUserId }),
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ targetUserId })
                     });
                     const data = await res.json();
                     if (data.success) {
@@ -586,17 +620,6 @@
                 }
             };
 
-            // Game selection
-            window.selectGame = function(game) {
-                currentGame = game;
-                document.getElementById('game-btn-saber').classList.toggle('btn-accent', game === 'saber');
-                document.getElementById('game-btn-ps99').classList.toggle('btn-accent', game === 'ps99');
-                document.getElementById('saber-stats').style.display = game === 'saber' ? 'grid' : 'none';
-                document.getElementById('saber-content').style.display = game === 'saber' ? 'block' : 'none';
-                document.getElementById('ps99-content').style.display = game === 'ps99' ? 'block' : 'none';
-                if (game === 'saber') loadGameData();
-            };
-
             // Load Saber data
             async function loadGameData() {
                 const loading = document.getElementById('rare-pets-loading');
@@ -608,20 +631,20 @@
                 viewBtn.style.display = 'none';
 
                 try {
-                    const overviewRes = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/saber/overview');
+                    const overviewRes = await fetch('https://mrc-saber-api.sakahr315.workers.dev/api/saber/overview');
                     const overview = await overviewRes.json();
                     document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
                     document.getElementById('stat-online').textContent = overview.onlineAccounts;
                     document.getElementById('stat-offline').textContent = overview.offlineAccounts;
 
-                    const accRes = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/saber/accounts');
+                    const accRes = await fetch('https://mrc-saber-api.sakahr315.workers.dev/api/saber/accounts');
                     const accounts = await accRes.json();
                     allAccounts = accounts;
                     updateModalAccountFilter();
 
                     const details = await Promise.all(
                         accounts.map(acc =>
-                            apiFetch(`https://mrc-saber-api.sakahr315.workers.dev/api/saber/account/${encodeURIComponent(acc.username)}`)
+                            fetch(`https://mrc-saber-api.sakahr315.workers.dev/api/saber/account/${encodeURIComponent(acc.username)}`)
                                 .then(r => r.json())
                                 .then(d => { accountDetailsCache[acc.username] = d; return d; })
                                 .catch(() => null)
@@ -654,18 +677,102 @@
             }
 
             const VARIANT_ORDER = ['Void', 'Rainbow', 'Shiny', 'Golden', 'Normal'];
-            function renderRarePets() { /* same as before, unchanged */ }
+
+            function renderRarePets() {
+                const rarePets = [
+                    { name: 'Magmatic Vortex', section: 'secret-grid', localImagePath: '/public/images/pets/magmatic-vortex.webp' },
+                    { name: 'The Nightmare', section: 'triple-moon-grid', localImagePath: '/public/images/pets/the-nightmare.webp' }
+                ];
+
+                document.getElementById('secret-grid').innerHTML = '';
+                document.getElementById('triple-moon-grid').innerHTML = '';
+
+                rarePets.forEach(petDef => {
+                    const grid = document.getElementById(petDef.section);
+                    VARIANT_ORDER.forEach(variant => {
+                        const entry = allInventory.find(p => p.name === petDef.name && p.variant === variant);
+                        const amount = entry ? entry.amount : 0;
+
+                        const card = document.createElement('div');
+                        card.className = 'pet-card';
+
+                        const img = document.createElement('img');
+                        img.src = petDef.localImagePath;
+                        img.alt = petDef.name;
+                        img.loading = 'lazy';
+                        img.onerror = function() {
+                            this.style.display = 'none';
+                            const noImg = document.createElement('div');
+                            noImg.className = 'no-image';
+                            noImg.textContent = '📷';
+                            card.insertBefore(noImg, card.firstChild);
+                        };
+                        card.appendChild(img);
+
+                        const nameEl = document.createElement('div');
+                        nameEl.className = 'name';
+                        nameEl.textContent = petDef.name;
+                        card.appendChild(nameEl);
+
+                        const badge = document.createElement('span');
+                        badge.className = `variant-badge variant-${variant.toLowerCase()}`;
+                        badge.textContent = variant;
+                        card.appendChild(badge);
+
+                        const amountEl = document.createElement('div');
+                        amountEl.className = 'amount';
+                        amountEl.textContent = `×${amount}`;
+                        card.appendChild(amountEl);
+
+                        if (amount === 0) {
+                            const notOwned = document.createElement('span');
+                            notOwned.className = 'badge-notowned';
+                            notOwned.textContent = 'Not Owned';
+                            card.appendChild(notOwned);
+                        }
+
+                        grid.appendChild(card);
+                    });
+                });
+            }
 
             // Full inventory modal
-            window.openFullInventory = function() { /* unchanged */ };
-            window.closeFullInventory = function() { /* unchanged */ };
-            function updateModalAccountFilter() { /* unchanged */ }
-            function renderInventoryList() { /* unchanged */ }
+            window.openFullInventory = function() {
+                document.getElementById('inventory-modal').style.display = 'flex';
+                updateModalAccountFilter();
+                renderInventoryList();
+            };
+            window.closeFullInventory = function() {
+                document.getElementById('inventory-modal').style.display = 'none';
+            };
+            function updateModalAccountFilter() {
+                const sel = document.getElementById('inv-account-filter');
+                sel.innerHTML = '<option value="">All Accounts</option>';
+                allAccounts.forEach(a => sel.innerHTML += `<option value="${escapeHTML(a.username)}">${escapeHTML(a.username)}</option>`);
+            }
+            function renderInventoryList() {
+                const container = document.getElementById('inv-list-container');
+                if (!inventoryLoaded) { container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Loading...</p>'; return; }
+                let filtered = allInventory.slice();
+                const search = document.getElementById('inv-search').value.toLowerCase();
+                if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
+                const account = document.getElementById('inv-account-filter').value;
+                if (account) filtered = filtered.filter(p => p.owners.includes(account));
+                const variant = document.getElementById('inv-variant-filter').value;
+                if (variant) filtered = filtered.filter(p => p.variant === variant);
+                const sort = document.getElementById('inv-sort').value;
+                if (sort === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
+                else if (sort === 'amount-desc') filtered.sort((a,b) => b.amount - a.amount);
+                else if (sort === 'amount-asc') filtered.sort((a,b) => a.amount - b.amount);
+                container.innerHTML = filtered.length ? filtered.map(p => `
+                    <div class="inventory-row"><span class="pet-name">${escapeHTML(p.name)}</span><span class="pet-variant">${escapeHTML(p.variant||'—')}</span><span class="pet-amount">${p.amount}</span></div>
+                `).join('') : '<p style="text-align:center;color:var(--text-secondary);">No pets match.</p>';
+            }
 
             // Tracker generator
             window.generateTracker = async function() {
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/generate-tracker-script', { method: 'POST' });
+                    const res = await fetch('https://mrc-saber-api.sakahr315.workers.dev/api/generate-tracker-script', { method: 'POST' });
                     const data = await res.json();
                     if (data.trackerScript) {
                         const blob = new Blob([data.trackerScript], { type: 'text/plain' });
@@ -684,15 +791,20 @@
             window.resetApiKey = async function() {
                 if (!confirm('Resetting your API Key will permanently invalidate your current tracker. Continue?')) return;
                 try {
-                    await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/reset-key', {
+                    const res = await fetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/reset-key', {
                         method: 'POST',
-                        body: JSON.stringify({ targetUserId: currentUser.id }),
-                        headers: { 'Content-Type': 'application/json' }
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ targetUserId: null }) // server will use current user
                     });
-                    showToast('🔑 API Key reset. Generate a new tracker.');
-                    document.getElementById('tracker-result').style.display = 'none';
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('🔑 API Key reset. New key: ' + data.apiKey);
+                        document.getElementById('tracker-result').style.display = 'none';
+                    } else {
+                        showToast('❌ ' + (data.error || 'Reset failed'));
+                    }
                 } catch (e) {
-                    showToast('❌ ' + e.message);
+                    showToast('❌ Error');
                 }
             };
 
@@ -704,25 +816,108 @@
             }
 
             // Background animations (unchanged)
-            // ... (cursor glow, particles) ...
+            const glow = document.getElementById('cursor-glow');
+            document.addEventListener('mousemove', (e) => {
+                glow.style.left = e.clientX + 'px';
+                glow.style.top = e.clientY + 'px';
+                glow.style.opacity = '1';
+            });
+            document.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
 
-            // Initialise
-            if (!authToken) {
-                document.body.innerHTML = `
-                    <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:1rem;">
-                        <h1>MRC Track Stat</h1>
-                        <p>Please log in with Discord to continue.</p>
-                        <button class="btn btn-accent shine-btn" onclick="window.location.href='https://mrc-saber-api.sakahr315.workers.dev/auth/login'">Login with Discord</button>
-                    </div>`;
-                return;
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            let particles = [];
+            let animFrame;
+            let mouse = { x: -200, y: -200 };
+
+            function resize() {
+                canvas.width = window.innerWidth * dpr;
+                canvas.height = window.innerHeight * dpr;
+                canvas.style.width = window.innerWidth + 'px';
+                canvas.style.height = window.innerHeight + 'px';
+                ctx.scale(dpr, dpr);
             }
+            resize();
+            window.addEventListener('resize', resize);
 
+            const particleCount = 55;
+            particles = Array.from({ length: particleCount }, () => ({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                r: Math.random() * 1.6 + 0.5,
+                vx: (Math.random() - 0.5) * 0.22,
+                vy: (Math.random() - 0.5) * 0.22,
+                opacity: Math.random() * 0.5 + 0.2,
+            }));
+
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+            });
+
+            function animate() {
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                ctx.clearRect(0, 0, w, h);
+
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < -20) p.x = w + 20;
+                    if (p.x > w + 20) p.x = -20;
+                    if (p.y < -20) p.y = h + 20;
+                    if (p.y > h + 20) p.y = -20;
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(180,200,240,${p.opacity * 0.55})`;
+                    ctx.fill();
+
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const q = particles[j];
+                        const dx = p.x - q.x;
+                        const dy = p.y - q.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 90) {
+                            ctx.beginPath();
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(q.x, q.y);
+                            ctx.strokeStyle = `rgba(160,200,240,${0.04 * (1 - dist / 90)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+
+                    const dmx = mouse.x - p.x;
+                    const dmy = mouse.y - p.y;
+                    const dm = Math.sqrt(dmx * dmx + dmy * dmy);
+                    if (dm < 200 && dm > 0) {
+                        const force = 0.015 * (1 - dm / 200);
+                        p.vx += (dmx / dm) * force;
+                        p.vy += (dmy / dm) * force;
+                        const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                        const maxSpeed = 0.5;
+                        if (speed > maxSpeed) {
+                            p.vx = (p.vx / speed) * maxSpeed;
+                            p.vy = (p.vy / speed) * maxSpeed;
+                        }
+                    }
+                }
+                animFrame = requestAnimationFrame(animate);
+            }
+            animFrame = requestAnimationFrame(animate);
+            window.addEventListener('beforeunload', () => cancelAnimationFrame(animFrame));
+
+            // Initialize dashboard
             pages.dashboard.style.display = 'block';
             document.getElementById('saber-stats').style.display = 'grid';
             document.getElementById('saber-content').style.display = 'block';
             document.getElementById('ps99-content').style.display = 'none';
             loadGameData();
-        })();
+            loadUserProfile();
+        }
     </script>
 </body>
 </html>
