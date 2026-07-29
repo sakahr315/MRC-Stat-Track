@@ -1,23 +1,19 @@
 // api.js - Centralized API manager for MRC Track Stat
 // Connects to Cloudflare Worker backend
-// Base URL can be changed for different games
 
 const API_CONFIG = {
     saber: 'https://mrc-saber-api.sakahr315.workers.dev',
     // Future games:
     // ps99: 'https://mrc-ps99-api.sakahr315.workers.dev',
-    // growagarden: 'https://mrc-garden-api.sakahr315.workers.dev',
 };
 
 const API = {
-    // Get base URL for a game
     base(game = 'saber') {
         return API_CONFIG[game] || API_CONFIG.saber;
     },
 
-    // Generic fetch helper with error handling
-    async fetchJSON(url) {
-        const res = await fetch(url);
+    async fetchJSON(url, options = {}) {
+        const res = await fetch(url, options);
         if (!res.ok) {
             const error = await res.json().catch(() => ({ error: 'Request failed' }));
             throw new Error(error.error || `HTTP ${res.status}`);
@@ -42,9 +38,22 @@ const API = {
         return this.fetchJSON(`${API_CONFIG.saber}/api/saber/search-pet?name=${encodeURIComponent(name)}`);
     },
 
-    // ─── Future: Pet Simulator 99 ───
-    // async getPS99Overview() { ... }
-    // async getPS99Accounts() { ... }
+    // ─── API Key Management (for tracker generator) ───
+    async generateTrackerKey(userId) {
+        return this.fetchJSON(`${API_CONFIG.saber}/api/generate-key`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: userId || 'test_user_123' }),
+        });
+    },
+
+    async resetTrackerKey(userId) {
+        return this.fetchJSON(`${API_CONFIG.saber}/api/reset-key`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: userId || 'test_user_123' }),
+        });
+    },
 };
 
 // Export for use in other scripts
