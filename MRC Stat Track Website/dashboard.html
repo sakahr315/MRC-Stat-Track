@@ -165,70 +165,30 @@
         .connected-account-row .account-details { display: flex; flex-direction: column; gap: 0.1rem; }
         .connected-account-row .account-details .name-line { display: flex; align-items: center; gap: 0.5rem; }
 
-        /* API key reveal styles */
-        .api-key-container {
-            position: relative;
-            display: inline-block;
-            max-width: 400px;
-            width: 100%;
-        }
-        .api-key-masked {
-            background: rgba(255,255,255,0.04);
+        /* Tracker code block */
+        .tracker-code {
+            background: rgba(0,0,0,0.4);
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 10px;
-            padding: 0.5rem 1rem;
-            color: var(--text-primary);
-            font-family: var(--font-outfit);
-            font-size: 0.875rem;
-            width: 100%;
-            cursor: default;
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+            overflow-x: auto;
             position: relative;
-            overflow: hidden;
-            min-height: 2.5rem;
-            display: flex;
-            align-items: center;
         }
-        .api-key-masked::after {
-            content: '';
+        .copy-btn {
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            animation: apiKeyShimmer 3s infinite;
+            top: 0.5rem;
+            right: 0.5rem;
         }
-        @keyframes apiKeyShimmer {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-        .api-key-masked:hover::after {
-            animation: none;
-            background: none;
-        }
-        .api-key-masked .full-key {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            background: rgba(0,0,0,0.8);
-            border-radius: 10px;
-            word-break: break-all;
-            font-size: 0.875rem;
-        }
-        .api-key-masked:hover .full-key {
-            display: flex;
-        }
-        .api-key-masked .masked-text {
-            transition: opacity 0.2s;
-        }
-        .api-key-masked:hover .masked-text {
-            opacity: 0;
-        }
+
+        /* Admin table */
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th, .admin-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .admin-table th { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); }
+        .admin-table td { font-size: 0.85rem; }
 
         @media (max-width: 768px) {
             .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; }
@@ -261,7 +221,7 @@
             </button>
             <button class="nav-link" data-page="trackers">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-                Trackers
+                Tracker
             </button>
             <button class="nav-link" data-page="games">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -270,6 +230,10 @@
             <button class="nav-link" data-page="settings">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 Settings
+            </button>
+            <button class="nav-link" data-page="admin" id="admin-nav-link" style="display:none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                Admin
             </button>
         </nav>
     </aside>
@@ -328,18 +292,18 @@
 
         <!-- Trackers Page -->
         <div id="page-trackers" style="display:none;">
-            <div class="glass-card" style="padding:2rem; max-width:600px; margin:0 auto;">
-                <h2 style="font-size:1.8rem; margin-bottom:1rem;">🛡️ Tracker Generator</h2>
-                <p style="color:var(--text-secondary); margin-bottom:2rem;">
-                    Generate a ready‑to‑use tracker script that automatically monitors your Roblox accounts.
-                    Your personal API key is automatically embedded – you never need to copy or configure it manually.
+            <div class="glass-card" style="padding:2rem; max-width:800px; margin:0 auto;">
+                <h2 style="font-size:1.8rem; margin-bottom:1rem;">📋 Tracker Script</h2>
+                <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
+                    Copy this script into your Roblox executor. It will automatically monitor your Saber Simulator accounts.
                 </p>
-                <button class="btn btn-accent shine-btn" style="width:100%; margin-bottom:1rem;" id="generate-btn" onclick="generateTracker()">Generate Tracker</button>
-                <button class="btn btn-danger" style="width:100%;" id="reset-key-btn" onclick="resetApiKey()">Reset API Key</button>
-                <p id="reset-cooldown" style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.5rem; display:none;"></p>
-                <div id="tracker-result" style="margin-top:1.5rem; display:none;">
-                    <a id="download-link" href="#" download="saber_tracker.lua" class="btn btn-ghost" style="width:100%;">📥 Download Tracker (.lua)</a>
+                <div class="tracker-code" id="tracker-script-container" style="position:relative;">
+                    <button class="btn btn-accent copy-btn" style="padding:0.3rem 0.8rem; font-size:0.75rem;" onclick="copyTrackerScript()">Copy</button>
+                    <code id="tracker-script-code">Loading...</code>
                 </div>
+                <p class="text-small" style="margin-top:0.5rem;">
+                    Your unique API key is already embedded. Never share this script.
+                </p>
             </div>
         </div>
 
@@ -397,9 +361,8 @@
                         </div>
                     </div>
                     <p class="text-small" style="margin-top:0.5rem;">
-                        Hover to reveal your key. If lost, reset it in the tracker generator.
+                        Hover to reveal. This key is used by your tracker. If compromised, contact an admin.
                     </p>
-                    <button class="btn btn-ghost" id="reveal-key-btn" style="margin-top:0.5rem;" onclick="loadFullApiKey()">Reveal Full Key</button>
                 </div>
 
                 <div>
@@ -409,12 +372,26 @@
             </div>
         </div>
 
-        <!-- Admin Panel (visible only to Owner/Manager) -->
-        <div id="admin-panel" style="display:none; margin-top:2rem;">
+        <!-- Admin Panel (Owner only) -->
+        <div id="page-admin" style="display:none;">
             <div class="glass-card" style="padding:2rem;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">🛡️ Admin Panel</h2>
-                <div id="admin-user-list"></div>
-                <button class="btn btn-danger" style="margin-top:1rem;" onclick="resetAllTrackerData()">🗑️ Clear All Tracker Data</button>
+                <input type="text" class="filter-input" placeholder="Search users..." id="admin-search" style="margin-bottom:1.5rem; width:100%;" oninput="filterAdminTable()" />
+                <div style="overflow-x:auto;">
+                    <table class="admin-table" id="admin-users-table">
+                        <thead>
+                            <tr>
+                                <th>Discord</th>
+                                <th>Plan</th>
+                                <th>API Key</th>
+                                <th>Accounts</th>
+                                <th>Pets</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-users-body"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </main>
@@ -499,6 +476,7 @@
                 trackers: document.getElementById('page-trackers'),
                 games: document.getElementById('page-games'),
                 settings: document.getElementById('page-settings'),
+                admin: document.getElementById('page-admin'),
             };
 
             navLinks.forEach(link => {
@@ -509,7 +487,9 @@
                     Object.values(pages).forEach(p => p.style.display = 'none');
                     pages[page].style.display = 'block';
                     if (page === 'dashboard') loadGameData();
+                    if (page === 'trackers') loadTrackerScript();
                     if (page === 'settings') loadSettingsData();
+                    if (page === 'admin') loadAdminPanel();
                 });
             });
 
@@ -539,9 +519,9 @@
                         if (user.avatar) {
                             document.getElementById('discord-avatar').src = `https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png`;
                         }
-                        if (user.permissions === 'OWNER' || user.permissions === 'MANAGER') {
-                            document.getElementById('admin-panel').style.display = 'block';
-                            loadAdminUsers();
+                        // Show admin nav if owner
+                        if (user.permissions === 'OWNER') {
+                            document.getElementById('admin-nav-link').style.display = 'block';
                         }
                     }
                 } catch (e) {
@@ -549,20 +529,24 @@
                 }
             }
 
-            // Load full API key (on click)
-            window.loadFullApiKey = async function() {
+            // Load tracker script on Trackers page
+            async function loadTrackerScript() {
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/user/full-api-key');
+                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/user/tracker-script');
                     const data = await res.json();
-                    if (data.apiKey) {
-                        document.getElementById('masked-key-text').style.display = 'none';
-                        document.getElementById('full-key-text').textContent = data.apiKey;
-                        document.getElementById('full-key-text').style.display = 'flex';
-                        document.getElementById('reveal-key-btn').style.display = 'none';
-                    }
+                    document.getElementById('tracker-script-code').textContent = data.script;
                 } catch (e) {
-                    showToast('❌ Could not retrieve API key.');
+                    document.getElementById('tracker-script-code').textContent = 'Error loading script. Make sure you have an API key.';
                 }
+            }
+
+            // Copy tracker script
+            window.copyTrackerScript = function() {
+                const code = document.getElementById('tracker-script-code').textContent;
+                if (!code || code === 'Loading...') return;
+                navigator.clipboard.writeText(code).then(() => {
+                    showToast('✅ Copied!');
+                });
             };
 
             // Load settings data
@@ -622,79 +606,91 @@
                 }
             };
 
-            // Admin functions
-            async function loadAdminUsers() {
+            // Admin panel functions
+            async function loadAdminPanel() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/users');
                     const users = await res.json();
-                    const container = document.getElementById('admin-user-list');
-                    container.innerHTML = users.map(u => `
-                        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:0.75rem; margin-bottom:0.5rem; display:flex; justify-content:space-between; align-items:center;">
-                            <div>
-                                <strong>${escapeHTML(u.username)}</strong>
-                                <span style="font-size:0.7rem; color:var(--text-secondary);"> (${u.discord_id})</span>
-                                <div style="font-size:0.75rem;">Plan: ${u.subscription} · Role: ${u.permissions}</div>
-                            </div>
-                            <div style="display:flex; gap:0.5rem;">
-                                <select onchange="updateUser(${u.id}, 'subscription', this.value)" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.25rem; color:var(--text-primary); font-size:0.75rem;">
-                                    <option ${u.subscription==='FREE'?'selected':''}>FREE</option>
-                                    <option ${u.subscription==='PREMIUM'?'selected':''}>PREMIUM</option>
-                                    <option ${u.subscription==='PRO'?'selected':''}>PRO</option>
-                                    <option ${u.subscription==='ENTERPRISE'?'selected':''}>ENTERPRISE</option>
-                                </select>
-                                <button class="btn btn-danger" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="resetUserKey(${u.id})">Reset Key</button>
-                            </div>
-                        </div>
-                    `).join('');
+                    renderAdminTable(users);
                 } catch (e) {
-                    console.error(e);
+                    showToast('❌ Failed to load admin data');
                 }
             }
 
-            window.updateUser = async function(targetUserId, field, value) {
-                try {
-                    await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/update', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ targetUserId, field, value })
-                    });
-                    showToast('✅ User updated');
-                    loadAdminUsers();
-                } catch (e) {
-                    showToast('❌ Update failed');
+            function renderAdminTable(users) {
+                const tbody = document.getElementById('admin-users-body');
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td>${escapeHTML(u.discordUsername)}<br/><small style="color:var(--text-secondary);">${u.discordId}</small></td>
+                        <td>
+                            <select onchange="changePlan(${u.id}, this.value)" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:0.25rem; color:var(--text-primary); font-size:0.75rem;">
+                                <option ${u.plan==='FREE'?'selected':''}>FREE</option>
+                                <option ${u.plan==='PREMIUM'?'selected':''}>PREMIUM</option>
+                                <option ${u.plan==='PRO'?'selected':''}>PRO</option>
+                                <option ${u.plan==='ENTERPRISE'?'selected':''}>ENTERPRISE</option>
+                            </select>
+                        </td>
+                        <td>${u.apiKeyPrefix || '—'}</td>
+                        <td>${u.totalAccounts} (${u.onlineAccounts} online)</td>
+                        <td>${u.totalPets}</td>
+                        <td>
+                            <button class="btn btn-ghost" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="deleteUserKey(${u.id})">🗑️ Key</button>
+                            <button class="btn btn-ghost" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="regenerateUserKey(${u.id})">🔄 New Key</button>
+                            <button class="btn btn-ghost" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="viewUserDetail(${u.id})">👁️</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            window.changePlan = async function(userId, plan) {
+                await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/plan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, plan })
+                });
+                showToast('✅ Plan updated');
+            };
+
+            window.deleteUserKey = async function(userId) {
+                if (!confirm('Delete this user\'s API key? Their tracker will stop working.')) return;
+                await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/delete-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+                showToast('✅ Key deleted');
+                loadAdminPanel();
+            };
+
+            window.regenerateUserKey = async function(userId) {
+                if (!confirm('Generate a new API key? The old one will be invalidated.')) return;
+                const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/generate-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ New key: ' + data.apiKey);
+                    loadAdminPanel();
+                } else {
+                    showToast('❌ Error generating key');
                 }
             };
 
-            window.resetUserKey = async function(targetUserId) {
-                if (!confirm('Reset API key for this user?')) return;
-                try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/reset-key', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ targetUserId })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        showToast('🔑 Key reset. New key: ' + data.apiKey);
-                        loadAdminUsers();
-                    } else {
-                        showToast('❌ ' + (data.error || 'Reset failed'));
-                    }
-                } catch (e) {
-                    showToast('❌ Error');
-                }
+            window.viewUserDetail = async function(userId) {
+                const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/' + userId);
+                const detail = await res.json();
+                alert(JSON.stringify(detail, null, 2)); // replace with proper modal if desired
             };
 
-            // Reset all tracker data
-            window.resetAllTrackerData = async function() {
-                if (!confirm('DELETE ALL accounts, inventory, and events? This cannot be undone.')) return;
-                try {
-                    await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/reset-tracker-data', { method: 'POST' });
-                    showToast('✅ All tracker data cleared.');
-                    loadGameData();
-                } catch (e) {
-                    showToast('❌ Error clearing data.');
-                }
+            window.filterAdminTable = function() {
+                const term = document.getElementById('admin-search').value.toLowerCase();
+                const rows = document.querySelectorAll('#admin-users-body tr');
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? '' : 'none';
+                });
             };
 
             // Load Saber data
@@ -835,45 +831,6 @@
                     <div class="inventory-row"><span class="pet-name">${escapeHTML(p.name)}</span><span class="pet-variant">${escapeHTML(p.variant||'—')}</span><span class="pet-amount">${p.amount}</span></div>
                 `).join('') : '<p style="text-align:center;color:var(--text-secondary);">No pets match.</p>';
             }
-
-            // Tracker generator
-            window.generateTracker = async function() {
-                try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/generate-tracker-script', { method: 'POST' });
-                    const data = await res.json();
-                    if (data.trackerScript) {
-                        const blob = new Blob([data.trackerScript], { type: 'text/plain' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.getElementById('download-link');
-                        a.href = url;
-                        a.download = 'saber_tracker.lua';
-                        document.getElementById('tracker-result').style.display = 'block';
-                        showToast('✅ Tracker ready! Click download.');
-                    }
-                } catch (e) {
-                    showToast('❌ Error generating tracker.');
-                }
-            };
-
-            window.resetApiKey = async function() {
-                if (!confirm('Resetting your API Key will permanently invalidate your current tracker. Continue?')) return;
-                try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/reset-key', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ targetUserId: null })
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        showToast('🔑 API Key reset. New key: ' + data.apiKey);
-                        document.getElementById('tracker-result').style.display = 'none';
-                    } else {
-                        showToast('❌ ' + (data.error || 'Reset failed'));
-                    }
-                } catch (e) {
-                    showToast('❌ Error');
-                }
-            };
 
             function escapeHTML(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
             function showToast(msg) {
