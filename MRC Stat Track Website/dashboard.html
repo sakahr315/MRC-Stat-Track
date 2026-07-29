@@ -408,9 +408,9 @@
                     </p>
                 </div>
 
-                <div>
-                    <h4>Theme</h4>
-                    <p style="color:var(--text-secondary);">Dark (default) – more themes coming soon.</p>
+                <!-- Logout -->
+                <div style="margin-top:2rem;">
+                    <button class="btn btn-danger" onclick="logout()">Logout</button>
                 </div>
             </div>
         </div>
@@ -505,6 +505,12 @@
                 return res;
             }
 
+            // Logout function
+            window.logout = function() {
+                localStorage.removeItem(AUTH_TOKEN_KEY);
+                window.location.href = '/index.html';
+            };
+
             // Globals
             let allAccounts = [];
             let allInventory = [];
@@ -574,19 +580,21 @@
 
             // Load tracker script on Trackers page
             async function loadTrackerScript() {
+                const codeEl = document.getElementById('tracker-script-code');
+                codeEl.textContent = 'Loading...';
                 try {
                     const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/user/tracker-script');
                     const data = await res.json();
-                    document.getElementById('tracker-script-code').textContent = data.script;
+                    codeEl.textContent = data.script;
                 } catch (e) {
-                    document.getElementById('tracker-script-code').textContent = 'Error loading script. Make sure you have an API key.';
+                    codeEl.textContent = '⚠️ No API key found. Please contact an administrator to get a key assigned.';
                 }
             }
 
             // Copy tracker script
             window.copyTrackerScript = function() {
                 const code = document.getElementById('tracker-script-code').textContent;
-                if (!code || code === 'Loading...' || code.startsWith('Error')) return;
+                if (!code || code === 'Loading...' || code.startsWith('⚠️')) return;
                 navigator.clipboard.writeText(code).then(() => {
                     showToast('✅ Copied!');
                 });
@@ -607,7 +615,7 @@
                     const accounts = await res.json();
                     allAccounts = accounts || [];
                     if (allAccounts.length === 0) {
-                        container.innerHTML = '<p style="color:var(--text-secondary);">No accounts connected yet.</p>';
+                        container.innerHTML = '<p style="color:var(--text-secondary);">No accounts connected yet. Run your tracker to start monitoring.</p>';
                         return;
                     }
                     container.innerHTML = allAccounts.map(acc => {
@@ -662,6 +670,10 @@
 
             function renderAdminTable(users) {
                 const tbody = document.getElementById('admin-users-body');
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">No users found.</td></tr>';
+                    return;
+                }
                 tbody.innerHTML = users.map(u => `
                     <tr>
                         <td>${escapeHTML(u.discordUsername)}<br/><small style="color:var(--text-secondary);">${u.discordId}</small></td>
