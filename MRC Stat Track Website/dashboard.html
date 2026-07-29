@@ -165,6 +165,71 @@
         .connected-account-row .account-details { display: flex; flex-direction: column; gap: 0.1rem; }
         .connected-account-row .account-details .name-line { display: flex; align-items: center; gap: 0.5rem; }
 
+        /* API key reveal styles */
+        .api-key-container {
+            position: relative;
+            display: inline-block;
+            max-width: 400px;
+            width: 100%;
+        }
+        .api-key-masked {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            color: var(--text-primary);
+            font-family: var(--font-outfit);
+            font-size: 0.875rem;
+            width: 100%;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .api-key-masked::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            animation: apiKeyShimmer 3s infinite;
+        }
+        @keyframes apiKeyShimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        .api-key-masked:hover::after {
+            animation: none;
+            background: none;
+        }
+        .api-key-masked .full-key {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.8);
+            border-radius: 10px;
+            word-break: break-all;
+            font-size: 0.875rem;
+        }
+        .api-key-masked:hover .full-key {
+            display: flex;
+        }
+        .api-key-masked .masked-text {
+            transition: opacity 0.2s;
+        }
+        .api-key-masked:hover .masked-text {
+            opacity: 0;
+        }
+
         @media (max-width: 768px) {
             .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; }
             .main-content { margin-left: 0; padding: 1.5rem; }
@@ -325,8 +390,16 @@
                 <!-- API Key -->
                 <div style="margin-bottom:1.5rem;">
                     <h4>API Key</h4>
-                    <input type="text" readonly id="masked-key" value="mrc_live_********" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:0.5rem; color:var(--text-primary); font-family:var(--font-outfit); font-size:0.875rem; width:100%; max-width:400px;" />
-                    <p class="text-small" style="margin-top:0.5rem;">For security, your full key is only shown once after generation. If lost, contact an admin to reset it.</p>
+                    <div class="api-key-container">
+                        <div class="api-key-masked" id="api-key-display">
+                            <span class="masked-text" id="masked-key-text">mrc_live_********</span>
+                            <span class="full-key" id="full-key-text"></span>
+                        </div>
+                    </div>
+                    <p class="text-small" style="margin-top:0.5rem;">
+                        Hover to reveal your key. If lost, reset it in the tracker generator.
+                    </p>
+                    <button class="btn btn-ghost" id="reveal-key-btn" style="margin-top:0.5rem;" onclick="loadFullApiKey()">Reveal Full Key</button>
                 </div>
 
                 <div>
@@ -462,7 +535,7 @@
                         discordUsernameEl.textContent = user.username;
                         document.getElementById('discord-id').textContent = 'ID: ' + user.discord_id;
                         document.getElementById('user-plan').textContent = 'Plan: ' + user.subscription;
-                        document.getElementById('masked-key').value = (user.apiKeyPrefix || 'mrc_live_') + '********';
+                        document.getElementById('masked-key-text').textContent = (user.apiKeyPrefix || 'mrc_live_') + '********';
                         if (user.avatar) {
                             document.getElementById('discord-avatar').src = `https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png`;
                         }
@@ -475,6 +548,22 @@
                     console.error('Profile load failed', e);
                 }
             }
+
+            // Load full API key (on click)
+            window.loadFullApiKey = async function() {
+                try {
+                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/user/full-api-key');
+                    const data = await res.json();
+                    if (data.apiKey) {
+                        document.getElementById('masked-key-text').style.display = 'none';
+                        document.getElementById('full-key-text').textContent = data.apiKey;
+                        document.getElementById('full-key-text').style.display = 'flex';
+                        document.getElementById('reveal-key-btn').style.display = 'none';
+                    }
+                } catch (e) {
+                    showToast('❌ Could not retrieve API key.');
+                }
+            };
 
             // Load settings data
             window.loadSettingsData = async function() {
