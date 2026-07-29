@@ -20,360 +20,66 @@
             --font-outfit: 'Outfit', system-ui, -apple-system, sans-serif;
             --sidebar-width: 260px;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html {
-            background: var(--bg-primary);
-            font-family: var(--font-outfit);
-            -webkit-font-smoothing: antialiased;
-        }
-
-        body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: var(--font-outfit);
-            font-weight: 400;
-            line-height: 1.5;
-            overflow-x: hidden;
-            min-height: 100vh;
-            display: flex;
-        }
-
-        .grid-overlay {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.22;
-            background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-            background-size: 48px 48px;
-            mask-image: radial-gradient(ellipse 65% 55% at 50% 40%, black 30%, transparent 70%);
-        }
-
-        /* Glass card */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border-radius: 20px;
-            transition: all 0.35s ease;
-        }
-        .glass-card:hover {
-            border-color: rgba(47, 143, 251, 0.25);
-            box-shadow: 0 0 0 1px rgba(47,143,251,0.08), 0 8px 32px rgba(0,0,0,0.4);
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-family: var(--font-outfit);
-            font-weight: 500;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            white-space: nowrap;
-            border: none;
-            font-size: 0.875rem;
-            padding: 0.6rem 1.25rem;
-        }
-        .btn-accent {
-            background: var(--accent);
-            color: #fff;
-            box-shadow: 0 0 0 1px rgba(47,143,251,0.3), 0 4px 16px rgba(47,143,251,0.25);
-        }
-        .btn-accent:hover {
-            background: #3b9aff;
-            transform: translateY(-1px);
-        }
-        .btn-ghost {
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-primary);
-        }
-        .btn-ghost:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: rgba(10,10,10,0.85);
-            backdrop-filter: blur(24px);
-            border-right: 1px solid rgba(255,255,255,0.06);
-            padding: 2rem 1rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-            z-index: 50;
-        }
-        .sidebar-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            text-decoration: none;
-        }
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-family: var(--font-outfit);
-            font-size: 0.875rem;
-            width: 100%;
-            text-align: left;
-        }
-        .nav-link svg {
-            width: 20px;
-            height: 20px;
-            opacity: 0.8;
-        }
-        .nav-link:hover,
-        .nav-link.active {
-            background: rgba(47,143,251,0.08);
-            color: var(--text-primary);
-        }
-        .nav-link.active {
-            border-left: 2px solid var(--accent);
-        }
-
-        /* Main content */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            flex: 1;
-            padding: 2.5rem 3rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        /* Stats cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-        .stat-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 1.75rem;
-            transition: all 0.3s ease;
-        }
-        .stat-card:hover {
-            border-color: rgba(47,143,251,0.3);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.5);
-            transform: translateY(-3px);
-        }
-        .stat-card .label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-        }
-        .stat-card .value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1;
-        }
-
-        /* Section headers */
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
-            letter-spacing: -0.02em;
-        }
-
-        /* Pet cards for rare overview */
-        .pet-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        .pet-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 20px;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .pet-card:hover {
-            border-color: rgba(47,143,251,0.3);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(0,0,0,0.4);
-        }
-        .pet-card img {
-            width: 100%;
-            height: 100px;
-            object-fit: contain;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.02);
-        }
-        .pet-card .no-image {
-            width: 100%;
-            height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-            font-size: 0.7rem;
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-        }
-        .pet-card .name {
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-align: center;
-            color: var(--text-primary);
-        }
-        .pet-card .variant-badge {
-            font-size: 0.65rem;
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { background: var(--bg-primary); font-family: var(--font-outfit); -webkit-font-smoothing: antialiased; }
+        body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-outfit); font-weight: 400; line-height: 1.5; overflow-x: hidden; min-height: 100vh; display: flex; }
+        .grid-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.22; background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px); background-size: 48px 48px; mask-image: radial-gradient(ellipse 65% 55% at 50% 40%, black 30%, transparent 70%); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 20px; transition: all 0.35s ease; }
+        .glass-card:hover { border-color: rgba(47, 143, 251, 0.25); box-shadow: 0 0 0 1px rgba(47,143,251,0.08), 0 8px 32px rgba(0,0,0,0.4); }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-family: var(--font-outfit); font-weight: 500; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; text-decoration: none; white-space: nowrap; border: none; font-size: 0.875rem; padding: 0.6rem 1.25rem; }
+        .btn-accent { background: var(--accent); color: #fff; box-shadow: 0 0 0 1px rgba(47,143,251,0.3), 0 4px 16px rgba(47,143,251,0.25); }
+        .btn-accent:hover { background: #3b9aff; transform: translateY(-1px); }
+        .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.05); }
+        .btn-danger { background: rgba(255,60,60,0.15); color: #ff4d4d; border: 1px solid rgba(255,60,60,0.3); }
+        .btn-danger:hover { background: rgba(255,60,60,0.25); }
+        .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0; background: rgba(10,10,10,0.85); backdrop-filter: blur(24px); border-right: 1px solid rgba(255,255,255,0.06); padding: 2rem 1rem; display: flex; flex-direction: column; gap: 2rem; z-index: 50; }
+        .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 600; color: var(--text-primary); text-decoration: none; }
+        .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 12px; color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: all 0.2s; background: none; border: none; cursor: pointer; font-family: var(--font-outfit); font-size: 0.875rem; width: 100%; text-align: left; }
+        .nav-link svg { width: 20px; height: 20px; opacity: 0.8; }
+        .nav-link:hover, .nav-link.active { background: rgba(47,143,251,0.08); color: var(--text-primary); }
+        .nav-link.active { border-left: 2px solid var(--accent); }
+        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 2.5rem 3rem; position: relative; z-index: 10; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+        .stat-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(20px); border-radius: 24px; padding: 1.75rem; transition: all 0.3s ease; }
+        .stat-card:hover { border-color: rgba(47,143,251,0.3); box-shadow: 0 12px 32px rgba(0,0,0,0.5); transform: translateY(-3px); }
+        .stat-card .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .stat-card .value { font-size: 2.5rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
+        .section-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-primary); letter-spacing: -0.02em; }
+        .pet-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .pet-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); border-radius: 20px; padding: 1rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.3s ease; position: relative; }
+        .pet-card:hover { border-color: rgba(47,143,251,0.3); transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.4); }
+        .pet-card img { width: 100%; height: 100px; object-fit: contain; border-radius: 12px; background: rgba(255,255,255,0.02); }
+        .pet-card .no-image { width: 100%; height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 0.7rem; background: rgba(255,255,255,0.02); border-radius: 12px; }
+        .pet-card .name { font-weight: 600; font-size: 0.85rem; text-align: center; color: var(--text-primary); }
+        .pet-card .variant-badge { font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em; }
         .variant-void { background: rgba(125, 60, 152, 0.3); color: #c39bdb; }
         .variant-rainbow { background: rgba(255,0,255,0.2); color: #ff80ff; }
         .variant-shiny { background: rgba(0,255,255,0.2); color: #80ffff; }
         .variant-golden { background: rgba(241,196,15,0.2); color: #f1c40f; }
         .variant-normal { background: rgba(255,255,255,0.1); color: #ccc; }
-        .pet-card .amount {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        /* Full inventory modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(12px);
-            z-index: 200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.2s ease;
-        }
+        .pet-card .amount { font-size: 0.75rem; color: var(--text-secondary); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); z-index: 200; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-        .modal {
-            background: rgba(20,20,22,0.95);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 28px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 900px;
-            max-height: 85vh;
-            overflow-y: auto;
-            position: relative;
-        }
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-        }
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            font-size: 1.8rem;
-            cursor: pointer;
-            padding: 0.25rem;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
+        .modal { background: rgba(20,20,22,0.95); border: 1px solid rgba(255,255,255,0.08); border-radius: 28px; padding: 2rem; width: 90%; max-width: 900px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+        .modal-title { font-size: 1.5rem; font-weight: 600; }
+        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.8rem; cursor: pointer; padding: 0.25rem; border-radius: 8px; }
         .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text-primary); }
-
-        /* Filters bar */
-        .filters-bar {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-        .filter-input, .filter-select {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 0.5rem 1rem;
-            color: var(--text-primary);
-            font-family: var(--font-outfit);
-            font-size: 0.875rem;
-            outline: none;
-        }
+        .filters-bar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .filter-input, .filter-select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0.5rem 1rem; color: var(--text-primary); font-family: var(--font-outfit); font-size: 0.875rem; outline: none; }
         .filter-input:focus, .filter-select:focus { border-color: var(--accent); }
-        .inventory-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-        }
-        .inventory-row {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-            transition: background 0.2s;
-            justify-content: space-between;
-            gap: 1rem;
-        }
+        .inventory-list { display: flex; flex-direction: column; gap: 0.3rem; }
+        .inventory-row { display: flex; align-items: center; padding: 0.75rem 1rem; background: rgba(255,255,255,0.02); border-radius: 12px; transition: background 0.2s; justify-content: space-between; gap: 1rem; }
         .inventory-row:hover { background: rgba(255,255,255,0.05); }
         .inventory-row .pet-name { font-weight: 500; color: var(--text-primary); flex: 1; }
         .inventory-row .pet-variant { font-size: 0.8rem; color: var(--text-secondary); width: 80px; }
         .inventory-row .pet-amount { font-weight: 600; color: var(--accent); width: 50px; text-align: right; }
-
-        /* Skeleton loaders */
-        .skeleton {
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            animation: shimmer 1.5s infinite;
-            background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 100%);
-            background-size: 200% 100%;
-        }
+        .skeleton { background: rgba(255,255,255,0.05); border-radius: 12px; animation: shimmer 1.5s infinite; background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 100%); background-size: 200% 100%; }
         @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
-
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: rgba(30,30,30,0.95); border: 1px solid var(--accent-glow); border-radius: 14px; padding: 1rem 1.5rem; z-index: 999; color: var(--text-primary); font-size: 0.875rem; animation: slideIn 0.4s ease, fadeOut 0.4s ease 3.5s forwards; box-shadow: 0 12px 32px rgba(0,0,0,0.6); max-width: 400px; }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; transform: translateY(10px); } }
         @media (max-width: 768px) {
             .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; }
             .main-content { margin-left: 0; padding: 1.5rem; }
@@ -396,7 +102,7 @@
             </svg>
             MRC Track Stat
         </a>
-        <nav class="nav-links" style="display:flex;flex-direction:column;gap:0.25rem;">
+        <nav style="display:flex;flex-direction:column;gap:0.25rem;">
             <button class="nav-link active" data-page="dashboard">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
                 Dashboard
@@ -418,65 +124,111 @@
 
     <!-- Main Content -->
     <main class="main-content" id="main-content">
-        <!-- Page: Dashboard -->
+        <!-- Dashboard Page (default) -->
         <div id="page-dashboard">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;">
                 <div>
                     <h1 style="font-size:2rem;font-weight:700;">Welcome back, User</h1>
-                    <p class="text-body">Manage your trackers and monitor your Roblox accounts.</p>
+                    <p style="color:var(--text-secondary);">Manage your trackers and monitor your Roblox accounts.</p>
                 </div>
-                <!-- Game selector -->
                 <div style="display:flex;gap:0.5rem;">
-                    <button class="btn btn-ghost" id="game-btn-saber" onclick="selectGame('saber')">🗡️ Saber Simulator</button>
+                    <button class="btn btn-accent" id="game-btn-saber" onclick="selectGame('saber')">🗡️ Saber Simulator</button>
                     <button class="btn btn-ghost" id="game-btn-ps99" onclick="selectGame('ps99')">🐾 PS99</button>
                 </div>
             </div>
 
-            <!-- Stats cards -->
-            <div class="stats-grid fade-up" id="global-stats">
-                <div class="stat-card">
-                    <div class="label">Total Accounts</div>
-                    <div class="value" id="stat-total-accounts">—</div>
+            <!-- Stats -->
+            <div class="stats-grid" id="global-stats">
+                <div class="stat-card"><div class="label">Total Accounts</div><div class="value" id="stat-total-accounts">—</div></div>
+                <div class="stat-card"><div class="label">Online</div><div class="value" id="stat-online">—</div></div>
+                <div class="stat-card"><div class="label">Offline</div><div class="value" id="stat-offline">—</div></div>
+            </div>
+
+            <!-- Rare Pets (Saber) -->
+            <div id="saber-content">
+                <div id="rare-pets-loading" class="glass-card" style="padding:1.5rem;margin-bottom:2rem;"><div class="skeleton" style="height:150px;"></div></div>
+                <div id="rare-pets-container" style="display:none;">
+                    <div class="glass-card" style="padding:1.5rem;margin-bottom:2rem;">
+                        <h2 class="section-title">🌙 Triple Moon Pets</h2>
+                        <div class="pet-cards-grid" id="triple-moon-grid"></div>
+                        <div style="text-align:center;padding:2rem;color:var(--text-secondary);display:none;" id="triple-moon-empty">No Triple Moon pets.</div>
+                    </div>
+                    <div class="glass-card" style="padding:1.5rem;margin-bottom:2rem;">
+                        <h2 class="section-title">🔮 Secret Pets</h2>
+                        <div class="pet-cards-grid" id="secret-grid"></div>
+                        <div style="text-align:center;padding:2rem;color:var(--text-secondary);display:none;" id="secret-empty">No Secret pets.</div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <div class="label">Online</div>
-                    <div class="value" id="stat-online">—</div>
-                </div>
-                <div class="stat-card">
-                    <div class="label">Offline</div>
-                    <div class="value" id="stat-offline">—</div>
+                <div style="text-align:center;margin-top:2rem;display:none;" id="view-inventory-btn-container">
+                    <button class="btn btn-accent" style="padding:1rem 2.5rem;font-size:1rem;" onclick="openFullInventory()">View Full Inventory</button>
                 </div>
             </div>
 
-            <!-- Rare Pets Overview -->
-            <div id="rare-pets-container" style="display:none;">
-                <div id="triple-moon-section" class="glass-card" style="padding:1.5rem;margin-bottom:2rem;">
-                    <h2 class="section-title" style="margin-bottom:1rem;">🌙 Triple Moon Pets</h2>
-                    <div class="pet-cards-grid" id="triple-moon-grid"></div>
-                    <div style="text-align:center;padding:2rem;color:var(--text-secondary);display:none;" id="triple-moon-empty">No Triple Moon pets found.</div>
-                </div>
-                <div id="secret-section" class="glass-card" style="padding:1.5rem;margin-bottom:2rem;">
-                    <h2 class="section-title" style="margin-bottom:1rem;">🔮 Secret Pets</h2>
-                    <div class="pet-cards-grid" id="secret-grid"></div>
-                    <div style="text-align:center;padding:2rem;color:var(--text-secondary);display:none;" id="secret-empty">No Secret pets found.</div>
-                </div>
-            </div>
-
-            <!-- View Full Inventory button -->
-            <div style="text-align:center;margin-top:2rem;" id="view-inventory-btn-container" style="display:none;">
-                <button class="btn btn-accent" style="padding:1rem 2.5rem;font-size:1rem;" onclick="openFullInventory()">View Full Inventory</button>
-            </div>
-
-            <!-- Loading skeleton for rare pets -->
-            <div id="rare-pets-loading" class="glass-card" style="padding:1.5rem;">
-                <div class="skeleton" style="height:150px;width:100%;border-radius:16px;"></div>
+            <!-- PS99 Coming Soon -->
+            <div id="ps99-content" style="display:none; text-align:center; padding:4rem 0;">
+                <div style="font-size:4rem; margin-bottom:1rem;">🐾</div>
+                <h1 style="font-size:2.5rem; margin-bottom:1rem;">Coming Soon</h1>
+                <p style="color:var(--text-secondary); max-width:400px; margin:0 auto;">
+                    Pet Simulator 99 support is currently in development. We'll notify you when it's ready!
+                </p>
             </div>
         </div>
 
-        <!-- Other pages (placeholder) -->
-        <div id="page-trackers" style="display:none;"><h2>Trackers</h2></div>
-        <div id="page-games" style="display:none;"><h2>Games</h2></div>
-        <div id="page-settings" style="display:none;"><h2>Settings</h2></div>
+        <!-- Trackers Page -->
+        <div id="page-trackers" style="display:none;">
+            <div class="glass-card" style="padding:2rem; max-width:600px; margin:0 auto;">
+                <h2 style="font-size:1.8rem; margin-bottom:1rem;">🛡️ Tracker Generator</h2>
+                <p style="color:var(--text-secondary); margin-bottom:2rem;">
+                    Generate a ready‑to‑use tracker script that automatically monitors your Roblox accounts.
+                    Your personal API key is automatically embedded – you never need to copy or configure it manually.
+                </p>
+                <button class="btn btn-accent" style="width:100%; margin-bottom:1rem;" id="generate-btn" onclick="generateTracker()">Generate Tracker</button>
+                <button class="btn btn-danger" style="width:100%;" id="reset-key-btn" onclick="resetApiKey()">Reset API Key</button>
+                <p id="reset-cooldown" style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.5rem; display:none;"></p>
+                <div id="tracker-result" style="margin-top:1.5rem; display:none;">
+                    <a id="download-link" href="#" download="saber_tracker.lua" class="btn btn-ghost" style="width:100%;">📥 Download Tracker (.lua)</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Games Page -->
+        <div id="page-games" style="display:none;">
+            <h2 style="font-size:1.8rem; margin-bottom:2rem;">Supported Games</h2>
+            <div style="display:flex; gap:2rem; flex-wrap:wrap;">
+                <div class="glass-card" style="padding:1.5rem; flex:1; min-width:250px; text-align:center;">
+                    <div style="font-size:3rem;">🗡️</div>
+                    <h3>Saber Simulator</h3>
+                    <span class="badge" style="background:rgba(47,143,251,0.2); color:var(--accent); padding:0.2rem 0.8rem; border-radius:999px; font-size:0.7rem; text-transform:uppercase;">Supported</span>
+                    <p style="color:var(--text-secondary); margin-top:0.5rem;">Full tracking for gems, pets, and inventory.</p>
+                </div>
+                <div class="glass-card" style="padding:1.5rem; flex:1; min-width:250px; text-align:center;">
+                    <div style="font-size:3rem;">🐾</div>
+                    <h3>Pet Simulator 99</h3>
+                    <span class="badge" style="background:rgba(255,255,255,0.08); color:#888; padding:0.2rem 0.8rem; border-radius:999px; font-size:0.7rem; text-transform:uppercase;">Coming Soon</span>
+                    <p style="color:var(--text-secondary); margin-top:0.5rem;">Tracking for PS99 will be available in a future update.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div id="page-settings" style="display:none;">
+            <div class="glass-card" style="padding:2rem; max-width:600px; margin:0 auto;">
+                <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">Settings</h2>
+                <div style="margin-bottom:1.5rem;">
+                    <h4>Discord Account</h4>
+                    <p style="color:var(--text-secondary);">Test User (ID: test_user_123)</p>
+                </div>
+                <div style="margin-bottom:1.5rem;">
+                    <h4>API Key</h4>
+                    <button class="btn btn-danger" onclick="resetApiKey()">Reset API Key</button>
+                    <p id="settings-reset-cooldown" style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.5rem; display:none;"></p>
+                </div>
+                <div>
+                    <h4>Theme</h4>
+                    <p style="color:var(--text-secondary);">Dark (default) – more themes coming soon.</p>
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Full Inventory Modal -->
@@ -487,10 +239,8 @@
                 <button class="modal-close" onclick="closeFullInventory()">✕</button>
             </div>
             <div class="filters-bar">
-                <input type="text" class="filter-input" placeholder="Search pet name..." id="inv-search" oninput="renderInventoryList()" />
-                <select class="filter-select" id="inv-account-filter" onchange="renderInventoryList()">
-                    <option value="">All Accounts</option>
-                </select>
+                <input type="text" class="filter-input" placeholder="Search pet..." id="inv-search" oninput="renderInventoryList()" />
+                <select class="filter-select" id="inv-account-filter" onchange="renderInventoryList()"><option value="">All Accounts</option></select>
                 <select class="filter-select" id="inv-variant-filter" onchange="renderInventoryList()">
                     <option value="">All Variants</option>
                     <option value="Void">Void</option>
@@ -509,7 +259,9 @@
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- Toast container -->
+    <div id="toast-container"></div>
+
     <script src="api.js"></script>
     <script src="petValues.js"></script>
     <script src="petImages.js"></script>
@@ -517,22 +269,28 @@
         (function() {
             // Globals
             let allAccounts = [];
-            let allInventory = [];       // will be filled after loadFullInventory()
+            let allInventory = [];
             let accountDetailsCache = {};
-            let currentGame = 'saber';   // default
+            let currentGame = 'saber';
             let inventoryLoaded = false;
-            let globalOverviewData = null;
 
             // Page switching
-            document.querySelectorAll('.nav-link').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    const page = this.dataset.page;
-                    document.getElementById('page-dashboard').style.display = page === 'dashboard' ? 'block' : 'none';
-                    document.getElementById('page-trackers').style.display = page === 'trackers' ? 'block' : 'none';
-                    document.getElementById('page-games').style.display = page === 'games' ? 'block' : 'none';
-                    document.getElementById('page-settings').style.display = page === 'settings' ? 'block' : 'none';
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = {
+                dashboard: document.getElementById('page-dashboard'),
+                trackers: document.getElementById('page-trackers'),
+                games: document.getElementById('page-games'),
+                settings: document.getElementById('page-settings'),
+            };
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    const page = link.dataset.page;
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                    Object.values(pages).forEach(p => p.style.display = 'none');
+                    pages[page].style.display = 'block';
+                    if (page === 'dashboard') loadGameData();
                 });
             });
 
@@ -541,223 +299,166 @@
                 currentGame = game;
                 document.getElementById('game-btn-saber').classList.toggle('btn-accent', game === 'saber');
                 document.getElementById('game-btn-ps99').classList.toggle('btn-accent', game === 'ps99');
-                loadGameData();
+                document.getElementById('saber-content').style.display = game === 'saber' ? 'block' : 'none';
+                document.getElementById('ps99-content').style.display = game === 'ps99' ? 'block' : 'none';
+                if (game === 'saber') loadGameData();
             };
 
-            // Load stats and inventory for current game
+            // Load game data
             async function loadGameData() {
-                const statsContainer = document.getElementById('global-stats');
-                const rareContainer = document.getElementById('rare-pets-container');
-                const loadingEl = document.getElementById('rare-pets-loading');
+                const loading = document.getElementById('rare-pets-loading');
+                const container = document.getElementById('rare-pets-container');
                 const viewBtn = document.getElementById('view-inventory-btn-container');
+                const statsGrid = document.getElementById('global-stats');
 
-                // Show loading
-                statsContainer.style.opacity = '0.5';
-                rareContainer.style.display = 'none';
-                loadingEl.style.display = 'block';
+                statsGrid.style.opacity = '0.5';
+                container.style.display = 'none';
+                loading.style.display = 'block';
                 viewBtn.style.display = 'none';
 
                 try {
-                    const overview = await API.getSaberOverview(); // hardcoded Saber for now
-                    globalOverviewData = overview;
+                    const overview = await API.getSaberOverview();
                     document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
                     document.getElementById('stat-online').textContent = overview.onlineAccounts;
                     document.getElementById('stat-offline').textContent = overview.offlineAccounts;
-                    statsContainer.style.opacity = '1';
+                    statsGrid.style.opacity = '1';
 
                     const accounts = await API.getSaberAccounts();
                     allAccounts = accounts;
-                    updateAccountFilters();
+                    updateModalAccountFilter();
 
-                    // Fetch full inventory (all accounts details)
                     const details = await Promise.all(
-                        allAccounts.map(acc =>
-                            API.getSaberAccount(acc.username).then(data => {
-                                accountDetailsCache[acc.username] = data;
-                                return data;
-                            }).catch(() => null)
+                        accounts.map(acc =>
+                            API.getSaberAccount(acc.username).then(d => { accountDetailsCache[acc.username] = d; return d; }).catch(() => null)
                         )
                     );
 
-                    // Build inventory aggregation (with image info)
                     const invMap = {};
                     for (const data of details) {
                         if (!data || !data.pets) continue;
                         for (const pet of data.pets) {
-                            const key = `${pet.name}|${pet.rarity || ''}|${pet.variant || ''}`;
+                            const key = `${pet.name}|${pet.rarity||''}|${pet.variant||''}`;
                             if (!invMap[key]) {
-                                invMap[key] = {
-                                    name: pet.name,
-                                    rarity: pet.rarity || 'Unknown',
-                                    variant: pet.variant || '',
-                                    amount: 0,
-                                    owners: new Set(),
-                                    imageUrl: pet.imageUrl || null,
-                                };
+                                invMap[key] = { name: pet.name, rarity: pet.rarity || 'Unknown', variant: pet.variant || '', amount: 0, owners: new Set(), imageUrl: pet.imageUrl || null };
                             }
                             invMap[key].amount += (pet.amount || 1);
                             invMap[key].owners.add(data.username);
-                            if (!invMap[key].imageUrl && pet.imageUrl) {
-                                invMap[key].imageUrl = pet.imageUrl;
-                            }
+                            if (!invMap[key].imageUrl && pet.imageUrl) invMap[key].imageUrl = pet.imageUrl;
                         }
                     }
-                    allInventory = Object.values(invMap).map(item => ({
-                        ...item,
-                        owners: Array.from(item.owners),
-                    }));
-
+                    allInventory = Object.values(invMap).map(item => ({ ...item, owners: Array.from(item.owners) }));
                     inventoryLoaded = true;
 
-                    // Show rare pets
                     renderRarePets();
-                    rareContainer.style.display = 'block';
-                    loadingEl.style.display = 'none';
+                    container.style.display = 'block';
+                    loading.style.display = 'none';
                     viewBtn.style.display = 'block';
-
                 } catch (err) {
                     console.error(err);
-                    loadingEl.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Failed to load data.</p>';
+                    loading.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Failed to load data.</p>';
                 }
             }
 
-            // Render rare pets (Triple Moon, Secret)
             function renderRarePets() {
-                const tripleMoon = allInventory.filter(p => p.rarity === 'Triple Moon');
+                const triple = allInventory.filter(p => p.rarity === 'Triple Moon');
                 const secret = allInventory.filter(p => p.rarity === 'Secret');
-
-                const tripleGrid = document.getElementById('triple-moon-grid');
-                const secretGrid = document.getElementById('secret-grid');
-                const tripleEmpty = document.getElementById('triple-moon-empty');
-                const secretEmpty = document.getElementById('secret-empty');
-
-                tripleGrid.innerHTML = '';
-                secretGrid.innerHTML = '';
-
-                if (tripleMoon.length === 0) {
-                    tripleEmpty.style.display = 'block';
-                } else {
-                    tripleEmpty.style.display = 'none';
-                    tripleMoon.forEach(p => tripleGrid.appendChild(createPetCard(p)));
-                }
-
-                if (secret.length === 0) {
-                    secretEmpty.style.display = 'block';
-                } else {
-                    secretEmpty.style.display = 'none';
-                    secret.forEach(p => secretGrid.appendChild(createPetCard(p)));
-                }
+                document.getElementById('triple-moon-grid').innerHTML = '';
+                document.getElementById('secret-grid').innerHTML = '';
+                document.getElementById('triple-moon-empty').style.display = triple.length ? 'none' : 'block';
+                document.getElementById('secret-empty').style.display = secret.length ? 'none' : 'block';
+                triple.forEach(p => document.getElementById('triple-moon-grid').appendChild(createPetCard(p)));
+                secret.forEach(p => document.getElementById('secret-grid').appendChild(createPetCard(p)));
             }
 
             function createPetCard(pet) {
-                const card = document.createElement('div');
-                card.className = 'pet-card';
-
-                const imgSrc = pet.imageUrl || getFallbackImageUrl(pet.name);
-                const img = document.createElement('img');
-                img.src = imgSrc || '';
-                img.alt = pet.name;
-                img.loading = 'lazy';
-                img.onerror = function() {
-                    this.style.display = 'none';
-                    const noImg = document.createElement('div');
-                    noImg.className = 'no-image';
-                    noImg.textContent = '📷';
-                    card.insertBefore(noImg, card.firstChild);
-                };
+                const card = document.createElement('div'); card.className = 'pet-card';
+                const imgSrc = pet.imageUrl || fallbackImage(pet.name);
+                const img = document.createElement('img'); img.src = imgSrc; img.alt = pet.name; img.loading = 'lazy';
+                img.onerror = function() { this.style.display = 'none'; const no = document.createElement('div'); no.className = 'no-image'; no.textContent = '📷'; card.insertBefore(no, card.firstChild); };
                 card.appendChild(img);
-
-                const nameEl = document.createElement('div');
-                nameEl.className = 'name';
-                nameEl.textContent = pet.name;
-                card.appendChild(nameEl);
-
-                if (pet.variant) {
-                    const badge = document.createElement('span');
-                    badge.className = `variant-badge variant-${pet.variant.toLowerCase()}`;
-                    badge.textContent = pet.variant;
-                    card.appendChild(badge);
-                }
-
-                const amountEl = document.createElement('div');
-                amountEl.className = 'amount';
-                amountEl.textContent = `×${pet.amount}`;
-                card.appendChild(amountEl);
-
+                const name = document.createElement('div'); name.className = 'name'; name.textContent = pet.name; card.appendChild(name);
+                if (pet.variant) { const badge = document.createElement('span'); badge.className = `variant-badge variant-${pet.variant.toLowerCase()}`; badge.textContent = pet.variant; card.appendChild(badge); }
+                const amount = document.createElement('div'); amount.className = 'amount'; amount.textContent = `×${pet.amount}`; card.appendChild(amount);
                 return card;
             }
 
-            function getFallbackImageUrl(petName) {
+            function fallbackImage(petName) {
                 const raw = getPetImageUrl(petName);
                 if (!raw) return null;
                 const match = raw.match(/assetIds=(\d+)/);
                 return match ? `https://www.roblox.com/asset-thumbnail/image?assetId=${match[1]}&width=420&height=420&format=png` : raw;
             }
 
-            // Full Inventory Modal
+            // Full inventory modal
             window.openFullInventory = function() {
                 document.getElementById('inventory-modal').style.display = 'flex';
-                updateAccountFilters(); // populate modal account filter
+                updateModalAccountFilter();
                 renderInventoryList();
             };
-
             window.closeFullInventory = function() {
                 document.getElementById('inventory-modal').style.display = 'none';
             };
-
-            function updateAccountFilters() {
-                const select = document.getElementById('inv-account-filter');
-                const current = select.value;
-                select.innerHTML = '<option value="">All Accounts</option>';
-                allAccounts.forEach(acc => select.innerHTML += `<option value="${escapeHTML(acc.username)}">${escapeHTML(acc.username)}</option>`);
-                select.value = current;
+            function updateModalAccountFilter() {
+                const sel = document.getElementById('inv-account-filter');
+                sel.innerHTML = '<option value="">All Accounts</option>';
+                allAccounts.forEach(a => sel.innerHTML += `<option value="${escapeHTML(a.username)}">${escapeHTML(a.username)}</option>`);
             }
-
             function renderInventoryList() {
                 const container = document.getElementById('inv-list-container');
-                if (!inventoryLoaded) {
-                    container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Loading inventory...</p>';
-                    return;
-                }
-
+                if (!inventoryLoaded) { container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Loading...</p>'; return; }
                 let filtered = allInventory.slice();
-
-                // Apply filters
                 const search = document.getElementById('inv-search').value.toLowerCase();
                 if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
                 const account = document.getElementById('inv-account-filter').value;
                 if (account) filtered = filtered.filter(p => p.owners.includes(account));
                 const variant = document.getElementById('inv-variant-filter').value;
                 if (variant) filtered = filtered.filter(p => p.variant === variant);
-
-                // Sorting
                 const sort = document.getElementById('inv-sort').value;
                 if (sort === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
                 else if (sort === 'amount-desc') filtered.sort((a,b) => b.amount - a.amount);
                 else if (sort === 'amount-asc') filtered.sort((a,b) => a.amount - b.amount);
-
-                if (filtered.length === 0) {
-                    container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">No pets match the filters.</p>';
-                    return;
-                }
-
-                container.innerHTML = filtered.map(pet => `
-                    <div class="inventory-row">
-                        <span class="pet-name">${escapeHTML(pet.name)}</span>
-                        <span class="pet-variant">${escapeHTML(pet.variant || '—')}</span>
-                        <span class="pet-amount">${pet.amount}</span>
-                    </div>
-                `).join('');
+                container.innerHTML = filtered.length ? filtered.map(p => `
+                    <div class="inventory-row"><span class="pet-name">${escapeHTML(p.name)}</span><span class="pet-variant">${escapeHTML(p.variant||'—')}</span><span class="pet-amount">${p.amount}</span></div>
+                `).join('') : '<p style="text-align:center;color:var(--text-secondary);">No pets match.</p>';
             }
 
-            function escapeHTML(str) {
-                const div = document.createElement('div');
-                div.textContent = str;
-                return div.innerHTML;
+            // Tracker generator
+            window.generateTracker = async function() {
+                try {
+                    const result = await API.generateTrackerKey('test_user_123');
+                    const blob = new Blob([result.trackerScript], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.getElementById('download-link');
+                    a.href = url;
+                    a.download = 'saber_tracker.lua';
+                    document.getElementById('tracker-result').style.display = 'block';
+                    showToast('✅ Tracker ready! Click download.');
+                } catch (e) {
+                    showToast('❌ Error generating tracker.');
+                }
+            };
+
+            window.resetApiKey = async function() {
+                if (!confirm('Resetting your API Key will permanently invalidate your current tracker. Continue?')) return;
+                try {
+                    await API.resetTrackerKey('test_user_123');
+                    showToast('🔑 API Key reset. Generate a new tracker.');
+                    document.getElementById('tracker-result').style.display = 'none';
+                } catch (e) {
+                    showToast('❌ ' + e.message);
+                }
+            };
+
+            function escapeHTML(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+            function showToast(msg) {
+                const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+                document.getElementById('toast-container').appendChild(t);
+                setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4000);
             }
 
             // Initialize
-            document.getElementById('game-btn-saber').classList.add('btn-accent');
+            pages.dashboard.style.display = 'block';
+            document.getElementById('saber-content').style.display = 'block';
             loadGameData();
         })();
     </script>
