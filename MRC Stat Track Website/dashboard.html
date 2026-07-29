@@ -556,7 +556,7 @@
             // Load user profile
             async function loadUserProfile() {
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/user/profile');
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/profile');
                     const user = await res.json();
                     document.getElementById('dashboard-username').textContent = user.username;
                     const discordUsernameEl = document.getElementById('discord-username');
@@ -583,7 +583,7 @@
                 const codeEl = document.getElementById('tracker-script-code');
                 codeEl.textContent = 'Loading...';
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/user/tracker-script');
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/tracker-script');
                     const data = await res.json();
                     codeEl.textContent = data.script;
                 } catch (e) {
@@ -611,7 +611,7 @@
                 const container = document.getElementById('connected-accounts-list');
                 container.innerHTML = '<p style="color:var(--text-secondary);">Loading accounts...</p>';
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/saber/accounts');
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/accounts');
                     const accounts = await res.json();
                     allAccounts = accounts || [];
                     if (allAccounts.length === 0) {
@@ -643,7 +643,7 @@
             window.removeAccount = async function(username) {
                 if (!confirm(`Permanently remove "${username}" and all their inventory data? This cannot be undone.`)) return;
                 try {
-                    const res = await apiFetch(`https://mrc-saber-api.sakahr315.workers.dev/api/saber/account/${encodeURIComponent(username)}`, { method: 'DELETE' });
+                    const res = await apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/saber/account/${encodeURIComponent(username)}`, { method: 'DELETE' });
                     const data = await res.json();
                     if (data.success) {
                         showToast(`✅ Removed ${username}`);
@@ -660,7 +660,7 @@
             // Admin panel functions
             async function loadAdminPanel() {
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/users');
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/users');
                     const users = await res.json();
                     renderAdminTable(users);
                 } catch (e) {
@@ -698,7 +698,7 @@
             }
 
             window.changePlan = async function(userId, plan) {
-                await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/plan', {
+                await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/plan', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId, plan })
@@ -708,7 +708,7 @@
 
             window.deleteUserKey = async function(userId) {
                 if (!confirm('Delete this user\'s API key? Their tracker will stop working.')) return;
-                await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/delete-key', {
+                await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/delete-key', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId })
@@ -719,7 +719,7 @@
 
             window.regenerateUserKey = async function(userId) {
                 if (!confirm('Generate a new API key? The old one will be invalidated.')) return;
-                const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/generate-key', {
+                const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/generate-key', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId })
@@ -734,7 +734,7 @@
             };
 
             window.viewUserDetail = async function(userId) {
-                const res = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/admin/user/' + userId);
+                const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/' + userId);
                 const detail = await res.json();
                 alert(JSON.stringify(detail, null, 2)); // replace with proper modal if desired
             };
@@ -759,20 +759,20 @@
                 viewBtn.style.display = 'none';
 
                 try {
-                    const overviewRes = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/saber/overview');
+                    const overviewRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/overview');
                     const overview = await overviewRes.json();
                     document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
                     document.getElementById('stat-online').textContent = overview.onlineAccounts;
                     document.getElementById('stat-offline').textContent = overview.offlineAccounts;
 
-                    const accRes = await apiFetch('https://mrc-saber-api.sakahr315.workers.dev/api/saber/accounts');
+                    const accRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/accounts');
                     const accounts = await accRes.json();
                     allAccounts = accounts;
                     updateModalAccountFilter();
 
                     const details = await Promise.all(
                         accounts.map(acc =>
-                            apiFetch(`https://mrc-saber-api.sakahr315.workers.dev/api/saber/account/${encodeURIComponent(acc.username)}`)
+                            apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/saber/account/${encodeURIComponent(acc.username)}`)
                                 .then(r => r.json())
                                 .then(d => { accountDetailsCache[acc.username] = d; return d; })
                                 .catch(() => null)
