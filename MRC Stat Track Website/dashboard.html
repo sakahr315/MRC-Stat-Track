@@ -150,6 +150,22 @@
         @keyframes slideIn { from { transform:translateX(100px); opacity:0; } to { transform:translateX(0); opacity:1; } }
         @keyframes fadeOut { from { opacity:1; } to { opacity:0; transform:translateY(10px); } }
 
+        /* Connected accounts row (reused account-row style) */
+        .connected-account-row {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            transition: background 0.2s;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .connected-account-row:hover { background: rgba(255,255,255,0.05); }
+        .connected-account-row .account-details { display: flex; flex-direction: column; gap: 0.1rem; }
+        .connected-account-row .account-details .name-line { display: flex; align-items: center; gap: 0.5rem; }
+
         @media (max-width: 768px) {
             .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; }
             .main-content { margin-left: 0; padding: 1.5rem; }
@@ -284,8 +300,19 @@
 
         <!-- Settings Page -->
         <div id="page-settings" style="display:none;">
-            <div class="glass-card" style="padding:2rem; max-width:600px; margin:0 auto;">
+            <div class="glass-card" style="padding:2rem; max-width:700px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">Settings</h2>
+
+                <!-- Connected Accounts -->
+                <div style="margin-bottom:2rem;">
+                    <h3 style="margin-bottom:1rem;">🔗 Connected Accounts</h3>
+                    <div id="connected-accounts-list" style="display:flex;flex-direction:column;gap:0.5rem;">
+                        <p style="color:var(--text-secondary);">Loading accounts...</p>
+                    </div>
+                </div>
+
+                <hr style="border-color:rgba(255,255,255,0.06); margin-bottom:1.5rem;">
+
                 <div style="margin-bottom:1.5rem;">
                     <h4>Discord Account</h4>
                     <p style="color:var(--text-secondary);">Test User (ID: test_user_123)</p>
@@ -366,6 +393,7 @@
                     Object.values(pages).forEach(p => p.style.display = 'none');
                     pages[page].style.display = 'block';
                     if (page === 'dashboard') loadGameData();
+                    if (page === 'settings') loadConnectedAccounts();
                 });
             });
 
@@ -462,7 +490,6 @@
                         const card = document.createElement('div');
                         card.className = 'pet-card';
 
-                        // Local image with fallback
                         const img = document.createElement('img');
                         img.src = petDef.localImagePath;
                         img.alt = petDef.name;
@@ -567,6 +594,64 @@
                     document.getElementById('reset-cooldown').textContent = msg;
                     document.getElementById('settings-reset-cooldown').style.display = 'block';
                     document.getElementById('settings-reset-cooldown').textContent = msg;
+                }
+            };
+
+            // ─── Connected Accounts (Settings page) ───
+            async function loadConnectedAccounts() {
+                const container = document.getElementById('connected-accounts-list');
+                container.innerHTML = '<p style="color:var(--text-secondary);">Loading accounts...</p>';
+
+                try {
+                    const accounts = await API.getSaberAccounts();
+                    allAccounts = accounts || [];
+
+                    if (allAccounts.length === 0) {
+                        container.innerHTML = '<p style="color:var(--text-secondary);">No accounts connected yet.</p>';
+                        return;
+                    }
+
+                    container.innerHTML = allAccounts.map(acc => {
+                        const lastUpdate = acc.lastUpdate
+                            ? new Date(acc.lastUpdate).toLocaleString()
+                            : 'Never';
+                        return `
+                            <div class="connected-account-row">
+                                <div class="account-details">
+                                    <div class="name-line">
+                                        <span class="account-name">${escapeHTML(acc.username)}</span>
+                                        <span class="badge ${acc.online ? 'online' : 'offline'}">${acc.online ? 'Online' : 'Offline'}</span>
+                                    </div>
+                                    <div style="font-size:0.7rem; color:var(--text-secondary); margin-top:0.2rem;">
+                                        ID: ${acc.userId || '—'} · Pets: ${acc.pets || 0} · Last seen: ${lastUpdate}
+                                    </div>
+                                </div>
+                                <button class="btn btn-danger" style="padding:0.3rem 0.75rem; font-size:0.75rem;" onclick="removeAccount('${escapeHTML(acc.username)}')">Remove</button>
+                            </div>
+                        `;
+                    }).join('');
+                } catch (err) {
+                    container.innerHTML = '<p style="color:#ff6b6b;">Failed to load accounts.</p>';
+                }
+            }
+
+            window.removeAccount = async function(username) {
+                if (!confirm(`Permanently remove "${username}" and all their inventory data? This cannot be undone.`)) return;
+
+                try {
+                    const res = await fetch(`${API_CONFIG.saber}/api/saber/account/${encodeURIComponent(username)}`, {
+                        method: 'DELETE',
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast(`✅ Removed ${username}`);
+                        loadConnectedAccounts();
+                        if (currentGame === 'saber') loadGameData();
+                    } else {
+                        showToast('❌ ' + (data.error || 'Failed to remove account'));
+                    }
+                } catch (e) {
+                    showToast('❌ Error removing account');
                 }
             };
 
