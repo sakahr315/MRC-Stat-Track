@@ -720,28 +720,37 @@
             function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
             // ─── Reviews ───
-            async function loadReviews() {
-                try {
-                    const res = await fetch('https://mrc-saber-api.stat-tracker.workers.dev/api/reviews/public');
-                    if (!res.ok) return;
-                    const reviews = await res.json();
-                    const container = document.getElementById('reviews-container');
-                    if (!container) return;
-                    if (reviews.length === 0) {
-                        container.innerHTML = '<p class="text-body" style="text-align:center; width:100%;">No reviews yet.</p>';
-                        return;
-                    }
-                    container.innerHTML = reviews.map(r => `
-                        <div class="review-card fade-up">
-                            <div class="review-header">
-                                <span class="review-user">${escapeHTML(r.display_name)}</span>
-                                <div style="color:#f1c40f;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
-                            </div>
-                            ${r.review_text ? `<p class="review-text">${escapeHTML(r.review_text)}</p>` : ''}
-                            <div class="review-date">${new Date(r.created_at).toLocaleDateString()}</div>
-                        </div>
-                    `).join('');
-                } catch (e) {}
+            function loadReviews() {
+                fetch('https://mrc-saber-api.stat-tracker.workers.dev/api/reviews/public')
+                    .then(res => res.json())
+                    .then(reviews => {
+                        const container = document.getElementById('reviews-container');
+                        if (!container) return;
+                        if (!Array.isArray(reviews) || reviews.length === 0) {
+                            container.innerHTML = '<p class="text-body" style="text-align:center; width:100%;">No reviews yet.</p>';
+                            return;
+                        }
+                        container.innerHTML = reviews.map(r => {
+                            const safeName = escapeHTML(r.display_name || 'Unknown');
+                            const safeText = r.review_text ? escapeHTML(r.review_text) : '';
+                            const date = new Date(r.created_at).toLocaleDateString();
+                            return `
+                                <div class="review-card fade-up">
+                                    <div class="review-header">
+                                        <span class="review-user">${safeName}</span>
+                                        <div style="color:#f1c40f;">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                                    </div>
+                                    ${safeText ? `<p class="review-text">${safeText}</p>` : ''}
+                                    <div class="review-date">${date}</div>
+                                </div>
+                            `;
+                        }).join('');
+                    })
+                    .catch(err => {
+                        console.error('Failed to load reviews:', err);
+                        const container = document.getElementById('reviews-container');
+                        if (container) container.innerHTML = '<p class="text-body" style="text-align:center; width:100%;">Failed to load reviews.</p>';
+                    });
             }
 
             function escapeHTML(str) {
@@ -750,9 +759,11 @@
                 return d.innerHTML;
             }
 
-            // Init
-            fetchStats();
-            loadReviews();
+            // Init after DOM is ready
+            window.addEventListener('DOMContentLoaded', () => {
+                fetchStats();
+                loadReviews();
+            });
         })();
     </script>
 </body>
