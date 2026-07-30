@@ -20,7 +20,6 @@
             --font-outfit: 'Outfit', system-ui, -apple-system, sans-serif;
             --sidebar-width: 260px;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { background: var(--bg-primary); font-family: var(--font-outfit); -webkit-font-smoothing: antialiased; }
         body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-outfit); font-weight: 400; line-height: 1.5; overflow-x: hidden; min-height: 100vh; display: flex; position: relative; }
@@ -229,7 +228,17 @@
         .bar-chart { display: flex; align-items: flex-end; gap: 2px; height: 150px; }
         .bar-chart .bar { flex: 1; background: linear-gradient(to top, var(--accent), rgba(47,143,251,0.3)); border-radius: 3px 3px 0 0; transition: height 0.5s ease; }
 
-        /* Mobile responsive – unchanged */
+        /* Reviews specific */
+        .star-rating { display: flex; gap: 0.2rem; }
+        .star-rating .star { font-size: 1.5rem; color: #555; cursor: pointer; transition: color 0.2s; }
+        .star-rating .star.filled { color: #f1c40f; }
+        .review-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 1.5rem; }
+        .review-card .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .review-card .review-user { font-weight: 600; color: var(--text-primary); }
+        .review-card .review-text { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.5; }
+        .review-card .review-date { font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.5rem; }
+
+        /* Mobile responsive */
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar { position: fixed; top: 0; left: 0; width: 100%; height: auto; z-index: 100; padding: 1rem;
@@ -314,6 +323,10 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
                 Games
             </button>
+            <button class="nav-link" data-page="reviews">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Reviews
+            </button>
             <button class="nav-link" data-page="settings">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 Settings
@@ -339,13 +352,11 @@
                     <button class="btn btn-ghost" id="game-btn-ps99" onclick="selectGame('ps99')">🐾 PS99</button>
                 </div>
             </div>
-
             <div id="saber-stats" class="stats-grid">
                 <div class="stat-card"><div class="label">Total Accounts</div><div class="value" id="stat-total-accounts">—</div></div>
                 <div class="stat-card"><div class="label">Online</div><div class="value" id="stat-online">—</div></div>
                 <div class="stat-card"><div class="label">Offline</div><div class="value" id="stat-offline">—</div></div>
             </div>
-
             <div id="saber-content">
                 <div id="rare-pets-loading" class="glass-card" style="padding:1.5rem;margin-bottom:2rem;"><div class="skeleton" style="height:150px;"></div></div>
                 <div id="rare-pets-container" style="display:none;">
@@ -362,7 +373,6 @@
                     <button class="btn btn-accent shine-btn" style="padding:1rem 2.5rem;font-size:1rem;" onclick="openFullInventory()">View Full Inventory</button>
                 </div>
             </div>
-
             <div id="ps99-content" style="display:none; text-align:center; padding:4rem 0;">
                 <div style="font-size:4rem; margin-bottom:1rem;">🐾</div>
                 <h1 style="font-size:2.5rem; margin-bottom:1rem;">Coming Soon</h1>
@@ -420,12 +430,47 @@
             </div>
         </div>
 
+        <!-- Reviews Page -->
+        <div id="page-reviews" style="display:none;">
+            <div class="glass-card" style="padding:2rem; max-width:800px; margin:0 auto;">
+                <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">⭐ Reviews</h2>
+
+                <!-- Submit a review -->
+                <div id="review-submit-section" style="margin-bottom:2rem;">
+                    <h3>Leave a Review</h3>
+                    <p class="text-small" style="margin-bottom:1rem;">You can submit one review every 24 hours.</p>
+                    <div class="star-rating" id="star-rating">
+                        <span class="star" data-value="1">★</span>
+                        <span class="star" data-value="2">★</span>
+                        <span class="star" data-value="3">★</span>
+                        <span class="star" data-value="4">★</span>
+                        <span class="star" data-value="5">★</span>
+                    </div>
+                    <textarea id="review-text" class="filter-input" style="width:100%; height:100px; margin-top:0.5rem; resize:vertical;" placeholder="Write your review (optional)"></textarea>
+                    <button class="btn btn-accent" id="submit-review-btn" style="margin-top:0.5rem;">Submit Review</button>
+                    <p id="review-error" style="color:#ff4d4d; margin-top:0.5rem; display:none;"></p>
+                    <p id="review-success" style="color:#34d399; margin-top:0.5rem; display:none;"></p>
+                </div>
+
+                <!-- Your review -->
+                <div id="my-review-container" style="display:none;">
+                    <h3>Your Review</h3>
+                    <div id="my-review-card" class="review-card"></div>
+                </div>
+
+                <!-- Admin review management -->
+                <div id="admin-reviews-section" style="display:none; margin-top:2rem;">
+                    <h3>Manage Reviews</h3>
+                    <div id="admin-reviews-list"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Settings Page -->
         <div id="page-settings" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:700px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">Settings</h2>
 
-                <!-- Discord Profile -->
                 <div style="margin-bottom:2rem; display:flex; align-items:center; gap:1rem;">
                     <img id="discord-avatar" style="width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,0.05);" />
                     <div>
@@ -435,7 +480,6 @@
                     </div>
                 </div>
 
-                <!-- Connected Accounts -->
                 <div style="margin-bottom:2rem;">
                     <h3 style="margin-bottom:1rem;">🔗 Connected Roblox Accounts</h3>
                     <div id="connected-accounts-list" style="display:flex;flex-direction:column;gap:0.5rem;">
@@ -445,7 +489,6 @@
 
                 <hr style="border-color:rgba(255,255,255,0.06); margin-bottom:1.5rem;">
 
-                <!-- API Key -->
                 <div style="margin-bottom:1.5rem;">
                     <h4>API Key</h4>
                     <div class="api-key-masked" id="api-key-display">
@@ -456,12 +499,10 @@
                     <p class="text-small" style="margin-top:0.5rem;">Hover to reveal prefix, or click "Show Key" to display and copy the full key.</p>
                 </div>
 
-                <!-- Logout -->
                 <div style="margin-top:2rem;">
                     <button class="btn btn-danger" onclick="logout()">Logout</button>
                 </div>
 
-                <!-- Legal links (moved from footer) -->
                 <hr style="border-color:rgba(255,255,255,0.06); margin:2rem 0 1rem;">
                 <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center;">
                     <a href="privacy.html" style="color:inherit; text-decoration:none; margin-right:1rem;">Privacy Policy</a>
@@ -535,7 +576,7 @@
                 return res;
             }
 
-            // Logout function
+            // Logout
             window.logout = function() {
                 document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=Strict';
                 window.location.href = '/index.html';
@@ -548,6 +589,8 @@
             let currentGame = 'saber';
             let inventoryLoaded = false;
             let dailyHatches = {};
+            let selectedRating = 0;
+            window.userPermissions = '';
 
             // Page switching
             const navLinks = document.querySelectorAll('.nav-link');
@@ -556,6 +599,7 @@
                 session: document.getElementById('page-session'),
                 trackers: document.getElementById('page-trackers'),
                 games: document.getElementById('page-games'),
+                reviews: document.getElementById('page-reviews'),
                 settings: document.getElementById('page-settings'),
                 admin: document.getElementById('page-admin'),
             };
@@ -570,6 +614,7 @@
                     if (page === 'dashboard') loadGameData();
                     if (page === 'session') loadSessionData();
                     if (page === 'trackers') loadTrackerScript();
+                    if (page === 'reviews') loadReviewsPage();
                     if (page === 'settings') loadSettingsData();
                     if (page === 'admin') loadAdminPanel();
                 });
@@ -598,7 +643,7 @@
                 if (game === 'saber') loadGameData();
             };
 
-            // Load user profile and set up API key reveal
+            // Load user profile
             async function loadUserProfile() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/profile');
@@ -613,12 +658,15 @@
                         if (user.avatar) {
                             document.getElementById('discord-avatar').src = `https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png`;
                         }
-                        if (user.permissions === 'OWNER') {
+                        if (user.permissions === 'OWNER' || user.permissions === 'MANAGER') {
                             document.getElementById('admin-nav-link').style.display = 'block';
+                        }
+                        window.userPermissions = user.permissions;
+                        if (user.permissions === 'OWNER' || user.permissions === 'MANAGER') {
+                            document.getElementById('admin-reviews-section').style.display = 'block';
                         }
                     }
 
-                    // Show API Key button logic
                     const showBtn = document.getElementById('show-api-key-btn');
                     const fullKeyEl = document.getElementById('full-key-text');
                     showBtn.addEventListener('click', async () => {
@@ -638,11 +686,11 @@
                         }
                     });
                 } catch (e) {
-                    // If profile fails, already redirected by apiFetch
+                    // Already redirected on 401
                 }
             }
 
-            // Load tracker script on Trackers page
+            // Load tracker script
             async function loadTrackerScript() {
                 const codeEl = document.getElementById('tracker-script-code');
                 codeEl.textContent = 'Loading...';
@@ -656,20 +704,18 @@
                 }
             }
 
-            // Copy tracker script
             window.copyTrackerScript = function() {
                 const code = document.getElementById('tracker-script-code').textContent;
                 if (!code || code === 'Loading...' || code.startsWith('⚠️')) return;
                 navigator.clipboard.writeText(code).then(() => showToast('✅ Copied!'));
             };
 
-            // Load settings data
+            // Load settings
             window.loadSettingsData = async function() {
                 await loadUserProfile();
                 await loadConnectedAccounts();
             };
 
-            // Connected accounts
             async function loadConnectedAccounts() {
                 const container = document.getElementById('connected-accounts-list');
                 container.innerHTML = '<p style="color:var(--text-secondary);">Loading accounts...</p>';
@@ -721,7 +767,7 @@
                 }
             };
 
-            // Admin panel functions
+            // Admin panel
             async function loadAdminPanel() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/users');
@@ -773,7 +819,6 @@
                     showToast('❌ ' + e.message);
                 }
             };
-
             window.deleteUserKey = async function(userId) {
                 if (!confirm('Delete this user\'s API key? Their tracker will stop working.')) return;
                 try {
@@ -788,7 +833,6 @@
                     showToast('❌ ' + e.message);
                 }
             };
-
             window.regenerateUserKey = async function(userId) {
                 if (!confirm('Generate a new API key? The old one will be invalidated.')) return;
                 try {
@@ -808,7 +852,6 @@
                     showToast('❌ ' + e.message);
                 }
             };
-
             window.viewUserDetail = async function(userId) {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/' + userId);
@@ -818,7 +861,6 @@
                     showToast('❌ ' + e.message);
                 }
             };
-
             window.filterAdminTable = function() {
                 const term = document.getElementById('admin-search').value.toLowerCase();
                 const rows = document.querySelectorAll('#admin-users-body tr');
@@ -1044,6 +1086,159 @@
                 return `${h}h ${m}m ${s}s`;
             }
 
+            // ─── Reviews Functions ───
+            function setupStarRating() {
+                const stars = document.querySelectorAll('#star-rating .star');
+                stars.forEach(star => {
+                    star.addEventListener('click', () => {
+                        selectedRating = parseInt(star.dataset.value);
+                        stars.forEach(s => {
+                            s.classList.toggle('filled', parseInt(s.dataset.value) <= selectedRating);
+                        });
+                    });
+                    star.addEventListener('mouseenter', () => {
+                        const value = parseInt(star.dataset.value);
+                        stars.forEach(s => {
+                            s.classList.toggle('filled', parseInt(s.dataset.value) <= value);
+                        });
+                    });
+                    star.addEventListener('mouseleave', () => {
+                        stars.forEach(s => {
+                            s.classList.toggle('filled', parseInt(s.dataset.value) <= selectedRating);
+                        });
+                    });
+                });
+            }
+
+            async function loadReviewsPage() {
+                selectedRating = 0;
+                document.querySelectorAll('#star-rating .star').forEach(s => s.classList.remove('filled'));
+                document.getElementById('review-text').value = '';
+                document.getElementById('review-error').style.display = 'none';
+                document.getElementById('review-success').style.display = 'none';
+
+                try {
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/reviews/my');
+                    const reviews = await res.json();
+                    const myReviewContainer = document.getElementById('my-review-card');
+                    const myReviewSection = document.getElementById('my-review-container');
+                    if (reviews.length > 0) {
+                        const r = reviews[0];
+                        myReviewSection.style.display = 'block';
+                        myReviewContainer.innerHTML = `
+                            <div class="review-header">
+                                <span class="review-user">Your Review (${r.status})</span>
+                                <div class="star-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                            </div>
+                            ${r.review_text ? `<p class="review-text">${escapeHTML(r.review_text)}</p>` : ''}
+                            <div class="review-date">${new Date(r.created_at).toLocaleDateString()}</div>
+                        `;
+                        const now = new Date();
+                        const lastTime = new Date(r.created_at + 'Z').getTime();
+                        if (now - lastTime < 24*60*60*1000) {
+                            document.getElementById('submit-review-btn').disabled = true;
+                            document.getElementById('review-error').textContent = 'You can submit another review after 24 hours from your last submission.';
+                            document.getElementById('review-error').style.display = 'block';
+                        } else {
+                            document.getElementById('submit-review-btn').disabled = false;
+                        }
+                    } else {
+                        myReviewSection.style.display = 'none';
+                        document.getElementById('submit-review-btn').disabled = false;
+                    }
+                } catch (e) {
+                    showToast('❌ ' + e.message);
+                }
+
+                if (window.userPermissions === 'OWNER' || window.userPermissions === 'MANAGER') {
+                    loadAdminReviews();
+                }
+            }
+
+            async function loadAdminReviews() {
+                try {
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/reviews');
+                    const reviews = await res.json();
+                    const adminList = document.getElementById('admin-reviews-list');
+                    adminList.innerHTML = reviews.map(r => `
+                        <div class="review-card" style="margin-bottom:0.5rem; border: 1px solid ${r.status === 'pending' ? 'rgba(255,200,0,0.5)' : 'rgba(255,255,255,0.1)'}">
+                            <div style="display:flex; justify-content:space-between;">
+                                <span class="review-user">${escapeHTML(r.display_name)}</span>
+                                <span style="font-size:0.7rem; color:var(--accent)">${r.status}</span>
+                            </div>
+                            <div class="star-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</div>
+                            ${r.review_text ? `<p class="review-text">${escapeHTML(r.review_text)}</p>` : ''}
+                            <div class="review-date">${new Date(r.created_at).toLocaleDateString()}</div>
+                            <div style="margin-top:0.5rem; display:flex; gap:0.5rem;">
+                                ${r.status === 'pending' ? `<button class="btn btn-accent" style="padding:0.25rem 0.75rem; font-size:0.7rem;" onclick="approveReview(${r.id})">Approve</button>
+                                <button class="btn btn-danger" style="padding:0.25rem 0.75rem; font-size:0.7rem;" onclick="rejectReview(${r.id})">Reject</button>` : ''}
+                                <button class="btn btn-ghost" style="padding:0.25rem 0.75rem; font-size:0.7rem;" onclick="deleteReview(${r.id})">Delete</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } catch (e) {
+                    showToast('❌ ' + e.message);
+                }
+            }
+
+            document.getElementById('submit-review-btn').addEventListener('click', async () => {
+                const rating = selectedRating;
+                if (rating === 0) {
+                    document.getElementById('review-error').textContent = 'Please select a star rating.';
+                    document.getElementById('review-error').style.display = 'block';
+                    return;
+                }
+                const reviewText = document.getElementById('review-text').value.trim();
+                try {
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/reviews', {
+                        method: 'POST',
+                        body: JSON.stringify({ rating, reviewText }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        document.getElementById('review-success').textContent = 'Review submitted! It will be visible after approval.';
+                        document.getElementById('review-success').style.display = 'block';
+                        document.getElementById('submit-review-btn').disabled = true;
+                        setTimeout(() => loadReviewsPage(), 1000);
+                    }
+                } catch (e) {
+                    document.getElementById('review-error').textContent = e.message;
+                    document.getElementById('review-error').style.display = 'block';
+                }
+            });
+
+            window.approveReview = async function(id) {
+                try {
+                    await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/reviews/approve', {
+                        method: 'POST',
+                        body: JSON.stringify({ reviewId: id }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    loadAdminReviews();
+                } catch (e) { showToast('❌ ' + e.message); }
+            };
+            window.rejectReview = async function(id) {
+                try {
+                    await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/reviews/reject', {
+                        method: 'POST',
+                        body: JSON.stringify({ reviewId: id }),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    loadAdminReviews();
+                } catch (e) { showToast('❌ ' + e.message); }
+            };
+            window.deleteReview = async function(id) {
+                if (!confirm('Delete this review?')) return;
+                try {
+                    await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/reviews/' + id, { method: 'DELETE' });
+                    loadAdminReviews();
+                } catch (e) { showToast('❌ ' + e.message); }
+            };
+
+            // Setup star rating
+            setupStarRating();
+
             // Background animations (unchanged)
             const glow = document.getElementById('cursor-glow');
             document.addEventListener('mousemove', (e) => {
@@ -1130,7 +1325,7 @@
             animFrame = requestAnimationFrame(animate);
             window.addEventListener('beforeunload', () => cancelAnimationFrame(animFrame));
 
-            // Initialisation
+            // Init
             (async function init() {
                 try {
                     await loadUserProfile();
@@ -1139,9 +1334,7 @@
                     document.getElementById('saber-content').style.display = 'block';
                     document.getElementById('ps99-content').style.display = 'none';
                     loadGameData();
-                } catch (e) {
-                    // Redirect already happened
-                }
+                } catch (e) {}
             })();
         })();
     </script>
