@@ -435,7 +435,6 @@
             <div class="glass-card" style="padding:2rem; max-width:800px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">⭐ Reviews</h2>
 
-                <!-- Submit a review -->
                 <div id="review-submit-section" style="margin-bottom:2rem;">
                     <h3>Leave a Review</h3>
                     <p class="text-small" style="margin-bottom:1rem;">You can submit one review every 24 hours.</p>
@@ -452,13 +451,11 @@
                     <p id="review-success" style="color:#34d399; margin-top:0.5rem; display:none;"></p>
                 </div>
 
-                <!-- Your review -->
                 <div id="my-review-container" style="display:none;">
                     <h3>Your Review</h3>
                     <div id="my-review-card" class="review-card"></div>
                 </div>
 
-                <!-- Admin review management -->
                 <div id="admin-reviews-section" style="display:none; margin-top:2rem;">
                     <h3>Manage Reviews</h3>
                     <div id="admin-reviews-list"></div>
@@ -721,8 +718,8 @@
                 container.innerHTML = '<p style="color:var(--text-secondary);">Loading accounts...</p>';
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/accounts');
-                    const accounts = await res.json();
-                    allAccounts = accounts || [];
+                    const data = await res.json();
+                    allAccounts = Array.isArray(data) ? data : [];
                     if (allAccounts.length === 0) {
                         container.innerHTML = '<p style="color:var(--text-secondary);">No accounts connected yet. Run your tracker to start monitoring.</p>';
                         return;
@@ -745,6 +742,7 @@
                         `;
                     }).join('');
                 } catch (e) {
+                    allAccounts = [];
                     container.innerHTML = '<p style="color:#ff6b6b;">Failed to load accounts.</p>';
                     showToast('❌ ' + e.message);
                 }
@@ -780,7 +778,7 @@
 
             function renderAdminTable(users) {
                 const tbody = document.getElementById('admin-users-body');
-                if (users.length === 0) {
+                if (!Array.isArray(users) || users.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:2rem;">No users found.</td></tr>';
                     return;
                 }
@@ -888,6 +886,7 @@
                 loading.style.display = 'block';
                 viewBtn.style.display = 'none';
                 accountDetailsCache = {};
+
                 try {
                     const overviewRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/overview');
                     const overview = await overviewRes.json();
@@ -897,11 +896,12 @@
 
                     const accRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/accounts');
                     const accounts = await accRes.json();
-                    allAccounts = accounts;
+                    allAccounts = Array.isArray(accounts) ? accounts : [];
                     updateModalAccountFilter();
 
+                    // Fetch each account's details
                     const details = await Promise.all(
-                        accounts.map(acc =>
+                        allAccounts.map(acc =>
                             apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/saber/account/${encodeURIComponent(acc.username)}`)
                                 .then(r => r.json())
                                 .then(d => { accountDetailsCache[acc.username] = d; return d; })
@@ -931,6 +931,8 @@
                     viewBtn.style.display = 'block';
                 } catch (err) {
                     console.error(err);
+                    allAccounts = [];
+                    allInventory = [];
                     loading.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Failed to load data. Please try again later.</p>';
                     showToast('❌ Failed to load game data');
                 }
@@ -1007,8 +1009,13 @@
             };
             function updateModalAccountFilter() {
                 const sel = document.getElementById('inv-account-filter');
+                if (!sel) return;
                 sel.innerHTML = '<option value="">All Accounts</option>';
-                allAccounts.forEach(a => sel.innerHTML += `<option value="${escapeHTML(a.username)}">${escapeHTML(a.username)}</option>`);
+                // Ensure allAccounts is an array before using forEach
+                const accounts = Array.isArray(allAccounts) ? allAccounts : [];
+                accounts.forEach(a => {
+                    sel.innerHTML += `<option value="${escapeHTML(a.username)}">${escapeHTML(a.username)}</option>`;
+                });
             }
             function renderInventoryList() {
                 const container = document.getElementById('inv-list-container');
@@ -1122,7 +1129,7 @@
                     const reviews = await res.json();
                     const myReviewContainer = document.getElementById('my-review-card');
                     const myReviewSection = document.getElementById('my-review-container');
-                    if (reviews.length > 0) {
+                    if (Array.isArray(reviews) && reviews.length > 0) {
                         const r = reviews[0];
                         myReviewSection.style.display = 'block';
                         myReviewContainer.innerHTML = `
@@ -1160,6 +1167,7 @@
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/reviews');
                     const reviews = await res.json();
                     const adminList = document.getElementById('admin-reviews-list');
+                    if (!Array.isArray(reviews)) reviews = [];
                     adminList.innerHTML = reviews.map(r => `
                         <div class="review-card" style="margin-bottom:0.5rem; border: 1px solid ${r.status === 'pending' ? 'rgba(255,200,0,0.5)' : 'rgba(255,255,255,0.1)'}">
                             <div style="display:flex; justify-content:space-between;">
