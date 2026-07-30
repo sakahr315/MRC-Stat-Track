@@ -745,6 +745,12 @@
                                 </div>
                             `;
                         }).join('');
+
+                        // Make newly added cards visible (the .fade-up initial state hides them)
+                        const newCards = container.querySelectorAll('.review-card.fade-up');
+                        newCards.forEach(card => {
+                            card.classList.add('is-visible');
+                        });
                     })
                     .catch(err => {
                         console.error('Failed to load reviews:', err);
