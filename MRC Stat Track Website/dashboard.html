@@ -118,6 +118,111 @@
 
         .daily-hatch { font-size: 0.7rem; font-weight: 500; color: #34d399; }
 
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
+            z-index: 200; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        .modal { background: rgba(20,20,22,0.95); border: 1px solid rgba(255,255,255,0.08); border-radius: 28px;
+            padding: 2rem; width: 90%; max-width: 900px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+        .modal-title { font-size: 1.5rem; font-weight: 600; }
+        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.8rem; cursor: pointer;
+            padding: 0.25rem; border-radius: 8px; }
+        .modal-close:hover { background: rgba(255,255,255,0.06); color: var(--text-primary); }
+        .filters-bar { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .filter-input, .filter-select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px; padding: 0.5rem 1rem; color: var(--text-primary); font-family: var(--font-outfit);
+            font-size: 0.875rem; outline: none; }
+        .filter-input:focus, .filter-select:focus { border-color: var(--accent); }
+        .inventory-list { display: flex; flex-direction: column; gap: 0.3rem; }
+        .inventory-row { display: flex; align-items: center; padding: 0.75rem 1rem; background: rgba(255,255,255,0.02);
+            border-radius: 12px; transition: background 0.2s; justify-content: space-between; gap: 1rem; }
+        .inventory-row:hover { background: rgba(255,255,255,0.05); }
+        .inventory-row .pet-name { font-weight: 500; color: var(--text-primary); flex: 1; }
+        .inventory-row .pet-variant { font-size: 0.8rem; color: var(--text-secondary); width: 80px; }
+        .inventory-row .pet-amount { font-weight: 600; color: var(--accent); width: 50px; text-align: right; }
+
+        .skeleton { background: rgba(255,255,255,0.05); border-radius: 12px; animation: shimmer 1.5s infinite;
+            background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 100%);
+            background-size: 200% 100%; }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: rgba(30,30,30,0.95); border: 1px solid var(--accent-glow);
+            border-radius: 14px; padding: 1rem 1.5rem; z-index: 999; color: var(--text-primary); font-size: 0.875rem;
+            animation: slideIn 0.4s ease, fadeOut 0.4s ease 3.5s forwards; box-shadow: 0 12px 32px rgba(0,0,0,0.6); max-width: 400px; }
+        @keyframes slideIn { from { transform:translateX(100px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+        @keyframes fadeOut { from { opacity:1; } to { opacity:0; transform:translateY(10px); } }
+
+        .connected-account-row {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            transition: background 0.2s;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .connected-account-row:hover { background: rgba(255,255,255,0.05); }
+        .connected-account-row .account-details { display: flex; flex-direction: column; gap: 0.1rem; }
+        .connected-account-row .account-details .name-line { display: flex; align-items: center; gap: 0.5rem; }
+
+        .tracker-code {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #e0e0e0;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+        }
+
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th, .admin-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .admin-table th { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); }
+        .admin-table td { font-size: 0.85rem; }
+
+        .api-key-masked {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            color: var(--text-primary);
+            font-family: var(--font-outfit);
+            font-size: 0.875rem;
+            width: 100%;
+            cursor: default;
+            position: relative;
+            overflow: hidden;
+            min-height: 2.5rem;
+            display: flex;
+            align-items: center;
+        }
+        .api-key-masked:hover::after { animation: none; background: none; }
+        .api-key-masked .full-key {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: none;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background: rgba(0,0,0,0.8);
+            border-radius: 10px;
+            word-break: break-all;
+            font-size: 0.875rem;
+        }
+        .api-key-masked:hover .full-key { display: flex; }
+        .api-key-masked .masked-text { transition: opacity 0.2s; }
+        .api-key-masked:hover .masked-text { opacity: 0; }
+
         /* Session page specific styles */
         .session-feed {
             display: flex;
@@ -366,6 +471,7 @@
         <div id="page-settings" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:700px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">Settings</h2>
+
                 <!-- Discord Profile -->
                 <div style="margin-bottom:2rem; display:flex; align-items:center; gap:1rem;">
                     <img id="discord-avatar" style="width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,0.05);" />
@@ -375,6 +481,7 @@
                         <p id="user-plan" style="color:var(--accent); font-size:0.8rem;">Plan: —</p>
                     </div>
                 </div>
+
                 <!-- Connected Accounts -->
                 <div style="margin-bottom:2rem;">
                     <h3 style="margin-bottom:1rem;">🔗 Connected Roblox Accounts</h3>
@@ -382,7 +489,9 @@
                         <p style="color:var(--text-secondary);">Loading accounts...</p>
                     </div>
                 </div>
+
                 <hr style="border-color:rgba(255,255,255,0.06); margin-bottom:1.5rem;">
+
                 <!-- API Key -->
                 <div style="margin-bottom:1.5rem;">
                     <h4>API Key</h4>
@@ -394,6 +503,7 @@
                         Hover to reveal. This key is used by your tracker. If compromised, contact an admin.
                     </p>
                 </div>
+
                 <!-- Logout -->
                 <div style="margin-top:2rem;">
                     <button class="btn btn-danger" onclick="logout()">Logout</button>
@@ -611,7 +721,7 @@
                 await loadConnectedAccounts();
             };
 
-            // Connected accounts (unchanged)
+            // Connected accounts
             async function loadConnectedAccounts() {
                 const container = document.getElementById('connected-accounts-list');
                 container.innerHTML = '<p style="color:var(--text-secondary);">Loading accounts...</p>';
@@ -662,7 +772,7 @@
                 }
             };
 
-            // Admin panel functions (unchanged)
+            // Admin panel functions
             async function loadAdminPanel() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/users');
@@ -702,13 +812,58 @@
                 `).join('');
             }
 
-            window.changePlan = async function(userId, plan) { /* unchanged */ };
-            window.deleteUserKey = async function(userId) { /* unchanged */ };
-            window.regenerateUserKey = async function(userId) { /* unchanged */ };
-            window.viewUserDetail = async function(userId) { /* unchanged */ };
-            window.filterAdminTable = function() { /* unchanged */ };
+            window.changePlan = async function(userId, plan) {
+                await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/plan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, plan })
+                });
+                showToast('✅ Plan updated');
+            };
 
-            // Daily hatches loader (unchanged)
+            window.deleteUserKey = async function(userId) {
+                if (!confirm('Delete this user\'s API key? Their tracker will stop working.')) return;
+                await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/delete-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+                showToast('✅ Key deleted');
+                loadAdminPanel();
+            };
+
+            window.regenerateUserKey = async function(userId) {
+                if (!confirm('Generate a new API key? The old one will be invalidated.')) return;
+                const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/generate-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ New key: ' + data.apiKey);
+                    loadAdminPanel();
+                } else {
+                    showToast('❌ Error generating key');
+                }
+            };
+
+            window.viewUserDetail = async function(userId) {
+                const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/' + userId);
+                const detail = await res.json();
+                alert(JSON.stringify(detail, null, 2));
+            };
+
+            window.filterAdminTable = function() {
+                const term = document.getElementById('admin-search').value.toLowerCase();
+                const rows = document.querySelectorAll('#admin-users-body tr');
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? '' : 'none';
+                });
+            };
+
+            // Daily hatches loader
             async function loadDailyHatches() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/daily-hatches');
@@ -718,19 +873,171 @@
                 }
             }
 
-            // Load Saber data – clears cache (unchanged)
+            // Load Saber data – clears cache
             async function loadGameData() {
-                /* ... identical to previous version ... */
+                const loading = document.getElementById('rare-pets-loading');
+                const container = document.getElementById('rare-pets-container');
+                const viewBtn = document.getElementById('view-inventory-btn-container');
+
+                container.style.display = 'none';
+                loading.style.display = 'block';
+                viewBtn.style.display = 'none';
+
+                accountDetailsCache = {};
+
+                try {
+                    const overviewRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/overview');
+                    const overview = await overviewRes.json();
+                    document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
+                    document.getElementById('stat-online').textContent = overview.onlineAccounts;
+                    document.getElementById('stat-offline').textContent = overview.offlineAccounts;
+
+                    const accRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/accounts');
+                    const accounts = await accRes.json();
+                    allAccounts = accounts;
+                    updateModalAccountFilter();
+
+                    const details = await Promise.all(
+                        accounts.map(acc =>
+                            apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/saber/account/${encodeURIComponent(acc.username)}`)
+                                .then(r => r.json())
+                                .then(d => { accountDetailsCache[acc.username] = d; return d; })
+                                .catch(() => null)
+                        )
+                    );
+
+                    const invMap = {};
+                    for (const data of details) {
+                        if (!data || !data.pets) continue;
+                        for (const pet of data.pets) {
+                            const key = `${pet.name}|${pet.rarity||''}|${pet.variant||''}`;
+                            if (!invMap[key]) {
+                                invMap[key] = { name: pet.name, rarity: pet.rarity || 'Unknown', variant: pet.variant || '', amount: 0, owners: new Set() };
+                            }
+                            invMap[key].amount += (pet.amount || 1);
+                            invMap[key].owners.add(data.username);
+                        }
+                    }
+                    allInventory = Object.values(invMap).map(item => ({ ...item, owners: Array.from(item.owners) }));
+                    inventoryLoaded = true;
+
+                    await loadDailyHatches();
+                    renderRarePets();
+                    container.style.display = 'block';
+                    loading.style.display = 'none';
+                    viewBtn.style.display = 'block';
+                } catch (err) {
+                    console.error(err);
+                    loading.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Failed to load data.</p>';
+                }
             }
 
             const VARIANT_ORDER = ['Void', 'Rainbow', 'Shiny', 'Golden', 'Normal'];
-            function renderRarePets() { /* ... identical ... */ }
 
-            // Full inventory modal (unchanged)
-            window.openFullInventory = function() { /* ... */ };
-            window.closeFullInventory = function() { /* ... */ };
-            function updateModalAccountFilter() { /* ... */ }
-            function renderInventoryList() { /* ... */ }
+            function renderRarePets() {
+                const rarePets = [
+                    { name: 'Magmatic Vortex', section: 'secret-grid', rarity: 'Secret', localImagePath: '/public/images/pets/magmatic-vortex.webp' },
+                    { name: 'The Nightmare', section: 'triple-moon-grid', rarity: 'Triple Moon', localImagePath: '/public/images/pets/the-nightmare.webp' }
+                ];
+                document.getElementById('secret-grid').innerHTML = '';
+                document.getElementById('triple-moon-grid').innerHTML = '';
+                rarePets.forEach(petDef => {
+                    const grid = document.getElementById(petDef.section);
+                    VARIANT_ORDER.forEach(variant => {
+                        const entry = allInventory.find(p => p.name === petDef.name && p.variant === variant);
+                        const amount = entry ? entry.amount : 0;
+                        const key = `${petDef.name}|${petDef.rarity}|${variant}`;
+                        const dailyCount = dailyHatches[key] || 0;
+
+                        const card = document.createElement('div');
+                        card.className = 'pet-card';
+
+                        const img = document.createElement('img');
+                        img.src = petDef.localImagePath;
+                        img.alt = petDef.name;
+                        img.loading = 'lazy';
+                        img.onerror = function() {
+                            this.style.display = 'none';
+                            const noImg = document.createElement('div');
+                            noImg.className = 'no-image';
+                            noImg.textContent = '📷';
+                            card.insertBefore(noImg, card.firstChild);
+                        };
+                        card.appendChild(img);
+
+                        const nameEl = document.createElement('div');
+                        nameEl.className = 'name';
+                        nameEl.textContent = petDef.name;
+                        card.appendChild(nameEl);
+
+                        const badge = document.createElement('span');
+                        badge.className = `variant-badge variant-${variant.toLowerCase()}`;
+                        badge.textContent = variant;
+                        card.appendChild(badge);
+
+                        const amountEl = document.createElement('div');
+                        amountEl.className = 'amount';
+                        amountEl.textContent = `×${amount}`;
+                        card.appendChild(amountEl);
+
+                        if (amount === 0) {
+                            const notOwned = document.createElement('span');
+                            notOwned.className = 'badge-notowned';
+                            notOwned.textContent = 'Not Owned';
+                            card.appendChild(notOwned);
+                        }
+
+                        if (dailyCount > 0) {
+                            const dailyBadge = document.createElement('span');
+                            dailyBadge.className = 'daily-hatch';
+                            dailyBadge.textContent = `+${dailyCount} Today`;
+                            card.appendChild(dailyBadge);
+                        }
+
+                        grid.appendChild(card);
+                    });
+                });
+            }
+
+            // Full inventory modal
+            window.openFullInventory = function() {
+                document.getElementById('inventory-modal').style.display = 'flex';
+                updateModalAccountFilter();
+                renderInventoryList();
+            };
+            window.closeFullInventory = function() {
+                document.getElementById('inventory-modal').style.display = 'none';
+            };
+            function updateModalAccountFilter() {
+                const sel = document.getElementById('inv-account-filter');
+                sel.innerHTML = '<option value="">All Accounts</option>';
+                allAccounts.forEach(a => sel.innerHTML += `<option value="${escapeHTML(a.username)}">${escapeHTML(a.username)}</option>`);
+            }
+            function renderInventoryList() {
+                const container = document.getElementById('inv-list-container');
+                if (!inventoryLoaded) { container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Loading...</p>'; return; }
+                let filtered = allInventory.slice();
+                const search = document.getElementById('inv-search').value.toLowerCase();
+                if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
+                const account = document.getElementById('inv-account-filter').value;
+                if (account) filtered = filtered.filter(p => p.owners.includes(account));
+                const variant = document.getElementById('inv-variant-filter').value;
+                if (variant) filtered = filtered.filter(p => p.variant === variant);
+                const sort = document.getElementById('inv-sort').value;
+                if (sort === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
+                else if (sort === 'amount-desc') filtered.sort((a,b) => b.amount - a.amount);
+                else if (sort === 'amount-asc') filtered.sort((a,b) => a.amount - b.amount);
+                container.innerHTML = filtered.length ? filtered.map(p => `
+                    <div class="inventory-row"><span class="pet-name">${escapeHTML(p.name)}</span><span class="pet-variant">${escapeHTML(p.variant||'—')}</span><span class="pet-amount">${p.amount}</span></div>
+                `).join('') : '<p style="text-align:center;color:var(--text-secondary);">No pets match.</p>';
+            }
+
+            function escapeHTML(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+            function showToast(msg) {
+                const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+                document.getElementById('toast-container').appendChild(t);
+                setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4000);
+            }
 
             // ─── Session Data ───
             async function loadSessionData() {
@@ -760,7 +1067,7 @@
                         const count = data.hourly?.[hour] || 0;
                         const bar = document.createElement('div');
                         bar.className = 'bar';
-                        bar.style.height = Math.min(count * 5, 140) + 'px'; // scale
+                        bar.style.height = Math.min(count * 5, 140) + 'px';
                         bar.title = `${hour}:00 - ${count} hatches`;
                         chartDiv.appendChild(bar);
                     }
@@ -788,13 +1095,6 @@
                 const m = Math.floor((seconds % 3600) / 60);
                 const s = seconds % 60;
                 return `${h}h ${m}m ${s}s`;
-            }
-
-            function escapeHTML(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
-            function showToast(msg) {
-                const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
-                document.getElementById('toast-container').appendChild(t);
-                setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4000);
             }
 
             // Background animations (unchanged)
