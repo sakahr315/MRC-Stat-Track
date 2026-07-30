@@ -20,11 +20,9 @@
             --font-outfit: 'Outfit', system-ui, -apple-system, sans-serif;
             --sidebar-width: 260px;
         }
-
         * { box-sizing: border-box; margin: 0; padding: 0; }
         html { background: var(--bg-primary); font-family: var(--font-outfit); -webkit-font-smoothing: antialiased; }
         body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-outfit); font-weight: 400; line-height: 1.5; overflow-x: hidden; min-height: 100vh; display: flex; position: relative; }
-
         .grid-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.22;
             background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
                               linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
@@ -32,32 +30,25 @@
             mask-image: radial-gradient(ellipse 65% 55% at 50% 40%, black 30%, transparent 70%);
             -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 40%, black 30%, transparent 70%);
         }
-
         .hero-glow { position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
             width: 900px; height: 700px; background: radial-gradient(ellipse at center, rgba(47,143,251,0.07) 0%, transparent 70%);
             pointer-events: none; z-index: 1; border-radius: 50%; filter: blur(40px); }
-
         #cursor-glow { position: fixed; pointer-events: none; z-index: 9999; width: 420px; height: 420px;
             border-radius: 50%; background: radial-gradient(circle, rgba(47,143,251,0.04) 0%, transparent 70%);
             transform: translate(-50%, -50%); transition: opacity 0.4s; will-change: left, top; }
-
         .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 20px;
             transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1); }
         .glass-card:hover { border-color: rgba(47, 143, 251, 0.25); box-shadow: 0 0 0 1px rgba(47,143,251,0.08), 0 8px 32px rgba(0,0,0,0.4); }
-
         @keyframes shine-sweep { 0%{transform:translateX(-100%) skewX(-20deg);opacity:0} 40%{opacity:0.8} 60%{opacity:0.8} 100%{transform:translateX(200%) skewX(-20deg);opacity:0} }
         .shine-btn { position: relative; overflow: hidden; isolation: isolate; }
         .shine-btn::after { content: ''; position: absolute; top: 0; left: 0; width: 60%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2) 40%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.2) 60%, transparent);
             animation: shine-sweep 3.5s ease-in-out infinite; pointer-events: none; z-index: 2; }
-
         @keyframes pulse-dot { 0%,100%{opacity:0.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.8)} }
         .pulse-dot { animation: pulse-dot 2.8s ease-in-out infinite; }
-
         .hover-lift { transition: transform 0.35s cubic-bezier(0.25,0.1,0.25,1), box-shadow 0.35s cubic-bezier(0.25,0.1,0.25,1), border-color 0.35s cubic-bezier(0.25,0.1,0.25,1); }
         .hover-lift:hover { transform: translateY(-6px); border-color: rgba(47,143,251,0.35); box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(47,143,251,0.12); }
-
         .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
             font-family: var(--font-outfit); font-weight: 500; border-radius: 12px; cursor: pointer;
             transition: all 0.3s cubic-bezier(0.25,0.1,0.25,1); text-decoration: none; white-space: nowrap;
@@ -69,7 +60,6 @@
         .btn-ghost:hover { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.2); }
         .btn-danger { background: rgba(255,60,60,0.15); color: #ff4d4d; border: 1px solid rgba(255,60,60,0.3); }
         .btn-danger:hover { background: rgba(255,60,60,0.25); }
-
         .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0;
             background: rgba(10,10,10,0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             border-right: 1px solid rgba(255,255,255,0.06); padding: 2rem 1rem;
@@ -83,9 +73,7 @@
         .nav-link svg { width: 20px; height: 20px; opacity: 0.8; }
         .nav-link:hover, .nav-link.active { background: rgba(47,143,251,0.08); color: var(--text-primary); }
         .nav-link.active { border-left: 2px solid var(--accent); background: rgba(47,143,251,0.1); }
-
         .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 2.5rem 3rem; position: relative; z-index: 10; }
-
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
         .stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 24px;
@@ -93,9 +81,7 @@
         .stat-card:hover { border-color: rgba(47,143,251,0.3); box-shadow: 0 12px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(47,143,251,0.12); transform: translateY(-3px); }
         .stat-card .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 0.5rem; }
         .stat-card .value { font-size: 2.5rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
-
         .section-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-primary); }
-
         .pet-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
         .pet-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 20px;
@@ -106,7 +92,7 @@
         .pet-card .no-image { width: 100%; height: 100px; display: flex; align-items: center; justify-content: center;
             color: var(--text-secondary); font-size: 0.7rem; background: rgba(255,255,255,0.02); border-radius: 12px; }
         .pet-card .name { font-weight: 600; font-size: 0.85rem; text-align: center; color: var(--text-primary); }
-        .pet-card .variant-badge { font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; font-weight: 600; }
+        .variant-badge { font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: uppercase; font-weight: 600; }
         .variant-void { background: rgba(125,60,152,0.3); color: #c39bdb; }
         .variant-rainbow { background: rgba(255,0,255,0.2); color: #ff80ff; }
         .variant-shiny { background: rgba(0,255,255,0.2); color: #80ffff; }
@@ -115,9 +101,7 @@
         .badge-notowned { background: rgba(255,255,255,0.06); color: #666; font-size: 0.6rem; padding: 0.15rem 0.5rem;
             border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 500; }
         .pet-card .amount { font-size: 0.75rem; color: var(--text-secondary); }
-
         .daily-hatch { font-size: 0.7rem; font-weight: 500; color: #34d399; }
-
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
             z-index: 200; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.2s ease; }
         @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
@@ -140,133 +124,42 @@
         .inventory-row .pet-name { font-weight: 500; color: var(--text-primary); flex: 1; }
         .inventory-row .pet-variant { font-size: 0.8rem; color: var(--text-secondary); width: 80px; }
         .inventory-row .pet-amount { font-weight: 600; color: var(--accent); width: 50px; text-align: right; }
-
         .skeleton { background: rgba(255,255,255,0.05); border-radius: 12px; animation: shimmer 1.5s infinite;
             background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 100%);
             background-size: 200% 100%; }
         @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
-
         .toast { position: fixed; bottom: 2rem; right: 2rem; background: rgba(30,30,30,0.95); border: 1px solid var(--accent-glow);
             border-radius: 14px; padding: 1rem 1.5rem; z-index: 999; color: var(--text-primary); font-size: 0.875rem;
             animation: slideIn 0.4s ease, fadeOut 0.4s ease 3.5s forwards; box-shadow: 0 12px 32px rgba(0,0,0,0.6); max-width: 400px; }
         @keyframes slideIn { from { transform:translateX(100px); opacity:0; } to { transform:translateX(0); opacity:1; } }
         @keyframes fadeOut { from { opacity:1; } to { opacity:0; transform:translateY(10px); } }
-
-        .connected-account-row {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-            transition: background 0.2s;
-            justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+        .connected-account-row { display: flex; align-items: center; padding: 0.75rem 1rem; background: rgba(255,255,255,0.02); border-radius: 12px; transition: background 0.2s; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
         .connected-account-row:hover { background: rgba(255,255,255,0.05); }
         .connected-account-row .account-details { display: flex; flex-direction: column; gap: 0.1rem; }
         .connected-account-row .account-details .name-line { display: flex; align-items: center; gap: 0.5rem; }
-
-        .tracker-code {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 1.5rem;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            color: #e0e0e0;
-            white-space: pre-wrap;
-            overflow-x: auto;
-            position: relative;
-        }
-        .copy-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-        }
-
+        .tracker-code { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.5rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #e0e0e0; white-space: pre-wrap; overflow-x: auto; position: relative; }
+        .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; }
         .admin-table { width: 100%; border-collapse: collapse; }
         .admin-table th, .admin-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
         .admin-table th { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); }
         .admin-table td { font-size: 0.85rem; }
-
-        .api-key-masked {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 10px;
-            padding: 0.5rem 1rem;
-            color: var(--text-primary);
-            font-family: var(--font-outfit);
-            font-size: 0.875rem;
-            width: 100%;
-            cursor: default;
-            position: relative;
-            overflow: hidden;
-            min-height: 2.5rem;
-            display: flex;
-            align-items: center;
-        }
+        .api-key-masked { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.5rem 1rem; color: var(--text-primary); font-family: var(--font-outfit); font-size: 0.875rem; width: 100%; cursor: default; position: relative; overflow: hidden; min-height: 2.5rem; display: flex; align-items: center; }
         .api-key-masked:hover::after { animation: none; background: none; }
-        .api-key-masked .full-key {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            display: none;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            background: rgba(0,0,0,0.8);
-            border-radius: 10px;
-            word-break: break-all;
-            font-size: 0.875rem;
-        }
+        .api-key-masked .full-key { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; align-items: center; padding: 0.5rem 1rem; background: rgba(0,0,0,0.8); border-radius: 10px; word-break: break-all; font-size: 0.875rem; }
         .api-key-masked:hover .full-key { display: flex; }
         .api-key-masked .masked-text { transition: opacity 0.2s; }
         .api-key-masked:hover .masked-text { opacity: 0; }
-
-        /* Session page specific styles */
-        .session-feed {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .session-feed-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 0.75rem;
-            background: rgba(255,255,255,0.02);
-            border-radius: 10px;
-        }
-        .session-feed-item .time {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            min-width: 50px;
-        }
-        .bar-chart {
-            display: flex;
-            align-items: flex-end;
-            gap: 2px;
-            height: 150px;
-        }
-        .bar-chart .bar {
-            flex: 1;
-            background: linear-gradient(to top, var(--accent), rgba(47,143,251,0.3));
-            border-radius: 3px 3px 0 0;
-            transition: height 0.5s ease;
-        }
-
-        /* Mobile responsive – unchanged */
+        .session-feed { display: flex; flex-direction: column; gap: 0.5rem; max-height: 400px; overflow-y: auto; }
+        .session-feed-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.02); border-radius: 10px; }
+        .session-feed-item .time { font-size: 0.7rem; color: var(--text-secondary); min-width: 50px; }
+        .bar-chart { display: flex; align-items: flex-end; gap: 2px; height: 150px; }
+        .bar-chart .bar { flex: 1; background: linear-gradient(to top, var(--accent), rgba(47,143,251,0.3)); border-radius: 3px 3px 0 0; transition: height 0.5s ease; }
+        /* Mobile responsive */
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            .sidebar { position: fixed; top: 0; left: 0; width: 100%; height: auto; z-index: 100; padding: 1rem;
-                flex-direction: row; justify-content: space-between; align-items: center;
-                background: rgba(10,10,10,0.95); border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
+            .sidebar { position: fixed; top: 0; left: 0; width: 100%; height: auto; z-index: 100; padding: 1rem; flex-direction: row; justify-content: space-between; align-items: center; background: rgba(10,10,10,0.95); border-right: none; border-bottom: 1px solid rgba(255,255,255,0.06); }
             .sidebar-logo { font-size: 1rem; gap: 0.5rem; }
-            .nav-links { display: none; position: absolute; top: 100%; left: 0; width: 100%;
-                background: rgba(10,10,10,0.98); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-                border-bottom: 1px solid rgba(255,255,255,0.06); padding: 1rem; flex-direction: column; gap: 0.5rem; }
+            .nav-links { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: rgba(10,10,10,0.98); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 1rem; flex-direction: column; gap: 0.5rem; }
             .nav-links.open { display: flex; }
             .nav-link { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; }
             .main-content { margin-left: 0; padding: 1.5rem 1rem; margin-top: 4rem; }
@@ -295,8 +188,7 @@
             .btn { font-size: 0.8rem; padding: 0.5rem 1rem; }
             .section-title { font-size: 1.25rem; margin-bottom: 1rem; }
             .toast { bottom: 1rem; right: 1rem; left: 1rem; max-width: none; font-size: 0.8rem; }
-            .sidebar-toggle { display: flex; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-                border-radius: 8px; padding: 0.5rem; cursor: pointer; color: var(--text-primary); }
+            .sidebar-toggle { display: flex; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.5rem; cursor: pointer; color: var(--text-primary); }
         }
         @media (min-width: 769px) {
             .sidebar-toggle { display: none; }
@@ -307,7 +199,6 @@
     <div class="grid-overlay"></div>
     <div class="hero-glow"></div>
     <div id="cursor-glow"></div>
-
     <!-- Sidebar -->
     <aside class="sidebar">
         <a href="index.html" class="sidebar-logo">
@@ -352,7 +243,6 @@
             </button>
         </nav>
     </aside>
-
     <!-- Main Content -->
     <main class="main-content" id="main-content">
         <!-- Dashboard Page -->
@@ -367,24 +257,18 @@
                     <button class="btn btn-ghost" id="game-btn-ps99" onclick="selectGame('ps99')">🐾 PS99</button>
                 </div>
             </div>
-
-            <!-- Stats (only shown for Saber) -->
             <div id="saber-stats" class="stats-grid">
                 <div class="stat-card"><div class="label">Total Accounts</div><div class="value" id="stat-total-accounts">—</div></div>
                 <div class="stat-card"><div class="label">Online</div><div class="value" id="stat-online">—</div></div>
                 <div class="stat-card"><div class="label">Offline</div><div class="value" id="stat-offline">—</div></div>
             </div>
-
-            <!-- Saber Simulator Content -->
             <div id="saber-content">
                 <div id="rare-pets-loading" class="glass-card" style="padding:1.5rem;margin-bottom:2rem;"><div class="skeleton" style="height:150px;"></div></div>
                 <div id="rare-pets-container" style="display:none;">
-                    <!-- Secret Pet Section -->
                     <div class="glass-card" style="padding:1.5rem;margin-bottom:2rem;">
                         <h2 class="section-title">🔥 Secret Pet</h2>
                         <div class="pet-cards-grid" id="secret-grid"></div>
                     </div>
-                    <!-- Triple Moon Pet Section -->
                     <div class="glass-card" style="padding:1.5rem;margin-bottom:2rem;">
                         <h2 class="section-title">🌙 Triple Moon Pet</h2>
                         <div class="pet-cards-grid" id="triple-moon-grid"></div>
@@ -394,60 +278,41 @@
                     <button class="btn btn-accent shine-btn" style="padding:1rem 2.5rem;font-size:1rem;" onclick="openFullInventory()">View Full Inventory</button>
                 </div>
             </div>
-
-            <!-- PS99 Coming Soon (hidden by default) -->
             <div id="ps99-content" style="display:none; text-align:center; padding:4rem 0;">
                 <div style="font-size:4rem; margin-bottom:1rem;">🐾</div>
                 <h1 style="font-size:2.5rem; margin-bottom:1rem;">Coming Soon</h1>
-                <p style="color:var(--text-secondary); max-width:400px; margin:0 auto;">
-                    Pet Simulator 99 support is currently in development. We'll notify you when it's ready!
-                </p>
+                <p style="color:var(--text-secondary); max-width:400px; margin:0 auto;">Pet Simulator 99 support is currently in development. We'll notify you when it's ready!</p>
             </div>
         </div>
-
         <!-- Session Page -->
         <div id="page-session" style="display:none;">
             <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">📊 Session Analytics</h2>
-
-            <!-- Session Stats -->
             <div class="stats-grid" id="session-stats-grid">
                 <div class="stat-card"><div class="label">Pets Hatched Today</div><div class="value" id="session-total-hatches">—</div></div>
                 <div class="stat-card"><div class="label">Session Duration</div><div class="value" id="session-duration">—</div></div>
                 <div class="stat-card"><div class="label">Best Hatch Today</div><div class="value" id="session-best-hatch" style="font-size:1.2rem;">—</div></div>
             </div>
-
-            <!-- Hatch History Graph -->
             <div class="glass-card" style="padding:1.5rem; margin-bottom:2rem;">
                 <h3 class="section-title">Hatch Activity (Today)</h3>
                 <div class="bar-chart" id="hatch-chart"></div>
             </div>
-
-            <!-- Recent Hatches Feed -->
             <div class="glass-card" style="padding:1.5rem; margin-bottom:2rem;">
                 <h3 class="section-title">Recent Hatches</h3>
-                <div class="session-feed" id="session-feed">
-                    <p style="color:var(--text-secondary);">Loading...</p>
-                </div>
+                <div class="session-feed" id="session-feed"><p style="color:var(--text-secondary);">Loading...</p></div>
             </div>
         </div>
-
         <!-- Trackers Page -->
         <div id="page-trackers" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:800px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1rem;">📋 Tracker Script</h2>
-                <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
-                    Copy this script into your Roblox executor. It will automatically monitor your Saber Simulator accounts.
-                </p>
+                <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Copy this script into your Roblox executor. It will automatically monitor your Saber Simulator accounts.</p>
                 <div class="tracker-code" id="tracker-script-container" style="position:relative;">
                     <button class="btn btn-accent copy-btn" style="padding:0.3rem 0.8rem; font-size:0.75rem;" onclick="copyTrackerScript()">Copy</button>
                     <code id="tracker-script-code">Loading...</code>
                 </div>
-                <p class="text-small" style="margin-top:0.5rem;">
-                    Your unique API key is already embedded. Never share this script.
-                </p>
+                <p class="text-small" style="margin-top:0.5rem;">Your unique API key is already embedded. Never share this script.</p>
             </div>
         </div>
-
         <!-- Games Page -->
         <div id="page-games" style="display:none;">
             <h2 style="font-size:1.8rem; margin-bottom:2rem;">Supported Games</h2>
@@ -466,13 +331,10 @@
                 </div>
             </div>
         </div>
-
         <!-- Settings Page -->
         <div id="page-settings" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:700px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">Settings</h2>
-
-                <!-- Discord Profile -->
                 <div style="margin-bottom:2rem; display:flex; align-items:center; gap:1rem;">
                     <img id="discord-avatar" style="width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,0.05);" />
                     <div>
@@ -481,60 +343,41 @@
                         <p id="user-plan" style="color:var(--accent); font-size:0.8rem;">Plan: —</p>
                     </div>
                 </div>
-
-                <!-- Connected Accounts -->
                 <div style="margin-bottom:2rem;">
                     <h3 style="margin-bottom:1rem;">🔗 Connected Roblox Accounts</h3>
                     <div id="connected-accounts-list" style="display:flex;flex-direction:column;gap:0.5rem;">
                         <p style="color:var(--text-secondary);">Loading accounts...</p>
                     </div>
                 </div>
-
                 <hr style="border-color:rgba(255,255,255,0.06); margin-bottom:1.5rem;">
-
-                <!-- API Key -->
                 <div style="margin-bottom:1.5rem;">
                     <h4>API Key</h4>
                     <div class="api-key-masked" id="api-key-display">
                         <span class="masked-text" id="masked-key-text">mrc_live_********</span>
                         <span class="full-key" id="full-key-text"></span>
                     </div>
-                    <p class="text-small" style="margin-top:0.5rem;">
-                        Hover to reveal. This key is used by your tracker. If compromised, contact an admin.
-                    </p>
+                    <button class="btn btn-ghost" id="show-api-key-btn" style="margin-top:0.5rem;">Show Key</button>
+                    <p class="text-small" style="margin-top:0.5rem;">Hover to reveal prefix, or click "Show Key" to display and copy the full key.</p>
                 </div>
-
-                <!-- Logout -->
                 <div style="margin-top:2rem;">
                     <button class="btn btn-danger" onclick="logout()">Logout</button>
                 </div>
             </div>
         </div>
-
-        <!-- Admin Panel (Owner only) -->
+        <!-- Admin Panel -->
         <div id="page-admin" style="display:none;">
             <div class="glass-card" style="padding:2rem;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">🛡️ Admin Panel</h2>
                 <input type="text" class="filter-input" placeholder="Search users..." id="admin-search" style="margin-bottom:1.5rem; width:100%;" oninput="filterAdminTable()" />
                 <div style="overflow-x:auto;">
                     <table class="admin-table" id="admin-users-table">
-                        <thead>
-                            <tr>
-                                <th>Discord</th>
-                                <th>Plan</th>
-                                <th>API Key</th>
-                                <th>Accounts</th>
-                                <th>Pets</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Discord</th><th>Plan</th><th>API Key</th><th>Accounts</th><th>Pets</th><th>Actions</th></tr></thead>
                         <tbody id="admin-users-body"></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </main>
-
     <!-- Full Inventory Modal -->
     <div class="modal-overlay" id="inventory-modal" style="display:none;">
         <div class="modal">
@@ -546,64 +389,46 @@
                 <input type="text" class="filter-input" placeholder="Search pet..." id="inv-search" oninput="renderInventoryList()" />
                 <select class="filter-select" id="inv-account-filter" onchange="renderInventoryList()"><option value="">All Accounts</option></select>
                 <select class="filter-select" id="inv-variant-filter" onchange="renderInventoryList()">
-                    <option value="">All Variants</option>
-                    <option value="Void">Void</option>
-                    <option value="Rainbow">Rainbow</option>
-                    <option value="Shiny">Shiny</option>
-                    <option value="Golden">Golden</option>
-                    <option value="Normal">Normal</option>
+                    <option value="">All Variants</option><option value="Void">Void</option><option value="Rainbow">Rainbow</option>
+                    <option value="Shiny">Shiny</option><option value="Golden">Golden</option><option value="Normal">Normal</option>
                 </select>
                 <select class="filter-select" id="inv-sort" onchange="renderInventoryList()">
-                    <option value="name-asc">Name A-Z</option>
-                    <option value="amount-desc">Amount ↓</option>
-                    <option value="amount-asc">Amount ↑</option>
+                    <option value="name-asc">Name A-Z</option><option value="amount-desc">Amount ↓</option><option value="amount-asc">Amount ↑</option>
                 </select>
             </div>
             <div class="inventory-list" id="inv-list-container"></div>
         </div>
     </div>
-
     <!-- Toast container -->
     <div id="toast-container"></div>
-
     <!-- Particles Canvas -->
     <canvas id="particles-canvas" style="position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.7;"></canvas>
-
-    <script src="api.js"></script>
-    <script src="petValues.js"></script>
-    <script src="petImages.js"></script>
     <script>
-        // ─── Auth Guard ───
         (function() {
-            const AUTH_TOKEN_KEY = 'auth_token';
-            const urlParams = new URLSearchParams(window.location.search);
-            const tokenFromUrl = urlParams.get('token');
-            if (tokenFromUrl) {
-                localStorage.setItem(AUTH_TOKEN_KEY, tokenFromUrl);
-                window.history.replaceState({}, document.title, '/dashboard.html');
-            }
-            const authToken = localStorage.getItem(AUTH_TOKEN_KEY);
-            if (!authToken) {
-                window.location.href = '/index.html';
-                return;
-            }
-
-            // API helper with auth
+            // ─── API Helper with cookie credentials ───
             async function apiFetch(url, options = {}) {
                 const headers = new Headers(options.headers || {});
-                headers.set('Authorization', `Bearer ${authToken}`);
-                const res = await fetch(url, { ...options, headers });
+                const res = await fetch(url, {
+                    ...options,
+                    headers,
+                    credentials: 'include'
+                });
                 if (res.status === 401) {
-                    localStorage.removeItem(AUTH_TOKEN_KEY);
+                    // Token expired or invalid – redirect to login
                     window.location.href = '/index.html';
                     throw new Error('Unauthorized');
+                }
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({ error: 'Request failed' }));
+                    throw new Error(errorData.error || `HTTP ${res.status}`);
                 }
                 return res;
             }
 
             // Logout function
             window.logout = function() {
-                localStorage.removeItem(AUTH_TOKEN_KEY);
+                // Clear the cookie by setting an expired one (server-side also should expire on token expiry)
+                document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=Strict';
                 window.location.href = '/index.html';
             };
 
@@ -644,17 +469,12 @@
             // Mobile sidebar toggle
             const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
             const navLinksContainer = document.getElementById('nav-links');
-
             sidebarToggleBtn.addEventListener('click', () => {
                 navLinksContainer.classList.toggle('open');
             });
-
-            // Close sidebar when a link is clicked on mobile
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', () => {
-                    if (window.innerWidth <= 768) {
-                        navLinksContainer.classList.remove('open');
-                    }
+                    if (window.innerWidth <= 768) navLinksContainer.classList.remove('open');
                 });
             });
 
@@ -669,7 +489,7 @@
                 if (game === 'saber') loadGameData();
             };
 
-            // Load user profile
+            // Load user profile and set up API key reveal
             async function loadUserProfile() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/profile');
@@ -688,8 +508,30 @@
                             document.getElementById('admin-nav-link').style.display = 'block';
                         }
                     }
+
+                    // Show API Key button logic
+                    const showBtn = document.getElementById('show-api-key-btn');
+                    const fullKeyEl = document.getElementById('full-key-text');
+                    showBtn.addEventListener('click', async () => {
+                        if (fullKeyEl.textContent) {
+                            // Already fetched, just copy
+                            navigator.clipboard.writeText(fullKeyEl.textContent).then(() => showToast('✅ Key copied!'));
+                            return;
+                        }
+                        try {
+                            const keyRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/full-api-key');
+                            const keyData = await keyRes.json();
+                            fullKeyEl.textContent = keyData.apiKey;
+                            // Show the full key and copy
+                            fullKeyEl.style.display = 'flex';
+                            document.getElementById('masked-key-text').style.display = 'none';
+                            navigator.clipboard.writeText(keyData.apiKey).then(() => showToast('✅ Key copied!'));
+                        } catch (e) {
+                            showToast('❌ Failed to retrieve API key');
+                        }
+                    });
                 } catch (e) {
-                    console.error('Profile load failed', e);
+                    // If profile fails, already redirected by apiFetch
                 }
             }
 
@@ -702,7 +544,8 @@
                     const data = await res.json();
                     codeEl.textContent = data.script;
                 } catch (e) {
-                    codeEl.textContent = '⚠️ No API key found. Please contact an administrator to get a key assigned.';
+                    codeEl.textContent = '⚠️ No API key found. Please contact an administrator.';
+                    showToast('❌ ' + e.message);
                 }
             }
 
@@ -710,9 +553,7 @@
             window.copyTrackerScript = function() {
                 const code = document.getElementById('tracker-script-code').textContent;
                 if (!code || code === 'Loading...' || code.startsWith('⚠️')) return;
-                navigator.clipboard.writeText(code).then(() => {
-                    showToast('✅ Copied!');
-                });
+                navigator.clipboard.writeText(code).then(() => showToast('✅ Copied!'));
             };
 
             // Load settings data
@@ -752,6 +593,7 @@
                     }).join('');
                 } catch (e) {
                     container.innerHTML = '<p style="color:#ff6b6b;">Failed to load accounts.</p>';
+                    showToast('❌ ' + e.message);
                 }
             }
 
@@ -768,7 +610,7 @@
                         showToast('❌ ' + (data.error || 'Failed to remove account'));
                     }
                 } catch (e) {
-                    showToast('❌ Error removing account');
+                    showToast('❌ Error: ' + e.message);
                 }
             };
 
@@ -779,7 +621,7 @@
                     const users = await res.json();
                     renderAdminTable(users);
                 } catch (e) {
-                    showToast('❌ Failed to load admin data');
+                    showToast('❌ Failed to load admin data: ' + e.message);
                 }
             }
 
@@ -813,53 +655,68 @@
             }
 
             window.changePlan = async function(userId, plan) {
-                await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/plan', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, plan })
-                });
-                showToast('✅ Plan updated');
+                try {
+                    await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/plan', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId, plan })
+                    });
+                    showToast('✅ Plan updated');
+                } catch (e) {
+                    showToast('❌ ' + e.message);
+                }
             };
 
             window.deleteUserKey = async function(userId) {
                 if (!confirm('Delete this user\'s API key? Their tracker will stop working.')) return;
-                await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/delete-key', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId })
-                });
-                showToast('✅ Key deleted');
-                loadAdminPanel();
+                try {
+                    await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/delete-key', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId })
+                    });
+                    showToast('✅ Key deleted');
+                    loadAdminPanel();
+                } catch (e) {
+                    showToast('❌ ' + e.message);
+                }
             };
 
             window.regenerateUserKey = async function(userId) {
                 if (!confirm('Generate a new API key? The old one will be invalidated.')) return;
-                const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/generate-key', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    showToast('✅ New key: ' + data.apiKey);
-                    loadAdminPanel();
-                } else {
-                    showToast('❌ Error generating key');
+                try {
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/generate-key', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        showToast('✅ New key: ' + data.apiKey);
+                        loadAdminPanel();
+                    } else {
+                        showToast('❌ ' + (data.error || 'Failed'));
+                    }
+                } catch (e) {
+                    showToast('❌ ' + e.message);
                 }
             };
 
             window.viewUserDetail = async function(userId) {
-                const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/' + userId);
-                const detail = await res.json();
-                alert(JSON.stringify(detail, null, 2));
+                try {
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/admin/user/' + userId);
+                    const detail = await res.json();
+                    alert(JSON.stringify(detail, null, 2)); // simple display for now
+                } catch (e) {
+                    showToast('❌ ' + e.message);
+                }
             };
 
             window.filterAdminTable = function() {
                 const term = document.getElementById('admin-search').value.toLowerCase();
                 const rows = document.querySelectorAll('#admin-users-body tr');
                 rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(term) ? '' : 'none';
+                    row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none';
                 });
             };
 
@@ -873,18 +730,15 @@
                 }
             }
 
-            // Load Saber data – clears cache
+            // Load Saber data
             async function loadGameData() {
                 const loading = document.getElementById('rare-pets-loading');
                 const container = document.getElementById('rare-pets-container');
                 const viewBtn = document.getElementById('view-inventory-btn-container');
-
                 container.style.display = 'none';
                 loading.style.display = 'block';
                 viewBtn.style.display = 'none';
-
                 accountDetailsCache = {};
-
                 try {
                     const overviewRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/overview');
                     const overview = await overviewRes.json();
@@ -928,7 +782,8 @@
                     viewBtn.style.display = 'block';
                 } catch (err) {
                     console.error(err);
-                    loading.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Failed to load data.</p>';
+                    loading.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Failed to load data. Please try again later.</p>';
+                    showToast('❌ Failed to load game data');
                 }
             }
 
@@ -951,7 +806,6 @@
 
                         const card = document.createElement('div');
                         card.className = 'pet-card';
-
                         const img = document.createElement('img');
                         img.src = petDef.localImagePath;
                         img.alt = petDef.name;
@@ -964,36 +818,30 @@
                             card.insertBefore(noImg, card.firstChild);
                         };
                         card.appendChild(img);
-
                         const nameEl = document.createElement('div');
                         nameEl.className = 'name';
                         nameEl.textContent = petDef.name;
                         card.appendChild(nameEl);
-
                         const badge = document.createElement('span');
                         badge.className = `variant-badge variant-${variant.toLowerCase()}`;
                         badge.textContent = variant;
                         card.appendChild(badge);
-
                         const amountEl = document.createElement('div');
                         amountEl.className = 'amount';
                         amountEl.textContent = `×${amount}`;
                         card.appendChild(amountEl);
-
                         if (amount === 0) {
                             const notOwned = document.createElement('span');
                             notOwned.className = 'badge-notowned';
                             notOwned.textContent = 'Not Owned';
                             card.appendChild(notOwned);
                         }
-
                         if (dailyCount > 0) {
                             const dailyBadge = document.createElement('span');
                             dailyBadge.className = 'daily-hatch';
                             dailyBadge.textContent = `+${dailyCount} Today`;
                             card.appendChild(dailyBadge);
                         }
-
                         grid.appendChild(card);
                     });
                 });
@@ -1044,22 +892,16 @@
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/session');
                     const data = await res.json();
-
-                    // Stats
                     document.getElementById('session-total-hatches').textContent = data.totalHatchesToday || '0';
                     document.getElementById('session-duration').textContent = data.sessionDuration
                         ? formatDuration(data.sessionDuration)
                         : 'Not started';
-
-                    // Best hatch
                     const bestEl = document.getElementById('session-best-hatch');
                     if (data.bestHatch) {
                         bestEl.textContent = `${data.bestHatch.variant} ${data.bestHatch.rarity} ${data.bestHatch.name}`;
                     } else {
                         bestEl.textContent = 'No rare hatches today';
                     }
-
-                    // Hatch chart
                     const chartDiv = document.getElementById('hatch-chart');
                     chartDiv.innerHTML = '';
                     for (let i = 0; i < 24; i++) {
@@ -1071,8 +913,6 @@
                         bar.title = `${hour}:00 - ${count} hatches`;
                         chartDiv.appendChild(bar);
                     }
-
-                    // Recent hatches feed
                     const feed = document.getElementById('session-feed');
                     if (!data.hatchesToday || data.hatchesToday.length === 0) {
                         feed.innerHTML = '<p style="color:var(--text-secondary);">No hatches yet today.</p>';
@@ -1086,7 +926,7 @@
                         `).join('');
                     }
                 } catch (e) {
-                    showToast('❌ Failed to load session data.');
+                    showToast('❌ Failed to load session data: ' + e.message);
                 }
             }
 
@@ -1105,14 +945,12 @@
                 glow.style.opacity = '1';
             });
             document.addEventListener('mouseleave', () => { glow.style.opacity = '0'; });
-
             const canvas = document.getElementById('particles-canvas');
             const ctx = canvas.getContext('2d');
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
             let particles = [];
             let animFrame;
             let mouse = { x: -200, y: -200 };
-
             function resize() {
                 canvas.width = window.innerWidth * dpr;
                 canvas.height = window.innerHeight * dpr;
@@ -1122,7 +960,6 @@
             }
             resize();
             window.addEventListener('resize', resize);
-
             const particleCount = 55;
             particles = Array.from({ length: particleCount }, () => ({
                 x: Math.random() * window.innerWidth,
@@ -1132,17 +969,14 @@
                 vy: (Math.random() - 0.5) * 0.22,
                 opacity: Math.random() * 0.5 + 0.2,
             }));
-
             window.addEventListener('mousemove', (e) => {
                 mouse.x = e.clientX;
                 mouse.y = e.clientY;
             });
-
             function animate() {
                 const w = window.innerWidth;
                 const h = window.innerHeight;
                 ctx.clearRect(0, 0, w, h);
-
                 for (let i = 0; i < particles.length; i++) {
                     const p = particles[i];
                     p.x += p.vx;
@@ -1151,12 +985,10 @@
                     if (p.x > w + 20) p.x = -20;
                     if (p.y < -20) p.y = h + 20;
                     if (p.y > h + 20) p.y = -20;
-
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                     ctx.fillStyle = `rgba(180,200,240,${p.opacity * 0.55})`;
                     ctx.fill();
-
                     for (let j = i + 1; j < particles.length; j++) {
                         const q = particles[j];
                         const dx = p.x - q.x;
@@ -1171,7 +1003,6 @@
                             ctx.stroke();
                         }
                     }
-
                     const dmx = mouse.x - p.x;
                     const dmy = mouse.y - p.y;
                     const dm = Math.sqrt(dmx * dmx + dmy * dmy);
@@ -1192,14 +1023,29 @@
             animFrame = requestAnimationFrame(animate);
             window.addEventListener('beforeunload', () => cancelAnimationFrame(animFrame));
 
-            // Initialize
-            pages.dashboard.style.display = 'block';
-            document.getElementById('saber-stats').style.display = 'grid';
-            document.getElementById('saber-content').style.display = 'block';
-            document.getElementById('ps99-content').style.display = 'none';
-            loadGameData();
-            loadUserProfile();
+            // Initialisation
+            (async function init() {
+                try {
+                    // Check authentication by fetching profile; if 401, apiFetch will redirect
+                    await loadUserProfile();
+                    // If successful, load dashboard data
+                    pages.dashboard.style.display = 'block';
+                    document.getElementById('saber-stats').style.display = 'grid';
+                    document.getElementById('saber-content').style.display = 'block';
+                    document.getElementById('ps99-content').style.display = 'none';
+                    loadGameData();
+                } catch (e) {
+                    // Redirect already happened
+                }
+            })();
         })();
     </script>
+    <footer style="margin-left:260px; padding:1.5rem 2rem; border-top:1px solid rgba(255,255,255,0.06); display:flex; flex-wrap:wrap; gap:1rem; justify-content:space-between; align-items:center; font-size:0.8rem; color:var(--text-secondary);">
+        <span>© 2026 MRC Stat Tracker</span>
+        <span>
+            <a href="privacy.html" style="color:inherit; text-decoration:none; margin-right:1rem;">Privacy Policy</a>
+            <a href="tos.html" style="color:inherit; text-decoration:none;">Terms of Service</a>
+        </span>
+    </footer>
 </body>
 </html>
