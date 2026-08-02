@@ -93,7 +93,8 @@
         .stat-card .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 0.5rem; }
         .stat-card .value { font-size: 2.5rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
 
-        .section-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-primary); }
+        .section-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; }
+        .section-title svg { width: 1.4em; height: 1.4em; stroke: var(--accent); fill: none; }
 
         .pet-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
         .pet-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
@@ -198,29 +199,20 @@
             font-family: var(--font-outfit);
             font-size: 0.875rem;
             width: 100%;
-            cursor: default;
-            position: relative;
-            overflow: hidden;
-            min-height: 2.5rem;
             display: flex;
             align-items: center;
+            justify-content: space-between;
         }
-        .api-key-masked:hover::after { animation: none; background: none; }
-        .api-key-masked .full-key {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            display: none;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            background: rgba(0,0,0,0.8);
-            border-radius: 10px;
-            word-break: break-all;
-            font-size: 0.875rem;
-        }
-        .api-key-masked:hover .full-key { display: flex; }
+        .api-key-masked .key-content { display: flex; align-items: center; gap: 0.5rem; flex: 1; }
         .api-key-masked .masked-text { transition: opacity 0.2s; }
-        .api-key-masked:hover .masked-text { opacity: 0; }
+        .api-key-masked .full-key-text { display: none; color: var(--text-primary); font-family: 'Fira Code', monospace; word-break: break-all; }
+        .api-key-masked.show-full .masked-text { display: none; }
+        .api-key-masked.show-full .full-key-text { display: block; }
+
+        .api-key-actions { display: flex; gap: 0.3rem; margin-left: 0.5rem; }
+        .icon-btn { background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.25rem; cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .icon-btn:hover { background: rgba(255,255,255,0.06); color: var(--text-primary); border-color: rgba(255,255,255,0.2); }
+        .icon-btn svg { width: 16px; height: 16px; }
 
         .session-feed { display: flex; flex-direction: column; gap: 0.5rem; max-height: 400px; overflow-y: auto; }
         .session-feed-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.02); border-radius: 10px; }
@@ -272,7 +264,7 @@
             .inventory-row .pet-variant { width: auto; }
             .inventory-row .pet-amount { width: auto; }
             .api-key-masked { font-size: 0.75rem; min-height: 2rem; }
-            .api-key-masked .full-key { font-size: 0.75rem; }
+            .api-key-masked .full-key-text { font-size: 0.75rem; }
             .btn { font-size: 0.8rem; padding: 0.5rem 1rem; }
             .section-title { font-size: 1.25rem; margin-bottom: 1rem; }
             .toast { bottom: 1rem; right: 1rem; left: 1rem; max-width: none; font-size: 0.8rem; }
@@ -348,8 +340,14 @@
                     <p style="color:var(--text-secondary);">Manage your trackers and monitor your Roblox accounts.</p>
                 </div>
                 <div style="display:flex;gap:0.5rem;">
-                    <button class="btn btn-accent shine-btn" id="game-btn-saber" onclick="selectGame('saber')">🗡️ Saber Simulator</button>
-                    <button class="btn btn-ghost" id="game-btn-ps99" onclick="selectGame('ps99')">🐾 PS99</button>
+                    <button class="btn btn-accent shine-btn" id="game-btn-saber" onclick="selectGame('saber')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M8 8l3 3"/></svg>
+                        Saber Simulator
+                    </button>
+                    <button class="btn btn-ghost" id="game-btn-ps99" onclick="selectGame('ps99')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V2"/><path d="M5 12H2"/><path d="M22 12h-3"/><path d="M12 16v-4"/><path d="M8 8l-2 2"/><path d="M16 8l2 2"/><path d="M20 12v4a2 2 0 0 1-2 2h-4"/><path d="M4 12v4a2 2 0 0 0 2 2h4"/><circle cx="12" cy="12" r="3"/></svg>
+                        PS99
+                    </button>
                 </div>
             </div>
             <div id="saber-stats" class="stats-grid">
@@ -361,11 +359,17 @@
                 <div id="rare-pets-loading" class="glass-card" style="padding:1.5rem;margin-bottom:2rem;"><div class="skeleton" style="height:150px;"></div></div>
                 <div id="rare-pets-container" style="display:none;">
                     <div class="glass-card" style="padding:1.5rem;margin-bottom:2rem;">
-                        <h2 class="section-title">🔥 Secret Pet</h2>
+                        <h2 class="section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+                            Secret Pet
+                        </h2>
                         <div class="pet-cards-grid" id="secret-grid"></div>
                     </div>
                     <div class="glass-card" style="padding:1.5rem;margin-bottom:2rem;">
-                        <h2 class="section-title">🌙 Triple Moon Pet</h2>
+                        <h2 class="section-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                            Triple Moon Pet
+                        </h2>
                         <div class="pet-cards-grid" id="triple-moon-grid"></div>
                     </div>
                 </div>
@@ -374,7 +378,9 @@
                 </div>
             </div>
             <div id="ps99-content" style="display:none; text-align:center; padding:4rem 0;">
-                <div style="font-size:4rem; margin-bottom:1rem;">🐾</div>
+                <div style="font-size:4rem; margin-bottom:1rem;">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" style="opacity:0.7;"><path d="M12 8V2"/><path d="M5 12H2"/><path d="M22 12h-3"/><path d="M12 16v-4"/><path d="M8 8l-2 2"/><path d="M16 8l2 2"/><path d="M20 12v4a2 2 0 0 1-2 2h-4"/><path d="M4 12v4a2 2 0 0 0 2 2h4"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
                 <h1 style="font-size:2.5rem; margin-bottom:1rem;">Coming Soon</h1>
                 <p style="color:var(--text-secondary); max-width:400px; margin:0 auto;">Pet Simulator 99 support is currently in development. We'll notify you when it's ready!</p>
             </div>
@@ -382,7 +388,10 @@
 
         <!-- Session Page -->
         <div id="page-session" style="display:none;">
-            <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">📊 Session Analytics</h2>
+            <h2 style="font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                Session Analytics
+            </h2>
             <div class="stats-grid" id="session-stats-grid">
                 <div class="stat-card"><div class="label">Pets Hatched Today</div><div class="value" id="session-total-hatches">—</div></div>
                 <div class="stat-card"><div class="label">Session Duration</div><div class="value" id="session-duration">—</div></div>
@@ -401,11 +410,22 @@
         <!-- Trackers Page -->
         <div id="page-trackers" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:800px; margin:0 auto;">
-                <h2 style="font-size:1.8rem; margin-bottom:1rem;">📋 Tracker Script</h2>
-                <p style="color:var(--text-secondary); margin-bottom:1.5rem;">Copy this script into your Roblox executor. It will automatically monitor your Saber Simulator accounts.</p>
+                <h2 style="font-size:1.8rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6"/><path d="M8 6l-6 6 6 6"/></svg>
+                    Tracker Script
+                </h2>
+                <p style="color:var(--text-secondary); margin-bottom:1.5rem;">
+                    Copy this script into your Roblox executor. It will automatically monitor your Saber Simulator accounts.
+                </p>
                 <div class="tracker-code" id="tracker-script-container" style="position:relative;">
                     <button class="btn btn-accent copy-btn" style="padding:0.3rem 0.8rem; font-size:0.75rem;" onclick="copyTrackerScript()">Copy</button>
-                    <code id="tracker-script-code">Loading...</code>
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <code id="tracker-script-code" style="display:none;"></code>
+                        <span id="tracker-script-masked" class="masked-text" style="font-size:0.85rem;">••••••••••••••••••••••••••••••</span>
+                        <button class="icon-btn" id="toggle-tracker-script" title="Show/Hide script" onclick="toggleTrackerScript()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                    </div>
                 </div>
                 <p class="text-small" style="margin-top:0.5rem;">Your unique API key is already embedded. Never share this script.</p>
             </div>
@@ -416,13 +436,17 @@
             <h2 style="font-size:1.8rem; margin-bottom:2rem;">Supported Games</h2>
             <div style="display:flex; gap:2rem; flex-wrap:wrap;">
                 <div class="glass-card hover-lift" style="padding:1.5rem; flex:1; min-width:250px; text-align:center;">
-                    <div style="font-size:3rem;">🗡️</div>
+                    <div style="font-size:3rem;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M8 8l3 3"/></svg>
+                    </div>
                     <h3>Saber Simulator</h3>
                     <span class="badge" style="background:rgba(47,143,251,0.2); color:var(--accent); padding:0.2rem 0.8rem; border-radius:999px; font-size:0.7rem; text-transform:uppercase;">Supported</span>
                     <p style="color:var(--text-secondary); margin-top:0.5rem;">Full tracking for gems, pets, and inventory.</p>
                 </div>
                 <div class="glass-card hover-lift" style="padding:1.5rem; flex:1; min-width:250px; text-align:center;">
-                    <div style="font-size:3rem;">🐾</div>
+                    <div style="font-size:3rem;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V2"/><path d="M5 12H2"/><path d="M22 12h-3"/><path d="M12 16v-4"/><path d="M8 8l-2 2"/><path d="M16 8l2 2"/><path d="M20 12v4a2 2 0 0 1-2 2h-4"/><path d="M4 12v4a2 2 0 0 0 2 2h4"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
                     <h3>Pet Simulator 99</h3>
                     <span class="badge" style="background:rgba(255,255,255,0.08); color:#888; padding:0.2rem 0.8rem; border-radius:999px; font-size:0.7rem; text-transform:uppercase;">Coming Soon</span>
                     <p style="color:var(--text-secondary); margin-top:0.5rem;">Tracking for PS99 will be available in a future update.</p>
@@ -433,7 +457,10 @@
         <!-- Reviews Page -->
         <div id="page-reviews" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:800px; margin:0 auto;">
-                <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">⭐ Reviews</h2>
+                <h2 style="font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Reviews
+                </h2>
 
                 <div id="review-submit-section" style="margin-bottom:2rem;">
                     <h3>Leave a Review</h3>
@@ -466,7 +493,10 @@
         <!-- Settings Page -->
         <div id="page-settings" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:700px; margin:0 auto;">
-                <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">Settings</h2>
+                <h2 style="font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Settings
+                </h2>
 
                 <div style="margin-bottom:2rem; display:flex; align-items:center; gap:1rem;">
                     <img id="discord-avatar" style="width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,0.05);" />
@@ -487,17 +517,32 @@
                 <hr style="border-color:rgba(255,255,255,0.06); margin-bottom:1.5rem;">
 
                 <div style="margin-bottom:1.5rem;">
-                    <h4>API Key</h4>
+                    <h4 style="display:flex; align-items:center; gap:0.5rem;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                        API Key
+                    </h4>
                     <div class="api-key-masked" id="api-key-display">
-                        <span class="masked-text" id="masked-key-text">mrc_live_********</span>
-                        <span class="full-key" id="full-key-text"></span>
+                        <div class="key-content">
+                            <span class="masked-text" id="masked-key-text">mrc_live_********</span>
+                            <span class="full-key-text" id="full-key-text"></span>
+                        </div>
+                        <div class="api-key-actions">
+                            <button class="icon-btn" id="toggle-api-key" title="Show/Hide API Key" onclick="toggleApiKey()">
+                                <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                            <button class="icon-btn" id="copy-api-key" title="Copy API Key" onclick="copyApiKey()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            </button>
+                        </div>
                     </div>
-                    <button class="btn btn-ghost" id="show-api-key-btn" style="margin-top:0.5rem;">Show Key</button>
-                    <p class="text-small" style="margin-top:0.5rem;">Hover to reveal prefix, or click "Show Key" to display and copy the full key.</p>
+                    <p class="text-small" style="margin-top:0.5rem;">Click the eye to reveal, copy to clipboard.</p>
                 </div>
 
                 <div style="margin-top:2rem;">
-                    <button class="btn btn-danger" onclick="logout()">Logout</button>
+                    <button class="btn btn-danger" onclick="logout()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Logout
+                    </button>
                 </div>
 
                 <hr style="border-color:rgba(255,255,255,0.06); margin:2rem 0 1rem;">
@@ -511,7 +556,10 @@
         <!-- Admin Panel -->
         <div id="page-admin" style="display:none;">
             <div class="glass-card" style="padding:2rem;">
-                <h2 style="font-size:1.8rem; margin-bottom:1.5rem;">🛡️ Admin Panel</h2>
+                <h2 style="font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                    Admin Panel
+                </h2>
                 <input type="text" class="filter-input" placeholder="Search users..." id="admin-search" style="margin-bottom:1.5rem; width:100%;" oninput="filterAdminTable()" />
                 <div style="overflow-x:auto;">
                     <table class="admin-table" id="admin-users-table">
@@ -588,6 +636,10 @@
             let dailyHatches = {};
             let selectedRating = 0;
             window.userPermissions = '';
+            let fullApiKey = '';   // will be fetched on profile load
+            let trackerScriptContent = ''; // fetched on Trackers page load
+            let scriptVisible = false;
+            let apiKeyVisible = false;
 
             // Page switching
             const navLinks = document.querySelectorAll('.nav-link');
@@ -640,7 +692,7 @@
                 if (game === 'saber') loadGameData();
             };
 
-            // Load user profile
+            // Load user profile and fetch API key if available
             async function loadUserProfile() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/profile');
@@ -664,47 +716,80 @@
                         }
                     }
 
-                    const showBtn = document.getElementById('show-api-key-btn');
-                    const fullKeyEl = document.getElementById('full-key-text');
-                    showBtn.addEventListener('click', async () => {
-                        if (fullKeyEl.textContent) {
-                            navigator.clipboard.writeText(fullKeyEl.textContent).then(() => showToast('✅ Key copied!'));
-                            return;
-                        }
+                    // Prefetch full API key (hidden until revealed)
+                    if (user.hasApiKey) {
                         try {
                             const keyRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/full-api-key');
                             const keyData = await keyRes.json();
-                            fullKeyEl.textContent = keyData.apiKey;
-                            fullKeyEl.style.display = 'flex';
-                            document.getElementById('masked-key-text').style.display = 'none';
-                            navigator.clipboard.writeText(keyData.apiKey).then(() => showToast('✅ Key copied!'));
+                            fullApiKey = keyData.apiKey;
+                            document.getElementById('full-key-text').textContent = fullApiKey;
                         } catch (e) {
-                            showToast('❌ Failed to retrieve API key');
+                            fullApiKey = '';
                         }
-                    });
+                    }
                 } catch (e) {
                     // Already redirected on 401
                 }
             }
 
-            // Load tracker script
+            // Toggle API key visibility
+            window.toggleApiKey = function() {
+                const display = document.getElementById('api-key-display');
+                const icon = document.getElementById('eye-icon');
+                apiKeyVisible = !apiKeyVisible;
+                if (apiKeyVisible) {
+                    display.classList.add('show-full');
+                    icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+                } else {
+                    display.classList.remove('show-full');
+                    icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+                }
+            };
+
+            // Copy API key (works even when hidden)
+            window.copyApiKey = function() {
+                if (!fullApiKey) return showToast('❌ No API key available');
+                navigator.clipboard.writeText(fullApiKey).then(() => showToast('✅ API key copied!'));
+            };
+
+            // Tracker script loading
             async function loadTrackerScript() {
                 const codeEl = document.getElementById('tracker-script-code');
-                codeEl.textContent = 'Loading...';
+                const maskedEl = document.getElementById('tracker-script-masked');
+                codeEl.style.display = 'none';
+                maskedEl.style.display = 'block';
+                scriptVisible = false;
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/tracker-script');
                     const data = await res.json();
-                    codeEl.textContent = data.script;
+                    trackerScriptContent = data.script;
+                    codeEl.textContent = trackerScriptContent;
                 } catch (e) {
+                    trackerScriptContent = '';
                     codeEl.textContent = '⚠️ No API key found. Please contact an administrator.';
                     showToast('❌ ' + e.message);
                 }
             }
 
+            window.toggleTrackerScript = function() {
+                const codeEl = document.getElementById('tracker-script-code');
+                const maskedEl = document.getElementById('tracker-script-masked');
+                const toggleBtn = document.getElementById('toggle-tracker-script');
+                scriptVisible = !scriptVisible;
+                if (scriptVisible) {
+                    codeEl.style.display = 'block';
+                    maskedEl.style.display = 'none';
+                    toggleBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+                } else {
+                    codeEl.style.display = 'none';
+                    maskedEl.style.display = 'block';
+                    toggleBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+                }
+            };
+
             window.copyTrackerScript = function() {
-                const code = document.getElementById('tracker-script-code').textContent;
-                if (!code || code === 'Loading...' || code.startsWith('⚠️')) return;
-                navigator.clipboard.writeText(code).then(() => showToast('✅ Copied!'));
+                if (!trackerScriptContent) return;
+                navigator.clipboard.writeText(trackerScriptContent).then(() => showToast('✅ Copied!'));
             };
 
             // Load settings
@@ -797,9 +882,18 @@
                         <td>${u.totalAccounts} (${u.onlineAccounts} online)</td>
                         <td>${u.totalPets}</td>
                         <td>
-                            <button class="btn btn-ghost" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="deleteUserKey(${u.id})">🗑️ Key</button>
-                            <button class="btn btn-ghost" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="regenerateUserKey(${u.id})">🔄 New Key</button>
-                            <button class="btn btn-ghost" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="viewUserDetail(${u.id})">👁️</button>
+                            <button class="btn btn-ghost" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="deleteUserKey(${u.id})">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                Key
+                            </button>
+                            <button class="btn btn-ghost" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="regenerateUserKey(${u.id})">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                                New Key
+                            </button>
+                            <button class="btn btn-ghost" style="font-size:0.7rem; padding:0.25rem 0.5rem;" onclick="viewUserDetail(${u.id})">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                View
+                            </button>
                         </td>
                     </tr>
                 `).join('');
