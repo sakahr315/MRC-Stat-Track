@@ -536,6 +536,7 @@
                         </div>
                     </div>
                     <p class="text-small" style="margin-top:0.5rem;">Click the eye to reveal, copy to clipboard.</p>
+                    <button class="btn btn-ghost" id="regenerate-key-btn" style="margin-top:0.5rem;">Regenerate API Key</button>
                 </div>
 
                 <div style="margin-top:2rem;">
@@ -546,7 +547,10 @@
                 </div>
 
                 <hr style="border-color:rgba(255,255,255,0.06); margin:2rem 0 1rem;">
-                <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center;">
+                <div style="margin-top:2rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:1.5rem;">
+                    <button class="btn btn-danger" id="delete-account-btn">Delete My Account</button>
+                </div>
+                <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin-top:1rem;">
                     <a href="privacy.html" style="color:inherit; text-decoration:none; margin-right:1rem;">Privacy Policy</a>
                     <a href="tos.html" style="color:inherit; text-decoration:none;">Terms of Service</a>
                 </div>
@@ -593,6 +597,38 @@
         </div>
     </div>
 
+    <!-- Regenerate Key Modal -->
+    <div id="regenerate-modal" class="modal-overlay" style="display:none;">
+        <div class="modal" style="max-width:500px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Regenerate API Key</h2>
+                <button class="modal-close" onclick="closeRegenerateModal()">✕</button>
+            </div>
+            <p style="margin-bottom:1rem;">Are you sure? Your old tracker will stop working immediately.</p>
+            <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+                <button class="btn btn-ghost" onclick="closeRegenerateModal()">Cancel</button>
+                <button class="btn btn-danger" id="confirm-regenerate-btn">Regenerate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Account Modal -->
+    <div id="delete-modal" class="modal-overlay" style="display:none;">
+        <div class="modal" style="max-width:500px;">
+            <div class="modal-header">
+                <h2 class="modal-title">Delete Account</h2>
+                <button class="modal-close" onclick="closeDeleteModal()">✕</button>
+            </div>
+            <p style="margin-bottom:1rem;">This action is permanent and cannot be undone. All your data will be erased.</p>
+            <p style="margin-bottom:1rem; font-weight:600;">Type <code>DELETE</code> to confirm.</p>
+            <input type="text" id="delete-confirm-input" class="filter-input" style="width:100%; margin-bottom:1rem;" placeholder="Type DELETE" />
+            <div style="display:flex; gap:0.5rem; justify-content:flex-end;">
+                <button class="btn btn-ghost" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn btn-danger" id="confirm-delete-btn" disabled>Delete My Account</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast container -->
     <div id="toast-container"></div>
 
@@ -636,8 +672,8 @@
             let dailyHatches = {};
             let selectedRating = 0;
             window.userPermissions = '';
-            let fullApiKey = '';   // will be fetched on profile load
-            let trackerScriptContent = ''; // fetched on Trackers page load
+            let fullApiKey = '';
+            let trackerScriptContent = '';
             let scriptVisible = false;
             let apiKeyVisible = false;
 
@@ -746,13 +782,63 @@
                 }
             };
 
-            // Copy API key (works even when hidden)
             window.copyApiKey = function() {
                 if (!fullApiKey) return showToast('❌ No API key available');
                 navigator.clipboard.writeText(fullApiKey).then(() => showToast('✅ API key copied!'));
             };
 
-            // Tracker script loading
+            // Regenerate key modal
+            document.getElementById('regenerate-key-btn').addEventListener('click', () => {
+                document.getElementById('regenerate-modal').style.display = 'flex';
+            });
+            window.closeRegenerateModal = function() {
+                document.getElementById('regenerate-modal').style.display = 'none';
+            };
+            document.getElementById('confirm-regenerate-btn').addEventListener('click', async () => {
+                closeRegenerateModal();
+                try {
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/regenerate-key', {
+                        method: 'POST'
+                    });
+                    const data = await res.json();
+                    fullApiKey = data.apiKey;
+                    document.getElementById('full-key-text').textContent = fullApiKey;
+                    document.getElementById('api-key-display').classList.remove('show-full');
+                    document.getElementById('eye-icon').innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+                    apiKeyVisible = false;
+                    showToast('✅ New API key generated! Copy it before you leave.');
+                    navigator.clipboard.writeText(fullApiKey);
+                } catch (e) {
+                    showToast('❌ ' + e.message);
+                }
+            });
+
+            // Delete account modal
+            document.getElementById('delete-account-btn').addEventListener('click', () => {
+                document.getElementById('delete-modal').style.display = 'flex';
+            });
+            window.closeDeleteModal = function() {
+                document.getElementById('delete-modal').style.display = 'none';
+                document.getElementById('delete-confirm-input').value = '';
+                document.getElementById('confirm-delete-btn').disabled = true;
+            };
+            document.getElementById('delete-confirm-input').addEventListener('input', (e) => {
+                document.getElementById('confirm-delete-btn').disabled = (e.target.value !== 'DELETE');
+            });
+            document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+                try {
+                    await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/account', { method: 'DELETE' });
+                    showToast('✅ Account deleted. Redirecting...');
+                    setTimeout(() => {
+                        document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=Strict';
+                        window.location.href = '/index.html';
+                    }, 1500);
+                } catch (e) {
+                    showToast('❌ ' + e.message);
+                }
+            });
+
+            // Tracker script loading and toggle
             async function loadTrackerScript() {
                 const codeEl = document.getElementById('tracker-script-code');
                 const maskedEl = document.getElementById('tracker-script-masked');
@@ -993,7 +1079,6 @@
                     allAccounts = Array.isArray(accounts) ? accounts : [];
                     updateModalAccountFilter();
 
-                    // Fetch each account's details
                     const details = await Promise.all(
                         allAccounts.map(acc =>
                             apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/saber/account/${encodeURIComponent(acc.username)}`)
@@ -1136,7 +1221,7 @@
                 setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4000);
             }
 
-            // ─── Session Data ───
+            // Session Data (unchanged)
             async function loadSessionData() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/session');
@@ -1186,7 +1271,7 @@
                 return `${h}h ${m}m ${s}s`;
             }
 
-            // ─── Reviews Functions ───
+            // Reviews Functions (unchanged)
             function setupStarRating() {
                 const stars = document.querySelectorAll('#star-rating .star');
                 stars.forEach(star => {
