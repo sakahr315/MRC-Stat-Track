@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel – MRC Stat Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #0d0d0d;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --text-primary: rgba(250, 250, 250, 0.82);
+            --text-secondary: rgba(180, 180, 180, 0.75);
+            --accent: #2f8ffb;
+            --accent-glow: rgba(47, 143, 251, 0.25);
+            --font-outfit: 'Outfit', system-ui, -apple-system, sans-serif;
+            --sidebar-width: 260px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { background: var(--bg-primary); font-family: var(--font-outfit); -webkit-font-smoothing: antialiased; }
+        body { background: var(--bg-primary); color: var(--text-primary); font-family: var(--font-outfit); font-weight: 400; line-height: 1.5; overflow-x: hidden; min-height: 100vh; display: flex; position: relative; }
+        .grid-overlay { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.22;
+            background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(ellipse 65% 55% at 50% 40%, black 30%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 40%, black 30%, transparent 70%);
+        }
+        .hero-glow { position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+            width: 900px; height: 700px; background: radial-gradient(ellipse at center, rgba(47,143,251,0.07) 0%, transparent 70%);
+            pointer-events: none; z-index: 1; border-radius: 50%; filter: blur(40px); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 20px;
+            transition: all 0.35s cubic-bezier(0.25, 0.1, 0.25, 1); }
+        .glass-card:hover { border-color: rgba(47, 143, 251, 0.25); box-shadow: 0 0 0 1px rgba(47,143,251,0.08), 0 8px 32px rgba(0,0,0,0.4); }
+        .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0;
+            background: rgba(10,10,10,0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-right: 1px solid rgba(255,255,255,0.06); padding: 2rem 1rem;
+            display: flex; flex-direction: column; gap: 2rem; z-index: 50; }
+        .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 600;
+            color: var(--text-primary); text-decoration: none; }
+        .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 12px;
+            color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: all 0.2s;
+            background: none; border: none; cursor: pointer; font-family: var(--font-outfit); font-size: 0.875rem;
+            width: 100%; text-align: left; }
+        .nav-link svg { width: 20px; height: 20px; opacity: 0.8; }
+        .nav-link:hover, .nav-link.active { background: rgba(47,143,251,0.08); color: var(--text-primary); }
+        .nav-link.active { border-left: 2px solid var(--accent); background: rgba(47,143,251,0.1); }
+        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 2.5rem 3rem; position: relative; z-index: 10; }
+        .section-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; }
+        .section-title svg { width: 1.4em; height: 1.4em; stroke: var(--accent); fill: none; }
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
+        .admin-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px; padding: 1.5rem; text-align: center; transition: all 0.3s ease; }
+        .admin-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+        .admin-card .card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .admin-card .card-title { font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem; }
+        .admin-card .card-subtitle { font-size: 0.8rem; color: var(--text-secondary); }
+        .badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+        .badge-coming { background: rgba(255,255,255,0.08); color: var(--text-secondary); }
+        .back-link { margin-top: 2rem; text-align: center; }
+        .back-link a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+    <div class="hero-glow"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <a href="/admin" class="sidebar-logo">
+            <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+                <rect x="2" y="2" width="28" height="28" rx="7" fill="rgba(47,143,251,0.12)" stroke="rgba(47,143,251,0.5)" stroke-width="1.5"/>
+                <rect x="8" y="18" width="4" height="8" rx="1.5" fill="#2f8ffb" opacity="0.9"/>
+                <rect x="14" y="12" width="4" height="14" rx="1.5" fill="#2f8ffb" opacity="0.75"/>
+                <rect x="20" y="6" width="4" height="20" rx="1.5" fill="#2f8ffb" opacity="0.6"/>
+                <circle cx="10" cy="8" r="1.8" fill="#2f8ffb" class="pulse-dot"/>
+            </svg>
+            MRC Admin
+        </a>
+        <nav class="nav-links">
+            <a class="nav-link active" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                Dashboard
+            </a>
+            <a class="nav-link" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Users
+            </a>
+            <a class="nav-link" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                Subscriptions
+            </a>
+            <a class="nav-link" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                API Keys
+            </a>
+            <a class="nav-link" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Trackers
+            </a>
+            <a class="nav-link" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                Analytics
+            </a>
+            <a class="nav-link" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                Security
+            </a>
+            <a class="nav-link" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Logs
+            </a>
+            <a class="nav-link" href="#">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Settings
+            </a>
+            <a class="nav-link" href="/dashboard" style="margin-top: auto; color: var(--accent);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Exit Admin
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <h1 style="font-size:2rem; margin-bottom:2rem; display:flex; align-items:center; gap:0.75rem;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+            Admin Panel
+        </h1>
+
+        <div class="admin-grid">
+            <!-- Dashboard -->
+            <div class="admin-card glass-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                </div>
+                <div class="card-title">Dashboard</div>
+                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            </div>
+
+            <!-- Users -->
+            <div class="admin-card glass-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="card-title">Users</div>
+                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            </div>
+
+            <!-- Subscriptions -->
+            <div class="admin-card glass-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </div>
+                <div class="card-title">Subscriptions</div>
+                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            </div>
+
+            <!-- API Keys -->
+            <div class="admin-card glass-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                </div>
+                <div class="card-title">API Keys</div>
+                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            </div>
+
+            <!-- Trackers -->
+            <div class="admin-card glass-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div class="card-title">Trackers</div>
+                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            </div>
+
+            <!-- Analytics -->
+            <div class="admin-card glass-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                </div>
+                <div class="card-title">Analytics</div>
+                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            </div>
+
+            <!-- Security -->
+            <div class="admin-card glass-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                </div>
+                <div class="card-title">Security</div>
+                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            </div>
+
+            <!-- Logs -->
+            <div class="admin-card glass-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div class="card-title">Logs</div>
+                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            </div>
+
+            <!-- Settings -->
+            <div class="admin-card glass-card">
+                <div class="card-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <div class="card-title">Settings</div>
+                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            </div>
+        </div>
+
+        <div class="back-link">
+            <a href="/dashboard">← Back to main dashboard</a>
+        </div>
+    </main>
+</body>
+</html>
