@@ -40,7 +40,7 @@
         .sidebar { width: var(--sidebar-width); height: 100vh; position: fixed; top: 0; left: 0;
             background: rgba(10,10,10,0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             border-right: 1px solid rgba(255,255,255,0.06); padding: 2rem 1rem;
-            display: flex; flex-direction: column; gap: 2rem; z-index: 50; }
+            display: flex; flex-direction: column; gap: 2rem; z-index: 50; overflow-y: auto; }
         .sidebar-logo { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 600;
             color: var(--text-primary); text-decoration: none; }
         .nav-link { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 12px;
@@ -52,25 +52,54 @@
         .nav-link.active { border-left: 2px solid var(--accent); background: rgba(47,143,251,0.1); }
         .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 2.5rem 3rem; position: relative; z-index: 10; }
         .section-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem; }
-        .section-title svg { width: 1.4em; height: 1.4em; stroke: var(--accent); fill: none; }
-        .admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
-        .admin-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 16px; padding: 1.5rem; text-align: center; transition: all 0.3s ease; }
-        .admin-card:hover { border-color: var(--accent); transform: translateY(-4px); }
-        .admin-card .card-icon { font-size: 2rem; margin-bottom: 0.5rem; }
-        .admin-card .card-title { font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem; }
-        .admin-card .card-subtitle { font-size: 0.8rem; color: var(--text-secondary); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 1.5rem; text-align: center; }
+        .stat-card .label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--text-primary); }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.85rem; }
+        th { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); }
         .badge { display: inline-block; padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
-        .badge-coming { background: rgba(255,255,255,0.08); color: var(--text-secondary); }
-        .back-link { margin-top: 2rem; text-align: center; }
-        .back-link a { color: var(--accent); text-decoration: none; font-weight: 500; }
+        .badge-success { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+        .badge-warning { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+        .badge-danger { background: rgba(248, 113, 113, 0.15); color: #f87171; }
+        .badge-neutral { background: rgba(255,255,255,0.08); color: var(--text-secondary); }
+        .search-bar { margin-bottom: 1.5rem; display: flex; gap: 0.5rem; }
+        .search-bar input { flex: 1; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
+            z-index: 200; display: flex; align-items: center; justify-content: center; }
+        .modal { background: rgba(20,20,22,0.95); border: 1px solid rgba(255,255,255,0.08); border-radius: 28px;
+            padding: 2rem; width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+        .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 1.8rem; cursor: pointer; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            font-family: var(--font-outfit); font-weight: 500; border-radius: 12px; cursor: pointer;
+            transition: all 0.3s; text-decoration: none; white-space: nowrap;
+            border: none; font-size: 0.875rem; padding: 0.6rem 1.25rem; }
+        .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.2); }
+        .btn-danger { background: rgba(255,60,60,0.15); color: #ff4d4d; border: 1px solid rgba(255,60,60,0.3); }
+        .btn-danger:hover { background: rgba(255,60,60,0.25); }
+        .btn-accent { background: var(--accent); color: #fff; }
+        .btn-accent:hover { background: #3b9aff; }
+        .skeleton { background: rgba(255,255,255,0.05); border-radius: 12px; animation: shimmer 1.5s infinite;
+            background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 100%);
+            background-size: 200% 100%; }
+        @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: rgba(30,30,30,0.95); border: 1px solid var(--accent-glow);
+            border-radius: 14px; padding: 1rem 1.5rem; z-index: 999; color: var(--text-primary); font-size: 0.875rem;
+            animation: slideIn 0.4s ease, fadeOut 0.4s ease 3.5s forwards; box-shadow: 0 12px 32px rgba(0,0,0,0.6); max-width: 400px; }
+        @keyframes slideIn { from { transform:translateX(100px); opacity:0; } to { transform:translateX(0); opacity:1; } }
+        @keyframes fadeOut { from { opacity:1; } to { opacity:0; transform:translateY(10px); } }
+        .hidden { display: none !important; }
+        .key-masked { font-family: 'Fira Code', monospace; background: rgba(0,0,0,0.4); padding: 0.3rem 0.6rem; border-radius: 6px; }
     </style>
 </head>
 <body>
     <div class="grid-overlay"></div>
     <div class="hero-glow"></div>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
         <a href="/admin" class="sidebar-logo">
             <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
@@ -82,43 +111,44 @@
             </svg>
             MRC Admin
         </a>
-        <nav class="nav-links">
-            <a class="nav-link active" href="#">
+        <nav class="nav-links" id="nav-links">
+            <button class="nav-link active" data-section="dashboard">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
                 Dashboard
-            </a>
-            <a class="nav-link" href="#">
+            </button>
+            <button class="nav-link" data-section="users">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 Users
-            </a>
-            <a class="nav-link" href="#">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                Subscriptions
-            </a>
-            <a class="nav-link" href="#">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                API Keys
-            </a>
-            <a class="nav-link" href="#">
+            </button>
+            <button class="nav-link" data-section="trackers">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
                 Trackers
-            </a>
-            <a class="nav-link" href="#">
+            </button>
+            <button class="nav-link" data-section="keys">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                API Keys
+            </button>
+            <!-- placeholder items -->
+            <button class="nav-link" data-section="subscriptions" style="pointer-events:none; opacity:0.4;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                Subscriptions
+            </button>
+            <button class="nav-link" data-section="analytics" style="pointer-events:none; opacity:0.4;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                 Analytics
-            </a>
-            <a class="nav-link" href="#">
+            </button>
+            <button class="nav-link" data-section="security" style="pointer-events:none; opacity:0.4;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
                 Security
-            </a>
-            <a class="nav-link" href="#">
+            </button>
+            <button class="nav-link" data-section="logs" style="pointer-events:none; opacity:0.4;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 Logs
-            </a>
-            <a class="nav-link" href="#">
+            </button>
+            <button class="nav-link" data-section="settings" style="pointer-events:none; opacity:0.4;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 Settings
-            </a>
+            </button>
             <a class="nav-link" href="/dashboard" style="margin-top: auto; color: var(--accent);">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                 Exit Admin
@@ -126,99 +156,258 @@
         </nav>
     </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <h1 style="font-size:2rem; margin-bottom:2rem; display:flex; align-items:center; gap:0.75rem;">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-            Admin Panel
-        </h1>
-
-        <div class="admin-grid">
-            <!-- Dashboard -->
-            <div class="admin-card glass-card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-                </div>
-                <div class="card-title">Dashboard</div>
-                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+    <main class="main-content" id="main-content">
+        <!-- Dashboard Section -->
+        <section id="section-dashboard">
+            <h1 class="section-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                Dashboard
+            </h1>
+            <div class="stats-grid" id="dashboard-stats">
+                <!-- loaded dynamically -->
             </div>
-
-            <!-- Users -->
-            <div class="admin-card glass-card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                </div>
-                <div class="card-title">Users</div>
-                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            <h2 class="section-title" style="margin-top:2rem;">Recent Activity</h2>
+            <div id="activity-feed" class="glass-card" style="padding:1.5rem;">
+                <p style="color:var(--text-secondary);">Loading...</p>
             </div>
+        </section>
 
-            <!-- Subscriptions -->
-            <div class="admin-card glass-card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                </div>
-                <div class="card-title">Subscriptions</div>
-                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+        <!-- Users Section -->
+        <section id="section-users" class="hidden">
+            <h1 class="section-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Users
+            </h1>
+            <div class="search-bar">
+                <input type="text" id="user-search" class="search-bar" placeholder="Search by username or ID..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.5rem 1rem; color:var(--text-primary); font-family:var(--font-outfit); font-size:0.875rem; outline:none; flex:1;" />
+                <button class="btn btn-ghost" onclick="loadUsers()">Search</button>
             </div>
-
-            <!-- API Keys -->
-            <div class="admin-card glass-card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                </div>
-                <div class="card-title">API Keys</div>
-                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            <div class="table-container">
+                <table id="users-table">
+                    <thead><tr><th>Avatar</th><th>Username</th><th>ID</th><th>Plan</th><th>Accounts</th><th>API Key</th><th>Last Login</th><th>Role</th><th>Actions</th></tr></thead>
+                    <tbody id="users-tbody"></tbody>
+                </table>
             </div>
+            <div id="users-loading" style="text-align:center; padding:2rem;"><div class="skeleton" style="height:100px;"></div></div>
+        </section>
 
-            <!-- Trackers -->
-            <div class="admin-card glass-card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                </div>
-                <div class="card-title">Trackers</div>
-                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+        <!-- Trackers Section -->
+        <section id="section-trackers" class="hidden">
+            <h1 class="section-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                Trackers
+            </h1>
+            <div class="search-bar">
+                <input type="text" id="tracker-search" class="search-bar" placeholder="Search by Roblox username..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.5rem 1rem; color:var(--text-primary); font-family:var(--font-outfit); font-size:0.875rem; outline:none; flex:1;" />
+                <button class="btn btn-ghost" onclick="loadTrackers()">Search</button>
             </div>
-
-            <!-- Analytics -->
-            <div class="admin-card glass-card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-                </div>
-                <div class="card-title">Analytics</div>
-                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+            <div class="table-container">
+                <table id="trackers-table">
+                    <thead><tr><th>Roblox Username</th><th>Owner</th><th>Status</th><th>Last Heartbeat</th><th>Version</th><th>Session</th></tr></thead>
+                    <tbody id="trackers-tbody"></tbody>
+                </table>
             </div>
+            <div id="trackers-loading" style="text-align:center; padding:2rem;"><div class="skeleton" style="height:100px;"></div></div>
+        </section>
 
-            <!-- Security -->
-            <div class="admin-card glass-card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-                </div>
-                <div class="card-title">Security</div>
-                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
+        <!-- API Keys Section -->
+        <section id="section-keys" class="hidden">
+            <h1 class="section-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                API Keys
+            </h1>
+            <div class="table-container">
+                <table id="keys-table">
+                    <thead><tr><th>Owner</th><th>Key</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead>
+                    <tbody id="keys-tbody"></tbody>
+                </table>
             </div>
-
-            <!-- Logs -->
-            <div class="admin-card glass-card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                </div>
-                <div class="card-title">Logs</div>
-                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
-            </div>
-
-            <!-- Settings -->
-            <div class="admin-card glass-card">
-                <div class="card-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-                </div>
-                <div class="card-title">Settings</div>
-                <div class="card-subtitle"><span class="badge badge-coming">Coming Soon</span></div>
-            </div>
-        </div>
-
-        <div class="back-link">
-            <a href="/dashboard">← Back to main dashboard</a>
-        </div>
+            <div id="keys-loading" style="text-align:center; padding:2rem;"><div class="skeleton" style="height:100px;"></div></div>
+        </section>
     </main>
+
+    <!-- User Detail Modal -->
+    <div class="modal-overlay hidden" id="user-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>User Details</h2>
+                <button class="modal-close" onclick="closeUserModal()">✕</button>
+            </div>
+            <div id="user-detail-content"></div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-container"></div>
+
+    <script>
+        const API_BASE = '';
+        let currentSection = 'dashboard';
+
+        // Auth helper
+        async function apiFetch(url, options = {}) {
+            const res = await fetch(API_BASE + url, { ...options, credentials: 'include' });
+            if (res.status === 401) { window.location.href = '/index.html'; throw new Error('Unauthorized'); }
+            if (res.status === 403) { alert('Access denied'); throw new Error('Forbidden'); }
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({ error: 'Request failed' }));
+                throw new Error(err.error || 'HTTP ' + res.status);
+            }
+            return res.json();
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-link[data-section]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const section = btn.dataset.section;
+                if (['subscriptions','analytics','security','logs','settings'].includes(section)) return;
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('section[id^="section-"]').forEach(s => s.classList.add('hidden'));
+                document.getElementById('section-' + section).classList.remove('hidden');
+                currentSection = section;
+                if (section === 'dashboard') loadDashboard();
+                else if (section === 'users') loadUsers();
+                else if (section === 'trackers') loadTrackers();
+                else if (section === 'keys') loadKeys();
+            });
+        });
+
+        function showToast(msg, success = true) {
+            const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+            document.getElementById('toast-container').appendChild(t);
+            setTimeout(() => t.remove(), 4000);
+        }
+
+        // ─── Dashboard ───
+        async function loadDashboard() {
+            const statsDiv = document.getElementById('dashboard-stats');
+            statsDiv.innerHTML = '<div class="skeleton" style="height:100px; grid-column: span 4;"></div>';
+            try {
+                const data = await apiFetch('/api/admin/dashboard');
+                const stats = [
+                    { label: 'Total Users', value: data.totalUsers },
+                    { label: 'Active Subscribers', value: data.activeSubscribers },
+                    { label: 'Total Accounts', value: data.totalAccounts },
+                    { label: 'Online Accounts', value: data.onlineAccounts },
+                    { label: 'Offline Accounts', value: data.offlineAccounts },
+                    { label: 'Connected Trackers', value: data.connectedTrackers },
+                    { label: 'Active API Keys', value: data.activeApiKeys },
+                    { label: 'Requests Today', value: data.requestsToday }
+                ];
+                statsDiv.innerHTML = stats.map(s => `<div class="stat-card glass-card"><div class="label">${s.label}</div><div class="value">${s.value}</div></div>`).join('');
+                const feed = document.getElementById('activity-feed');
+                feed.innerHTML = data.recentActivity.length ? data.recentActivity.map(a => `<div style="margin-bottom:0.5rem; font-size:0.85rem;">${a.time} – ${a.message}</div>`).join('') : '<p>No recent activity.</p>';
+            } catch(e) { showToast('Error loading dashboard', false); }
+        }
+
+        // ─── Users ───
+        async function loadUsers() {
+            const tbody = document.getElementById('users-tbody');
+            const loading = document.getElementById('users-loading');
+            loading.classList.remove('hidden');
+            tbody.innerHTML = '';
+            try {
+                const query = document.getElementById('user-search').value.trim();
+                const users = await apiFetch('/api/admin/users?search=' + encodeURIComponent(query));
+                loading.classList.add('hidden');
+                if (!users.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">No users found.</td></tr>'; return; }
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td><img src="https://cdn.discordapp.com/avatars/${u.discordId}/${u.avatar}.png" style="width:24px;height:24px;border-radius:50%;" onerror="this.style.display='none'" /></td>
+                        <td>${escapeHTML(u.discordUsername)}</td>
+                        <td>${u.discordId}</td>
+                        <td>${u.plan}</td>
+                        <td>${u.totalAccounts}</td>
+                        <td>${u.apiKeyPrefix ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">None</span>'}</td>
+                        <td>${u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : 'Never'}</td>
+                        <td>${u.permissions}</td>
+                        <td><button class="btn btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="openUserDetail(${u.id})">Open</button></td>
+                    </tr>
+                `).join('');
+            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load users', false); }
+        }
+
+        window.openUserDetail = async function(userId) {
+            try {
+                const user = await apiFetch('/api/admin/user/' + userId);
+                const modal = document.getElementById('user-modal');
+                const content = document.getElementById('user-detail-content');
+                content.innerHTML = `
+                    <p><strong>Discord ID:</strong> ${user.discordId}</p>
+                    <p><strong>Username:</strong> ${escapeHTML(user.username)}</p>
+                    <p><strong>Created:</strong> ${new Date(user.createdAt).toLocaleString()}</p>
+                    <p><strong>Last Login:</strong> ${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}</p>
+                    <p><strong>Subscription:</strong> ${user.subscription}</p>
+                    <p><strong>API Key:</strong> ${user.apiKeyPrefix ? user.apiKeyPrefix + '...' : 'None'}</p>
+                    <p><strong>Accounts:</strong> ${user.accounts?.length || 0}</p>
+                    <p><strong>Role:</strong> ${user.permissions}</p>
+                    <div style="margin-top:1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <button class="btn btn-ghost" onclick="navigator.clipboard.writeText('${user.discordId}');showToast('Copied!')">Copy Discord ID</button>
+                        <button class="btn btn-ghost" onclick="navigator.clipboard.writeText('${user.id}');showToast('Copied!')">Copy User ID</button>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+            } catch(e) { showToast('Failed to load user detail', false); }
+        };
+        window.closeUserModal = function() { document.getElementById('user-modal').classList.add('hidden'); };
+
+        // ─── Trackers ───
+        async function loadTrackers() {
+            const tbody = document.getElementById('trackers-tbody');
+            const loading = document.getElementById('trackers-loading');
+            loading.classList.remove('hidden');
+            tbody.innerHTML = '';
+            try {
+                const query = document.getElementById('tracker-search').value.trim();
+                const trackers = await apiFetch('/api/admin/trackers?search=' + encodeURIComponent(query));
+                loading.classList.add('hidden');
+                if (!trackers.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No trackers found.</td></tr>'; return; }
+                tbody.innerHTML = trackers.map(t => {
+                    const statusBadge = t.online ? '<span class="badge badge-success">Online</span>' : '<span class="badge badge-danger">Offline</span>';
+                    return `
+                    <tr>
+                        <td>${escapeHTML(t.username)}</td>
+                        <td>${escapeHTML(t.ownerUsername)}</td>
+                        <td>${statusBadge}</td>
+                        <td>${t.lastHeartbeat ? new Date(t.lastHeartbeat).toLocaleString() : 'Never'}</td>
+                        <td>1.0</td>
+                        <td>--</td>
+                    </tr>`;
+                }).join('');
+            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load trackers', false); }
+        }
+
+        // ─── API Keys ───
+        async function loadKeys() {
+            const tbody = document.getElementById('keys-tbody');
+            const loading = document.getElementById('keys-loading');
+            loading.classList.remove('hidden');
+            tbody.innerHTML = '';
+            try {
+                const keys = await apiFetch('/api/admin/keys');
+                loading.classList.add('hidden');
+                if (!keys.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No API keys found.</td></tr>'; return; }
+                tbody.innerHTML = keys.map(k => `
+                    <tr>
+                        <td>${escapeHTML(k.ownerUsername)}</td>
+                        <td><span class="key-masked">${k.keyPrefix}••••••••</span></td>
+                        <td><span class="badge badge-success">Active</span></td>
+                        <td>${new Date(k.createdAt).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="revealKey(${k.id})">Reveal</button>
+                            <button class="btn btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="copyKey(${k.id})">Copy</button>
+                            <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="regenerateKey(${k.id})">Regen</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load API keys', false); }
+        }
+
+        function escapeHTML(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+
+        // Initial load
+        loadDashboard();
+    </script>
 </body>
 </html>
