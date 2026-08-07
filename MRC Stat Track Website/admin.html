@@ -65,6 +65,7 @@
         .badge-warning { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
         .badge-danger { background: rgba(248, 113, 113, 0.15); color: #f87171; }
         .badge-neutral { background: rgba(255,255,255,0.08); color: var(--text-secondary); }
+        .badge-info { background: rgba(47,143,251,0.15); color: #2f8ffb; }
         .search-bar { margin-bottom: 1.5rem; display: flex; gap: 0.5rem; }
         .search-bar input { flex: 1; }
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
@@ -83,6 +84,8 @@
         .btn-danger:hover { background: rgba(255,60,60,0.25); }
         .btn-accent { background: var(--accent); color: #fff; }
         .btn-accent:hover { background: #3b9aff; }
+        .btn-success { background: rgba(52,211,153,0.2); color: #34d399; border: 1px solid rgba(52,211,153,0.3); }
+        .btn-success:hover { background: rgba(52,211,153,0.3); }
         .skeleton { background: rgba(255,255,255,0.05); border-radius: 12px; animation: shimmer 1.5s infinite;
             background-image: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 100%);
             background-size: 200% 100%; }
@@ -94,6 +97,20 @@
         @keyframes fadeOut { from { opacity:1; } to { opacity:0; transform:translateY(10px); } }
         .hidden { display: none !important; }
         .key-masked { font-family: 'Fira Code', monospace; background: rgba(0,0,0,0.4); padding: 0.3rem 0.6rem; border-radius: 6px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .setting-label { font-weight: 500; color: var(--text-primary); }
+        .setting-desc { font-size: 0.8rem; color: var(--text-secondary); }
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .3s; border-radius: 24px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .toggle-slider { background-color: var(--accent); }
+        input:checked + .toggle-slider:before { transform: translateX(20px); }
+        .chart-container { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .pagination { display: flex; gap: 0.5rem; align-items: center; justify-content: center; margin-top: 1rem; }
+        .pagination button { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-primary); padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; }
+        .pagination button:disabled { opacity: 0.3; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -128,24 +145,23 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
                 API Keys
             </button>
-            <!-- placeholder items -->
-            <button class="nav-link" data-section="subscriptions" style="pointer-events:none; opacity:0.4;">
+            <button class="nav-link" data-section="subscriptions">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 Subscriptions
             </button>
-            <button class="nav-link" data-section="analytics" style="pointer-events:none; opacity:0.4;">
+            <button class="nav-link" data-section="analytics">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                 Analytics
             </button>
-            <button class="nav-link" data-section="security" style="pointer-events:none; opacity:0.4;">
+            <button class="nav-link" data-section="security">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
                 Security
             </button>
-            <button class="nav-link" data-section="logs" style="pointer-events:none; opacity:0.4;">
+            <button class="nav-link" data-section="logs">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                 Logs
             </button>
-            <button class="nav-link" data-section="settings" style="pointer-events:none; opacity:0.4;">
+            <button class="nav-link" data-section="settings">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 Settings
             </button>
@@ -163,9 +179,7 @@
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
                 Dashboard
             </h1>
-            <div class="stats-grid" id="dashboard-stats">
-                <!-- loaded dynamically -->
-            </div>
+            <div class="stats-grid" id="dashboard-stats"></div>
             <h2 class="section-title" style="margin-top:2rem;">Recent Activity</h2>
             <div id="activity-feed" class="glass-card" style="padding:1.5rem;">
                 <p style="color:var(--text-secondary);">Loading...</p>
@@ -224,6 +238,183 @@
             </div>
             <div id="keys-loading" style="text-align:center; padding:2rem;"><div class="skeleton" style="height:100px;"></div></div>
         </section>
+
+        <!-- Subscriptions Section -->
+        <section id="section-subscriptions" class="hidden">
+            <h1 class="section-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                Subscriptions
+            </h1>
+            <div class="stats-grid" id="subscription-stats"></div>
+            <div class="flex-between" style="margin-bottom:1rem;">
+                <div class="search-bar" style="flex:1; margin-bottom:0;">
+                    <input type="text" id="sub-search" placeholder="Search by username or Discord ID..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.5rem 1rem; color:var(--text-primary); font-family:var(--font-outfit); font-size:0.875rem; outline:none; flex:1;" />
+                    <button class="btn btn-ghost" onclick="loadSubscriptions()">Search</button>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <select id="sub-plan-filter" class="btn btn-ghost" style="padding:0.5rem; font-size:0.8rem;" onchange="loadSubscriptions()">
+                        <option value="">All Plans</option>
+                        <option value="FREE">FREE</option>
+                        <option value="PREMIUM">PREMIUM</option>
+                        <option value="PRO">PRO</option>
+                        <option value="ENTERPRISE">ENTERPRISE</option>
+                    </select>
+                    <select id="sub-status-filter" class="btn btn-ghost" style="padding:0.5rem; font-size:0.8rem;" onchange="loadSubscriptions()">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="expired">Expired</option>
+                        <option value="suspended">Suspended</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="subscriptions-table">
+                    <thead><tr><th>User</th><th>Discord ID</th><th>Plan</th><th>Status</th><th>Start Date</th><th>End Date</th><th>Actions</th></tr></thead>
+                    <tbody id="subscriptions-tbody"></tbody>
+                </table>
+            </div>
+            <div id="subscriptions-loading" style="text-align:center; padding:2rem;"><div class="skeleton" style="height:100px;"></div></div>
+        </section>
+
+        <!-- Analytics Section -->
+        <section id="section-analytics" class="hidden">
+            <h1 class="section-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                Analytics
+            </h1>
+            <div class="stats-grid" id="analytics-stats"></div>
+            <div class="chart-container">
+                <h3 style="margin-bottom:1rem;">User Growth (30 days)</h3>
+                <canvas id="userGrowthChart" width="400" height="200"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3 style="margin-bottom:1rem;">Tracker Activity (30 days)</h3>
+                <canvas id="trackerActivityChart" width="400" height="200"></canvas>
+            </div>
+            <div id="analytics-loading" style="text-align:center; padding:2rem;"><div class="skeleton" style="height:100px;"></div></div>
+        </section>
+
+        <!-- Security Section -->
+        <section id="section-security" class="hidden">
+            <h1 class="section-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+                Security
+            </h1>
+            <div class="stats-grid" id="security-stats">
+                <div class="stat-card"><div class="label">Active Sessions</div><div class="value" id="sec-sessions">0</div></div>
+                <div class="stat-card"><div class="label">Security Events (24h)</div><div class="value" id="sec-events">0</div></div>
+                <div class="stat-card"><div class="label">Rate Limit Violations</div><div class="value" id="sec-rate-violations">0</div></div>
+                <div class="stat-card"><div class="label">Banned Users</div><div class="value" id="sec-banned">0</div></div>
+            </div>
+            <h2 class="section-title">Active Sessions</h2>
+            <div class="table-container">
+                <table id="sessions-table">
+                    <thead><tr><th>Username</th><th>Last Login</th><th>Actions</th></tr></thead>
+                    <tbody id="sessions-tbody"></tbody>
+                </table>
+            </div>
+            <h2 class="section-title" style="margin-top:1.5rem;">Security Events</h2>
+            <div class="table-container">
+                <table id="secevents-table">
+                    <thead><tr><th>Type</th><th>Details</th><th>IP</th><th>Time</th></tr></thead>
+                    <tbody id="secevents-tbody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Logs Section -->
+        <section id="section-logs" class="hidden">
+            <h1 class="section-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Audit Logs
+            </h1>
+            <div class="search-bar">
+                <input type="text" id="log-search" placeholder="Search logs..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.5rem 1rem; color:var(--text-primary); font-family:var(--font-outfit); font-size:0.875rem; outline:none; flex:1;" />
+                <select id="log-severity-filter" class="btn btn-ghost" style="padding:0.5rem;" onchange="loadLogs()">
+                    <option value="">All Severity</option>
+                    <option value="info">Info</option>
+                    <option value="warning">Warning</option>
+                    <option value="error">Error</option>
+                </select>
+                <button class="btn btn-ghost" onclick="loadLogs()">Filter</button>
+            </div>
+            <div class="table-container">
+                <table id="logs-table">
+                    <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Details</th><th>Severity</th></tr></thead>
+                    <tbody id="logs-tbody"></tbody>
+                </table>
+            </div>
+            <div class="pagination" id="logs-pagination"></div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="section-settings" class="hidden">
+            <h1 class="section-title">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Settings
+            </h1>
+            <div class="glass-card" style="padding:1.5rem;">
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Maintenance Mode</div>
+                        <div class="setting-desc">Disable all non-admin access to the site.</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="setting-maintenance" onchange="updateSetting('maintenance_mode', this.checked ? 'true' : 'false')">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Global IP Rate Limit</div>
+                        <div class="setting-desc">Max requests per minute per IP.</div>
+                    </div>
+                    <input type="number" id="setting-rate-ip" class="btn btn-ghost" style="width:100px; padding:0.5rem;" value="120" onchange="updateSetting('rate_limit_ip', this.value)" />
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">User API Rate Limit</div>
+                        <div class="setting-desc">Max dashboard requests per minute per user.</div>
+                    </div>
+                    <input type="number" id="setting-rate-user" class="btn btn-ghost" style="width:100px; padding:0.5rem;" value="30" onchange="updateSetting('rate_limit_user', this.value)" />
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Default Plan</div>
+                        <div class="setting-desc">Plan assigned to new users.</div>
+                    </div>
+                    <select id="setting-default-plan" class="btn btn-ghost" style="padding:0.5rem;" onchange="updateSetting('default_plan', this.value)">
+                        <option value="FREE">FREE</option>
+                        <option value="PREMIUM">PREMIUM</option>
+                        <option value="PRO">PRO</option>
+                        <option value="ENTERPRISE">ENTERPRISE</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <div><div class="setting-label">API Rate Limits by Plan</div></div>
+                </div>
+                <div class="setting-row">
+                    <div><div class="setting-desc">FREE</div></div>
+                    <input type="number" id="setting-api-free" class="btn btn-ghost" style="width:100px;" value="10" onchange="updateSetting('api_rate_free', this.value)" />
+                </div>
+                <div class="setting-row">
+                    <div><div class="setting-desc">PREMIUM</div></div>
+                    <input type="number" id="setting-api-premium" class="btn btn-ghost" style="width:100px;" value="100" onchange="updateSetting('api_rate_premium', this.value)" />
+                </div>
+                <div class="setting-row">
+                    <div><div class="setting-desc">PRO</div></div>
+                    <input type="number" id="setting-api-pro" class="btn btn-ghost" style="width:100px;" value="500" onchange="updateSetting('api_rate_pro', this.value)" />
+                </div>
+                <div class="setting-row">
+                    <div><div class="setting-desc">ENTERPRISE</div></div>
+                    <input type="number" id="setting-api-enterprise" class="btn btn-ghost" style="width:100px;" value="5000" onchange="updateSetting('api_rate_enterprise', this.value)" />
+                </div>
+                <div style="margin-top:1rem;">
+                    <button class="btn btn-accent" onclick="saveSettings()">Save All Settings</button>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- User Detail Modal -->
@@ -241,11 +432,12 @@
     <div id="toast-container"></div>
 
     <script>
-        // ⚠️ Must point to the Worker domain
         const API_BASE = 'https://mrc-saber-api.stat-tracker.workers.dev';
         let currentSection = 'dashboard';
+        let currentLogPage = 1;
+        let logFilters = {};
 
-        // ─── Auth helper ───
+        // Auth helper
         async function apiFetch(url, options = {}) {
             const res = await fetch(API_BASE + url, { ...options, credentials: 'include' });
             if (res.status === 401) { window.location.href = '/index.html'; throw new Error('Unauthorized'); }
@@ -257,20 +449,26 @@
             return res.json();
         }
 
-        // ─── Navigation ───
+        // Navigation
         document.querySelectorAll('.nav-link[data-section]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const section = btn.dataset.section;
-                if (['subscriptions','analytics','security','logs','settings'].includes(section)) return;
                 document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 btn.classList.add('active');
                 document.querySelectorAll('section[id^="section-"]').forEach(s => s.classList.add('hidden'));
                 document.getElementById('section-' + section).classList.remove('hidden');
                 currentSection = section;
-                if (section === 'dashboard') loadDashboard();
-                else if (section === 'users') loadUsers();
-                else if (section === 'trackers') loadTrackers();
-                else if (section === 'keys') loadKeys();
+                switch(section) {
+                    case 'dashboard': loadDashboard(); break;
+                    case 'users': loadUsers(); break;
+                    case 'trackers': loadTrackers(); break;
+                    case 'keys': loadKeys(); break;
+                    case 'subscriptions': loadSubscriptions(); break;
+                    case 'analytics': loadAnalytics(); break;
+                    case 'security': loadSecurity(); break;
+                    case 'logs': loadLogs(); break;
+                    case 'settings': loadSettings(); break;
+                }
             });
         });
 
@@ -366,15 +564,7 @@
                 if (!trackers.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">No trackers found.</td></tr>'; return; }
                 tbody.innerHTML = trackers.map(t => {
                     const statusBadge = t.online ? '<span class="badge badge-success">Online</span>' : '<span class="badge badge-danger">Offline</span>';
-                    return `
-                    <tr>
-                        <td>${escapeHTML(t.username)}</td>
-                        <td>${escapeHTML(t.ownerUsername)}</td>
-                        <td>${statusBadge}</td>
-                        <td>${t.lastHeartbeat ? new Date(t.lastHeartbeat).toLocaleString() : 'Never'}</td>
-                        <td>1.0</td>
-                        <td>--</td>
-                    </tr>`;
+                    return `<tr><td>${escapeHTML(t.username)}</td><td>${escapeHTML(t.ownerUsername)}</td><td>${statusBadge}</td><td>${t.lastHeartbeat ? new Date(t.lastHeartbeat).toLocaleString() : 'Never'}</td><td>1.0</td><td>--</td></tr>`;
                 }).join('');
             } catch(e) { loading.classList.add('hidden'); showToast('Failed to load trackers'); }
         }
@@ -390,10 +580,8 @@
                 loading.classList.add('hidden');
                 if (!keys.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No API keys found.</td></tr>'; return; }
                 tbody.innerHTML = keys.map(k => {
-                    // Mask the full key but keep prefix visible
                     const masked = k.keyPrefix ? k.keyPrefix + '••••••••' : 'No prefix';
-                    return `
-                    <tr>
+                    return `<tr>
                         <td>${escapeHTML(k.ownerUsername)}</td>
                         <td><span class="key-masked">${masked}</span></td>
                         <td><span class="badge badge-success">Active</span></td>
@@ -408,7 +596,6 @@
             } catch(e) { loading.classList.add('hidden'); showToast('Failed to load API keys'); }
         }
 
-        // Key management functions
         async function revealKey(userId) {
             try {
                 const user = await apiFetch('/api/admin/user/' + userId);
@@ -417,9 +604,7 @@
                 } else {
                     showToast('No API key found for this user.');
                 }
-            } catch(e) {
-                showToast('Failed to reveal key: ' + e.message);
-            }
+            } catch(e) { showToast('Failed to reveal key: ' + e.message); }
         }
 
         async function copyKey(userId) {
@@ -431,9 +616,7 @@
                 } else {
                     showToast('No API key found.');
                 }
-            } catch(e) {
-                showToast('Failed to copy key: ' + e.message);
-            }
+            } catch(e) { showToast('Failed to copy key: ' + e.message); }
         }
 
         async function regenerateKey(userId) {
@@ -450,15 +633,237 @@
                 } else {
                     showToast('Regeneration failed: ' + result.error);
                 }
-            } catch(e) {
-                showToast('Error regenerating key: ' + e.message);
-            }
+            } catch(e) { showToast('Error regenerating key: ' + e.message); }
         }
 
-        // Expose functions to global scope for onclick
+        // ─── Subscriptions ───
+        async function loadSubscriptions() {
+            const tbody = document.getElementById('subscriptions-tbody');
+            const loading = document.getElementById('subscriptions-loading');
+            loading.classList.remove('hidden');
+            tbody.innerHTML = '';
+            try {
+                const search = document.getElementById('sub-search').value.trim();
+                const plan = document.getElementById('sub-plan-filter').value;
+                const status = document.getElementById('sub-status-filter').value;
+                const params = new URLSearchParams();
+                if (search) params.append('search', search);
+                if (plan) params.append('plan', plan);
+                if (status) params.append('status', status);
+                const subs = await apiFetch('/api/admin/subscriptions?' + params.toString());
+                const statsData = await apiFetch('/api/admin/subscriptions/stats');
+                renderSubscriptionStats(statsData);
+                loading.classList.add('hidden');
+                if (!subs.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No subscriptions found.</td></tr>'; return; }
+                tbody.innerHTML = subs.map(s => `
+                    <tr>
+                        <td>${escapeHTML(s.username)}</td>
+                        <td>${s.discordId}</td>
+                        <td><span class="badge badge-info">${s.plan}</span></td>
+                        <td><span class="badge ${s.status === 'active' ? 'badge-success' : (s.status === 'expired' ? 'badge-warning' : 'badge-danger')}">${s.status}</span></td>
+                        <td>${new Date(s.startDate).toLocaleDateString()}</td>
+                        <td>${s.endDate ? new Date(s.endDate).toLocaleDateString() : 'Never'}</td>
+                        <td>
+                            <button class="btn btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="editSubscription(${s.userId})">Edit</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load subscriptions'); }
+        }
+
+        function renderSubscriptionStats(data) {
+            const statsDiv = document.getElementById('subscription-stats');
+            statsDiv.innerHTML = `
+                <div class="stat-card"><div class="label">Active Subscriptions</div><div class="value">${data.activeSubscriptions}</div></div>
+                <div class="stat-card"><div class="label">FREE</div><div class="value">${data.planDistribution.find(p => p.plan === 'FREE')?.count || 0}</div></div>
+                <div class="stat-card"><div class="label">PREMIUM</div><div class="value">${data.planDistribution.find(p => p.plan === 'PREMIUM')?.count || 0}</div></div>
+                <div class="stat-card"><div class="label">PRO</div><div class="value">${data.planDistribution.find(p => p.plan === 'PRO')?.count || 0}</div></div>
+                <div class="stat-card"><div class="label">ENTERPRISE</div><div class="value">${data.planDistribution.find(p => p.plan === 'ENTERPRISE')?.count || 0}</div></div>
+                <div class="stat-card"><div class="label">Expiring Soon</div><div class="value">${data.expiringSoon?.length || 0}</div></div>
+            `;
+        }
+
+        window.editSubscription = async function(userId) {
+            const plan = prompt('Enter new plan (FREE, PREMIUM, PRO, ENTERPRISE):');
+            if (!plan) return;
+            try {
+                await apiFetch('/api/admin/subscriptions/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, plan })
+                });
+                showToast('Subscription updated!');
+                loadSubscriptions();
+            } catch(e) { showToast('Error: ' + e.message); }
+        };
+
+        // ─── Analytics ───
+        async function loadAnalytics() {
+            const loading = document.getElementById('analytics-loading');
+            loading.classList.remove('hidden');
+            try {
+                const data = await apiFetch('/api/admin/analytics');
+                document.getElementById('analytics-stats').innerHTML = `
+                    <div class="stat-card"><div class="label">Total Users</div><div class="value">${data.totalUsers}</div></div>
+                    <div class="stat-card"><div class="label">New Today</div><div class="value">${data.newUsersToday}</div></div>
+                    <div class="stat-card"><div class="label">Active Now</div><div class="value">${data.activeNow}</div></div>
+                    <div class="stat-card"><div class="label">API Requests Today</div><div class="value">${data.apiRequestsToday}</div></div>
+                    <div class="stat-card"><div class="label">Tracker Updates Today</div><div class="value">${data.trackerUpdatesToday}</div></div>
+                `;
+                drawChart('userGrowthChart', data.userGrowth, 'day', 'count', 'User Growth');
+                drawChart('trackerActivityChart', data.trackerActivity, 'day', 'count', 'Tracker Activity');
+                loading.classList.add('hidden');
+            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load analytics'); }
+        }
+
+        function drawChart(canvasId, data, labelKey, valueKey, title) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = 200;
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 40;
+            const maxVal = Math.max(1, ...data.map(d => d[valueKey]));
+            const stepX = (width - padding * 2) / (data.length - 1 || 1);
+            ctx.clearRect(0, 0, width, height);
+            ctx.beginPath();
+            ctx.strokeStyle = '#2f8ffb';
+            ctx.lineWidth = 2;
+            data.forEach((d, i) => {
+                const x = padding + i * stepX;
+                const y = height - padding - (d[valueKey] / maxVal) * (height - padding * 2);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            // labels
+            ctx.fillStyle = 'rgba(180,180,180,0.75)';
+            ctx.font = '10px Outfit';
+            data.forEach((d, i) => {
+                const x = padding + i * stepX;
+                ctx.fillText(d[labelKey].slice(5), x - 10, height - padding + 15);
+            });
+        }
+
+        // ─── Security ───
+        async function loadSecurity() {
+            try {
+                const events = await apiFetch('/api/admin/security/events?limit=50');
+                const sessions = await apiFetch('/api/admin/security/sessions');
+                document.getElementById('sec-sessions').textContent = sessions.length;
+                document.getElementById('sec-events').textContent = events.length;
+                // rate violations and banned users not tracked yet
+                document.getElementById('sec-rate-violations').textContent = '0';
+                document.getElementById('sec-banned').textContent = '0';
+                const seventsTbody = document.getElementById('secevents-tbody');
+                seventsTbody.innerHTML = events.map(e => `
+                    <tr>
+                        <td>${escapeHTML(e.event_type)}</td>
+                        <td>${escapeHTML(e.details || '')}</td>
+                        <td>${e.ip || '-'}</td>
+                        <td>${new Date(e.created_at).toLocaleString()}</td>
+                    </tr>`).join('') || '<tr><td colspan="4">No security events.</td></tr>';
+                const sessionsTbody = document.getElementById('sessions-tbody');
+                sessionsTbody.innerHTML = sessions.map(s => `
+                    <tr>
+                        <td>${escapeHTML(s.username)}</td>
+                        <td>${s.lastLogin ? new Date(s.lastLogin).toLocaleString() : 'Never'}</td>
+                        <td>
+                            <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="revokeSessions(${s.userId})">Revoke</button>
+                        </td>
+                    </tr>`).join('') || '<tr><td colspan="3">No active sessions.</td></tr>';
+            } catch(e) { showToast('Failed to load security data'); }
+        }
+
+        window.revokeSessions = async function(userId) {
+            if (!confirm('Force this user to re-login?')) return;
+            try {
+                await apiFetch('/api/admin/security/revoke-sessions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+                showToast('Sessions revoked.');
+                loadSecurity();
+            } catch(e) { showToast('Error: ' + e.message); }
+        };
+
+        // ─── Logs ───
+        async function loadLogs(page = 1) {
+            currentLogPage = page;
+            const search = document.getElementById('log-search').value.trim();
+            const severity = document.getElementById('log-severity-filter').value;
+            const params = new URLSearchParams({ page, limit: 50 });
+            if (search) params.append('search', search);
+            if (severity) params.append('severity', severity);
+            try {
+                const data = await apiFetch('/api/admin/logs?' + params.toString());
+                const tbody = document.getElementById('logs-tbody');
+                tbody.innerHTML = data.logs.map(l => `
+                    <tr>
+                        <td>${new Date(l.created_at).toLocaleString()}</td>
+                        <td>${l.username || l.user_id || 'System'}</td>
+                        <td>${escapeHTML(l.action)}</td>
+                        <td>${escapeHTML(l.details || '')}</td>
+                        <td><span class="badge ${l.severity === 'error' ? 'badge-danger' : (l.severity === 'warning' ? 'badge-warning' : 'badge-neutral')}">${l.severity}</span></td>
+                    </tr>
+                `).join('');
+                // Pagination
+                const pagination = document.getElementById('logs-pagination');
+                let html = '';
+                html += `<button ${page === 1 ? 'disabled' : ''} onclick="loadLogs(1)">First</button>`;
+                if (page > 1) html += `<button onclick="loadLogs(${page - 1})">Prev</button>`;
+                html += `<span style="padding:0 1rem;">Page ${page} of ${data.totalPages || 1}</span>`;
+                if (page < data.totalPages) html += `<button onclick="loadLogs(${page + 1})">Next</button>`;
+                html += `<button ${page === data.totalPages ? 'disabled' : ''} onclick="loadLogs(${data.totalPages})">Last</button>`;
+                pagination.innerHTML = html;
+            } catch(e) { showToast('Failed to load logs'); }
+        }
+
+        // ─── Settings ───
+        async function loadSettings() {
+            try {
+                const settings = await apiFetch('/api/admin/settings');
+                document.getElementById('setting-maintenance').checked = settings.maintenance_mode === 'true';
+                document.getElementById('setting-rate-ip').value = settings.rate_limit_ip || 120;
+                document.getElementById('setting-rate-user').value = settings.rate_limit_user || 30;
+                document.getElementById('setting-default-plan').value = settings.default_plan || 'FREE';
+                document.getElementById('setting-api-free').value = settings.api_rate_free || 10;
+                document.getElementById('setting-api-premium').value = settings.api_rate_premium || 100;
+                document.getElementById('setting-api-pro').value = settings.api_rate_pro || 500;
+                document.getElementById('setting-api-enterprise').value = settings.api_rate_enterprise || 5000;
+            } catch(e) { showToast('Failed to load settings'); }
+        }
+
+        async function saveSettings() {
+            const payload = {
+                maintenance_mode: document.getElementById('setting-maintenance').checked ? 'true' : 'false',
+                rate_limit_ip: document.getElementById('setting-rate-ip').value,
+                rate_limit_user: document.getElementById('setting-rate-user').value,
+                default_plan: document.getElementById('setting-default-plan').value,
+                api_rate_free: document.getElementById('setting-api-free').value,
+                api_rate_premium: document.getElementById('setting-api-premium').value,
+                api_rate_pro: document.getElementById('setting-api-pro').value,
+                api_rate_enterprise: document.getElementById('setting-api-enterprise').value,
+            };
+            try {
+                await apiFetch('/api/admin/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                showToast('Settings saved!');
+            } catch(e) { showToast('Error saving settings: ' + e.message); }
+        }
+
+        // expose helpers to global
         window.revealKey = revealKey;
         window.copyKey = copyKey;
         window.regenerateKey = regenerateKey;
+        window.revokeSessions = revokeSessions;
+        window.editSubscription = editSubscription;
 
         function escapeHTML(str) {
             const d = document.createElement('div');
@@ -466,7 +871,7 @@
             return d.innerHTML;
         }
 
-        // Initial load
+        // initial load
         loadDashboard();
     </script>
 </body>
