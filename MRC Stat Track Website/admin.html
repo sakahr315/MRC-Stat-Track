@@ -179,7 +179,7 @@
                 Users
             </h1>
             <div class="search-bar">
-                <input type="text" id="user-search" class="search-bar" placeholder="Search by username or ID..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.5rem 1rem; color:var(--text-primary); font-family:var(--font-outfit); font-size:0.875rem; outline:none; flex:1;" />
+                <input type="text" id="user-search" placeholder="Search by username or ID..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.5rem 1rem; color:var(--text-primary); font-family:var(--font-outfit); font-size:0.875rem; outline:none; flex:1;" />
                 <button class="btn btn-ghost" onclick="loadUsers()">Search</button>
             </div>
             <div class="table-container">
@@ -198,7 +198,7 @@
                 Trackers
             </h1>
             <div class="search-bar">
-                <input type="text" id="tracker-search" class="search-bar" placeholder="Search by Roblox username..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.5rem 1rem; color:var(--text-primary); font-family:var(--font-outfit); font-size:0.875rem; outline:none; flex:1;" />
+                <input type="text" id="tracker-search" placeholder="Search by Roblox username..." style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:0.5rem 1rem; color:var(--text-primary); font-family:var(--font-outfit); font-size:0.875rem; outline:none; flex:1;" />
                 <button class="btn btn-ghost" onclick="loadTrackers()">Search</button>
             </div>
             <div class="table-container">
@@ -241,10 +241,11 @@
     <div id="toast-container"></div>
 
     <script>
-        const API_BASE = '';
+        // ⚠️ Must point to the Worker domain
+        const API_BASE = 'https://mrc-saber-api.stat-tracker.workers.dev';
         let currentSection = 'dashboard';
 
-        // Auth helper
+        // ─── Auth helper ───
         async function apiFetch(url, options = {}) {
             const res = await fetch(API_BASE + url, { ...options, credentials: 'include' });
             if (res.status === 401) { window.location.href = '/index.html'; throw new Error('Unauthorized'); }
@@ -256,7 +257,7 @@
             return res.json();
         }
 
-        // Navigation
+        // ─── Navigation ───
         document.querySelectorAll('.nav-link[data-section]').forEach(btn => {
             btn.addEventListener('click', () => {
                 const section = btn.dataset.section;
@@ -273,7 +274,7 @@
             });
         });
 
-        function showToast(msg, success = true) {
+        function showToast(msg) {
             const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
             document.getElementById('toast-container').appendChild(t);
             setTimeout(() => t.remove(), 4000);
@@ -298,7 +299,7 @@
                 statsDiv.innerHTML = stats.map(s => `<div class="stat-card glass-card"><div class="label">${s.label}</div><div class="value">${s.value}</div></div>`).join('');
                 const feed = document.getElementById('activity-feed');
                 feed.innerHTML = data.recentActivity.length ? data.recentActivity.map(a => `<div style="margin-bottom:0.5rem; font-size:0.85rem;">${a.time} – ${a.message}</div>`).join('') : '<p>No recent activity.</p>';
-            } catch(e) { showToast('Error loading dashboard', false); }
+            } catch(e) { showToast('Error loading dashboard'); }
         }
 
         // ─── Users ───
@@ -325,7 +326,7 @@
                         <td><button class="btn btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="openUserDetail(${u.id})">Open</button></td>
                     </tr>
                 `).join('');
-            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load users', false); }
+            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load users'); }
         }
 
         window.openUserDetail = async function(userId) {
@@ -339,7 +340,7 @@
                     <p><strong>Created:</strong> ${new Date(user.createdAt).toLocaleString()}</p>
                     <p><strong>Last Login:</strong> ${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}</p>
                     <p><strong>Subscription:</strong> ${user.subscription}</p>
-                    <p><strong>API Key:</strong> ${user.apiKeyPrefix ? user.apiKeyPrefix + '...' : 'None'}</p>
+                    <p><strong>API Key:</strong> ${user.apiKey ? user.apiKeyPrefix + user.apiKey.slice(10) : (user.apiKeyPrefix ? user.apiKeyPrefix + '...' : 'None')}</p>
                     <p><strong>Accounts:</strong> ${user.accounts?.length || 0}</p>
                     <p><strong>Role:</strong> ${user.permissions}</p>
                     <div style="margin-top:1rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
@@ -348,7 +349,7 @@
                     </div>
                 `;
                 modal.classList.remove('hidden');
-            } catch(e) { showToast('Failed to load user detail', false); }
+            } catch(e) { showToast('Failed to load user detail'); }
         };
         window.closeUserModal = function() { document.getElementById('user-modal').classList.add('hidden'); };
 
@@ -375,7 +376,7 @@
                         <td>--</td>
                     </tr>`;
                 }).join('');
-            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load trackers', false); }
+            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load trackers'); }
         }
 
         // ─── API Keys ───
@@ -388,23 +389,82 @@
                 const keys = await apiFetch('/api/admin/keys');
                 loading.classList.add('hidden');
                 if (!keys.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">No API keys found.</td></tr>'; return; }
-                tbody.innerHTML = keys.map(k => `
+                tbody.innerHTML = keys.map(k => {
+                    // Mask the full key but keep prefix visible
+                    const masked = k.keyPrefix ? k.keyPrefix + '••••••••' : 'No prefix';
+                    return `
                     <tr>
                         <td>${escapeHTML(k.ownerUsername)}</td>
-                        <td><span class="key-masked">${k.keyPrefix}••••••••</span></td>
+                        <td><span class="key-masked">${masked}</span></td>
                         <td><span class="badge badge-success">Active</span></td>
                         <td>${new Date(k.createdAt).toLocaleDateString()}</td>
                         <td>
-                            <button class="btn btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="revealKey(${k.id})">Reveal</button>
-                            <button class="btn btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="copyKey(${k.id})">Copy</button>
-                            <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="regenerateKey(${k.id})">Regen</button>
+                            <button class="btn btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="revealKey(${k.userId})">Reveal</button>
+                            <button class="btn btn-ghost" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="copyKey(${k.userId})">Copy</button>
+                            <button class="btn btn-danger" style="padding:0.25rem 0.5rem; font-size:0.7rem;" onclick="regenerateKey(${k.userId})">Regen</button>
                         </td>
-                    </tr>
-                `).join('');
-            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load API keys', false); }
+                    </tr>`;
+                }).join('');
+            } catch(e) { loading.classList.add('hidden'); showToast('Failed to load API keys'); }
         }
 
-        function escapeHTML(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+        // Key management functions
+        async function revealKey(userId) {
+            try {
+                const user = await apiFetch('/api/admin/user/' + userId);
+                if (user.apiKey) {
+                    alert('Full API Key:\n' + user.apiKey);
+                } else {
+                    showToast('No API key found for this user.');
+                }
+            } catch(e) {
+                showToast('Failed to reveal key: ' + e.message);
+            }
+        }
+
+        async function copyKey(userId) {
+            try {
+                const user = await apiFetch('/api/admin/user/' + userId);
+                if (user.apiKey) {
+                    await navigator.clipboard.writeText(user.apiKey);
+                    showToast('API key copied!');
+                } else {
+                    showToast('No API key found.');
+                }
+            } catch(e) {
+                showToast('Failed to copy key: ' + e.message);
+            }
+        }
+
+        async function regenerateKey(userId) {
+            if (!confirm('Generate a new API key? The old one will stop working immediately.')) return;
+            try {
+                const result = await apiFetch('/api/admin/user/generate-key', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId })
+                });
+                if (result.success) {
+                    alert('New API key:\n' + result.apiKey);
+                    loadKeys();
+                } else {
+                    showToast('Regeneration failed: ' + result.error);
+                }
+            } catch(e) {
+                showToast('Error regenerating key: ' + e.message);
+            }
+        }
+
+        // Expose functions to global scope for onclick
+        window.revealKey = revealKey;
+        window.copyKey = copyKey;
+        window.regenerateKey = regenerateKey;
+
+        function escapeHTML(str) {
+            const d = document.createElement('div');
+            d.textContent = str;
+            return d.innerHTML;
+        }
 
         // Initial load
         loadDashboard();
