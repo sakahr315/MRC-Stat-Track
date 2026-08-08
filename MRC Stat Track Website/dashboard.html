@@ -152,57 +152,15 @@
         @keyframes slideIn { from { transform:translateX(100px); opacity:0; } to { transform:translateX(0); opacity:1; } }
         @keyframes fadeOut { from { opacity:1; } to { opacity:0; transform:translateY(10px); } }
 
-        .connected-account-row {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1rem;
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-            transition: background 0.2s;
-            justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+        .connected-account-row { display: flex; align-items: center; padding: 0.75rem 1rem; background: rgba(255,255,255,0.02); border-radius: 12px; transition: background 0.2s; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
         .connected-account-row:hover { background: rgba(255,255,255,0.05); }
         .connected-account-row .account-details { display: flex; flex-direction: column; gap: 0.1rem; }
         .connected-account-row .account-details .name-line { display: flex; align-items: center; gap: 0.5rem; }
 
-        .tracker-code {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 12px;
-            padding: 1.5rem;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            color: #e0e0e0;
-            white-space: pre-wrap;
-            overflow-x: auto;
-            position: relative;
-        }
-        .copy-btn {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-        }
+        .tracker-code { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 1.5rem; font-family: 'Fira Code', monospace; font-size: 0.85rem; color: #e0e0e0; white-space: pre-wrap; overflow-x: auto; position: relative; }
+        .copy-btn { position: absolute; top: 0.5rem; right: 0.5rem; }
 
-        .admin-table { width: 100%; border-collapse: collapse; }
-        .admin-table th, .admin-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.06); }
-        .admin-table th { font-size: 0.7rem; text-transform: uppercase; color: var(--text-secondary); }
-        .admin-table td { font-size: 0.85rem; }
-
-        .api-key-masked {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 10px;
-            padding: 0.5rem 1rem;
-            color: var(--text-primary);
-            font-family: var(--font-outfit);
-            font-size: 0.875rem;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+        .api-key-masked { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 0.5rem 1rem; color: var(--text-primary); font-family: var(--font-outfit); font-size: 0.875rem; width: 100%; display: flex; align-items: center; justify-content: space-between; }
         .api-key-masked .key-content { display: flex; align-items: center; gap: 0.5rem; flex: 1; }
         .api-key-masked .masked-text { transition: opacity 0.2s; }
         .api-key-masked .full-key-text { display: none; color: var(--text-primary); font-family: 'Fira Code', monospace; word-break: break-all; }
@@ -219,6 +177,14 @@
         .session-feed-item .time { font-size: 0.7rem; color: var(--text-secondary); min-width: 50px; }
         .bar-chart { display: flex; align-items: flex-end; gap: 2px; height: 150px; }
         .bar-chart .bar { flex: 1; background: linear-gradient(to top, var(--accent), rgba(47,143,251,0.3)); border-radius: 3px 3px 0 0; transition: height 0.5s ease; }
+
+        /* game selection cards */
+        .game-card { text-align: center; padding: 2rem; cursor: pointer; }
+        .game-card h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .game-card p { color: var(--text-secondary); margin-bottom: 1rem; }
+
+        /* sidebar toggle hidden on desktop */
+        .sidebar-toggle { display: none; }
 
         @media (max-width: 768px) {
             body { flex-direction: column; }
@@ -238,6 +204,8 @@
             .pet-cards-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem; }
             .pet-card img { height: 80px; }
             .pet-card .name { font-size: 0.8rem; }
+            .sidebar-toggle { display: flex; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 8px; padding: 0.5rem; cursor: pointer; color: var(--text-primary); }
         }
     </style>
 </head>
@@ -264,7 +232,11 @@
             </svg>
         </button>
         <nav class="nav-links" id="nav-links">
-            <button class="nav-link active" data-page="dashboard">
+            <button class="nav-link active" data-page="game-selection">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                Games
+            </button>
+            <button class="nav-link" data-page="dashboard">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
                 Dashboard
             </button>
@@ -276,10 +248,6 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
                 Tracker
             </button>
-            <button class="nav-link" data-page="games">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                Games
-            </button>
             <button class="nav-link" data-page="reviews">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 Reviews
@@ -289,7 +257,7 @@
                 Settings
             </button>
             <button class="nav-link" data-page="admin" id="admin-nav-link" style="display:none;"
-                onclick="window.location.href='https://mrc-saber-api.stat-tracker.workers.dev/admin'">
+                onclick="window.location.href='https://mrc.stat-tracker.workers.dev/admin'">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
                 Admin
             </button>
@@ -298,69 +266,41 @@
 
     <!-- Main Content -->
     <main class="main-content" id="main-content">
-        <!-- Dashboard Page -->
-        <div id="page-dashboard">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;">
-                <div>
-                    <h1 style="font-size:2rem;font-weight:700;">Welcome back, <span id="dashboard-username">User</span></h1>
-                    <p style="color:var(--text-secondary);">Manage your trackers and monitor your Roblox accounts.</p>
+        <!-- Game Selection Page -->
+        <div id="page-game-selection" style="display:block;">
+            <h1 style="font-size:2.2rem; text-align:center; margin-bottom:2rem;">Select Your Game</h1>
+            <div style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap;">
+                <div class="glass-card hover-lift game-card" style="width:280px;" onclick="selectGame('saber')">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:1rem; opacity:0.8;">
+                        <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M8 8l3 3"/>
+                    </svg>
+                    <h2>Saber Simulator</h2>
+                    <p>Track your gems, pets, and inventory.</p>
+                    <button class="btn btn-accent shine-btn" style="margin-top:1rem;">Select</button>
                 </div>
-                <div style="display:flex;gap:0.5rem;">
-                    <button class="btn btn-accent shine-btn" id="game-btn-saber" onclick="selectGame('saber')">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M8 8l3 3"/></svg>
-                        Saber Simulator
-                    </button>
-                    <button class="btn btn-ghost" id="game-btn-ps99" onclick="selectGame('ps99')">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V2"/><path d="M5 12H2"/><path d="M22 12h-3"/><path d="M12 16v-4"/><path d="M8 8l-2 2"/><path d="M16 8l2 2"/><path d="M20 12v4a2 2 0 0 1-2 2h-4"/><path d="M4 12v4a2 2 0 0 0 2 2h4"/><circle cx="12" cy="12" r="3"/></svg>
-                        PS99
-                    </button>
+                <div class="glass-card hover-lift game-card" style="width:280px;" onclick="selectGame('ps99')">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:1rem; opacity:0.8;">
+                        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <h2>Pet Simulator 99</h2>
+                    <p>Automatic pet images – always up to date.</p>
+                    <button class="btn btn-accent shine-btn" style="margin-top:1rem;">Select</button>
                 </div>
-            </div>
-            <div id="saber-stats" class="stats-grid">
-                <div class="stat-card"><div class="label">Total Accounts</div><div class="value" id="stat-total-accounts">—</div></div>
-                <div class="stat-card"><div class="label">Online</div><div class="value" id="stat-online">—</div></div>
-                <div class="stat-card"><div class="label">Offline</div><div class="value" id="stat-offline">—</div></div>
-            </div>
-            <div id="saber-content">
-                <div id="rare-pets-loading" class="glass-card" style="padding:1.5rem;margin-bottom:2rem;"><div class="skeleton" style="height:150px;"></div></div>
-                <div id="rare-pets-container" style="display:none;">
-                    <div class="glass-card" style="padding:1.5rem;margin-bottom:2rem;">
-                        <h2 class="section-title">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
-                            Secret Pet
-                        </h2>
-                        <div class="pet-cards-grid" id="secret-grid"></div>
-                    </div>
-                    <div class="glass-card" style="padding:1.5rem;margin-bottom:2rem;">
-                        <h2 class="section-title">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-                            Professor Chaos
-                        </h2>
-                        <div class="pet-cards-grid" id="triple-moon-grid"></div>
-                    </div>
-                </div>
-                <div style="text-align:center;margin-top:2rem;display:none;" id="view-inventory-btn-container">
-                    <button class="btn btn-accent shine-btn" style="padding:1rem 2.5rem;font-size:1rem;" onclick="openFullInventory()">View Full Inventory</button>
-                </div>
-            </div>
-            <!-- PS99 Section -->
-            <div id="ps99-stats" class="stats-grid" style="display:none;">
-                <div class="stat-card"><div class="label">Total Accounts</div><div class="value" id="stat-ps99-total-accounts">—</div></div>
-                <div class="stat-card"><div class="label">Online</div><div class="value" id="stat-ps99-online">—</div></div>
-                <div class="stat-card"><div class="label">Offline</div><div class="value" id="stat-ps99-offline">—</div></div>
-            </div>
-            <div id="ps99-content" style="display:none;">
-                <div id="ps99-accounts-list" style="margin-bottom:2rem;"></div>
-                <div id="ps99-pets-grid" class="pet-cards-grid"></div>
-                <p style="text-align:center;color:var(--text-secondary);" id="ps99-no-pets">Loading PS99 data...</p>
             </div>
         </div>
 
-        <!-- Session Page -->
+        <!-- Dashboard Page (game-specific) -->
+        <div id="page-dashboard" style="display:none;">
+            <h2 style="font-size:1.8rem; margin-bottom:1.5rem;"><span id="dashboard-game-label"></span> Overview</h2>
+            <div id="game-stats" class="stats-grid"></div>
+            <div id="game-content"></div>
+        </div>
+
+        <!-- Session Page (game-specific) -->
         <div id="page-session" style="display:none;">
             <h2 style="font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-                Session Analytics
+                <span id="session-game-label"></span> Session Analytics
             </h2>
             <div class="stats-grid" id="session-stats-grid">
                 <div class="stat-card"><div class="label">Pets Hatched Today</div><div class="value" id="session-total-hatches">—</div></div>
@@ -377,7 +317,7 @@
             </div>
         </div>
 
-        <!-- Trackers Page -->
+        <!-- Trackers Page (common) -->
         <div id="page-trackers" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:800px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;">
@@ -401,30 +341,7 @@
             </div>
         </div>
 
-        <!-- Games Page -->
-        <div id="page-games" style="display:none;">
-            <h2 style="font-size:1.8rem; margin-bottom:2rem;">Supported Games</h2>
-            <div style="display:flex; gap:2rem; flex-wrap:wrap;">
-                <div class="glass-card hover-lift" style="padding:1.5rem; flex:1; min-width:250px; text-align:center;">
-                    <div style="font-size:3rem;">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M8 8l3 3"/></svg>
-                    </div>
-                    <h3>Saber Simulator</h3>
-                    <span class="badge" style="background:rgba(47,143,251,0.2); color:var(--accent); padding:0.2rem 0.8rem; border-radius:999px; font-size:0.7rem; text-transform:uppercase;">Supported</span>
-                    <p style="color:var(--text-secondary); margin-top:0.5rem;">Full tracking for gems, pets, and inventory.</p>
-                </div>
-                <div class="glass-card hover-lift" style="padding:1.5rem; flex:1; min-width:250px; text-align:center;">
-                    <div style="font-size:3rem;">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V2"/><path d="M5 12H2"/><path d="M22 12h-3"/><path d="M12 16v-4"/><path d="M8 8l-2 2"/><path d="M16 8l2 2"/><path d="M20 12v4a2 2 0 0 1-2 2h-4"/><path d="M4 12v4a2 2 0 0 0 2 2h4"/><circle cx="12" cy="12" r="3"/></svg>
-                    </div>
-                    <h3>Pet Simulator 99</h3>
-                    <span class="badge" style="background:rgba(47,143,251,0.2); color:var(--accent); padding:0.2rem 0.8rem; border-radius:999px; font-size:0.7rem; text-transform:uppercase;">Supported</span>
-                    <p style="color:var(--text-secondary); margin-top:0.5rem;">Automatic pet images from BIG Games – always up to date.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Reviews Page -->
+        <!-- Reviews Page (unchanged) -->
         <div id="page-reviews" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:800px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
@@ -457,7 +374,7 @@
             </div>
         </div>
 
-        <!-- Settings Page -->
+        <!-- Settings Page (unchanged) -->
         <div id="page-settings" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:700px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
@@ -593,16 +510,6 @@
                     window.location.href = '/index.html';
                     throw new Error('Unauthorized');
                 }
-                if (res.status === 429) {
-                    // Rate limited – wait and retry once
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    const retryRes = await fetch(url, { ...options, headers, credentials: 'include' });
-                    if (retryRes.ok) return retryRes;
-                    if (retryRes.status === 401) {
-                        window.location.href = '/index.html';
-                        throw new Error('Unauthorized');
-                    }
-                }
                 if (!res.ok) {
                     const errorData = await res.json().catch(() => ({ error: 'Request failed' }));
                     throw new Error(errorData.error || `HTTP ${res.status}`);
@@ -610,20 +517,18 @@
                 return res;
             }
 
-            // Delay helper
-            function delay(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms));
-            }
+            function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
             window.logout = function() {
                 document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=Strict';
                 window.location.href = '/index.html';
             };
 
+            // ─── Application state ───
+            let selectedGame = null;        // 'saber' or 'ps99'
             let allAccounts = [];
             let allInventory = [];
             let accountDetailsCache = {};
-            let currentGame = 'saber';
             let inventoryLoaded = false;
             let dailyHatches = {};
             let selectedRating = 0;
@@ -633,31 +538,65 @@
             let scriptVisible = false;
             let apiKeyVisible = false;
 
-            // Page switching – removed admin page reference
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pages = {
-                dashboard: document.getElementById('page-dashboard'),
-                session: document.getElementById('page-session'),
-                trackers: document.getElementById('page-trackers'),
-                games: document.getElementById('page-games'),
-                reviews: document.getElementById('page-reviews'),
-                settings: document.getElementById('page-settings')
-            };
+            // Page elements
+            const pageGameSelection = document.getElementById('page-game-selection');
+            const pageDashboard = document.getElementById('page-dashboard');
+            const pageSession = document.getElementById('page-session');
+            const pageTrackers = document.getElementById('page-trackers');
+            const pageReviews = document.getElementById('page-reviews');
+            const pageSettings = document.getElementById('page-settings');
 
+            // Sidebar links
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            // ─── Page switching (only works when a game is selected for game-specific tabs) ───
+            function switchToPage(pageName) {
+                // Hide all content sections
+                document.querySelectorAll('#main-content > div[id^="page-"]').forEach(p => p.style.display = 'none');
+                // Show the requested section
+                const pageMap = {
+                    'game-selection': pageGameSelection,
+                    'dashboard': pageDashboard,
+                    'session': pageSession,
+                    'trackers': pageTrackers,
+                    'reviews': pageReviews,
+                    'settings': pageSettings
+                };
+                const page = pageMap[pageName];
+                if (page) page.style.display = 'block';
+
+                // Update active nav link
+                navLinks.forEach(l => l.classList.remove('active'));
+                const activeLink = document.querySelector(`.nav-link[data-page="${pageName}"]`);
+                if (activeLink) activeLink.classList.add('active');
+            }
+
+            // ─── Sidebar navigation click handler ───
             navLinks.forEach(link => {
-                link.addEventListener('click', () => {
+                link.addEventListener('click', (e) => {
                     const page = link.dataset.page;
-                    // Skip admin link (handled by onclick)
-                    if (page === 'admin') return;
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    link.classList.add('active');
-                    Object.values(pages).forEach(p => p.style.display = 'none');
-                    pages[page].style.display = 'block';
-                    if (page === 'dashboard') loadGameData();
-                    if (page === 'session') loadSessionData();
-                    if (page === 'trackers') loadTrackerScript();
-                    if (page === 'reviews') loadReviewsPage();
-                    if (page === 'settings') loadSettingsData();
+                    if (page === 'admin') return; // handled by direct onclick
+
+                    // If no game selected and trying to access game-specific tabs, redirect to game selection
+                    if (!selectedGame && ['dashboard','session'].includes(page)) {
+                        switchToPage('game-selection');
+                        return;
+                    }
+
+                    switchToPage(page);
+
+                    // Load appropriate data when switching to game-specific pages
+                    if (page === 'dashboard' && selectedGame) {
+                        loadGameDashboardData();
+                    } else if (page === 'session' && selectedGame) {
+                        loadGameSessionData();
+                    } else if (page === 'trackers') {
+                        loadTrackerScript();
+                    } else if (page === 'reviews') {
+                        loadReviewsPage();
+                    } else if (page === 'settings') {
+                        loadSettingsData();
+                    }
                 });
             });
 
@@ -667,25 +606,36 @@
             sidebarToggleBtn.addEventListener('click', () => {
                 navLinksContainer.classList.toggle('open');
             });
+            // Close mobile menu when a link is clicked
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', () => {
                     if (window.innerWidth <= 768) navLinksContainer.classList.remove('open');
                 });
             });
 
-            // Game selection
+            // ─── Game selection ───
             window.selectGame = function(game) {
-                currentGame = game;
-                document.getElementById('game-btn-saber').classList.toggle('btn-accent', game === 'saber');
-                document.getElementById('game-btn-ps99').classList.toggle('btn-accent', game === 'ps99');
-                document.getElementById('saber-stats').style.display = game === 'saber' ? 'grid' : 'none';
-                document.getElementById('saber-content').style.display = game === 'saber' ? 'block' : 'none';
-                document.getElementById('ps99-stats').style.display = game === 'ps99' ? 'grid' : 'none';
-                document.getElementById('ps99-content').style.display = game === 'ps99' ? 'block' : 'none';
-                if (game === 'saber') loadGameData();
-                else if (game === 'ps99') loadPS99Data();
+                selectedGame = game;
+                // Update game-specific labels
+                document.getElementById('dashboard-game-label').textContent = game === 'saber' ? 'Saber Simulator' : 'Pet Simulator 99';
+                document.getElementById('session-game-label').textContent = game === 'saber' ? 'Saber Simulator' : 'Pet Simulator 99';
+
+                // Show dashboard page
+                switchToPage('dashboard');
+                // Clear previous game data
+                allAccounts = [];
+                allInventory = [];
+                accountDetailsCache = {};
+                inventoryLoaded = false;
+                dailyHatches = {};
+                document.getElementById('game-stats').innerHTML = '';
+                document.getElementById('game-content').innerHTML = '';
+
+                // Load new game data
+                loadGameDashboardData();
             };
 
+            // ─── Load user profile (shared across games) ───
             async function loadUserProfile() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/profile');
@@ -718,11 +668,10 @@
                             fullApiKey = '';
                         }
                     }
-                } catch (e) {
-                    // Already redirected on 401
-                }
+                } catch (e) {}
             }
 
+            // ─── Toggle API key visibility ───
             window.toggleApiKey = function() {
                 const display = document.getElementById('api-key-display');
                 const icon = document.getElementById('eye-icon');
@@ -735,7 +684,6 @@
                     icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
                 }
             };
-
             window.copyApiKey = function() {
                 if (!fullApiKey) return showToast('❌ No API key available');
                 navigator.clipboard.writeText(fullApiKey).then(() => showToast('✅ API key copied!'));
@@ -792,7 +740,7 @@
                 }
             });
 
-            // Tracker script loading and toggle
+            // ─── Tracker Script ───
             async function loadTrackerScript() {
                 const codeEl = document.getElementById('tracker-script-code');
                 const maskedEl = document.getElementById('tracker-script-masked');
@@ -806,11 +754,9 @@
                     codeEl.textContent = trackerScriptContent;
                 } catch (e) {
                     trackerScriptContent = '';
-                    codeEl.textContent = '⚠️ No API key found. Please contact an administrator.';
-                    showToast('❌ ' + e.message);
+                    codeEl.textContent = '⚠️ No API key found.';
                 }
             }
-
             window.toggleTrackerScript = function() {
                 const codeEl = document.getElementById('tracker-script-code');
                 const maskedEl = document.getElementById('tracker-script-masked');
@@ -823,20 +769,19 @@
                 } else {
                     codeEl.style.display = 'none';
                     maskedEl.style.display = 'block';
-                    toggleBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+                    toggleBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
                 }
             };
-
             window.copyTrackerScript = function() {
                 if (!trackerScriptContent) return;
                 navigator.clipboard.writeText(trackerScriptContent).then(() => showToast('✅ Copied!'));
             };
 
+            // ─── Settings (Saber accounts only, as before) ───
             window.loadSettingsData = async function() {
                 await loadUserProfile();
                 await loadConnectedAccounts();
             };
-
             async function loadConnectedAccounts() {
                 const container = document.getElementById('connected-accounts-list');
                 container.innerHTML = '<p style="color:var(--text-secondary);">Loading accounts...</p>';
@@ -868,10 +813,8 @@
                 } catch (e) {
                     allAccounts = [];
                     container.innerHTML = '<p style="color:#ff6b6b;">Failed to load accounts.</p>';
-                    showToast('❌ ' + e.message);
                 }
             }
-
             window.removeAccount = async function(username) {
                 if (!confirm(`Permanently remove "${username}" and all their inventory data? This cannot be undone.`)) return;
                 try {
@@ -880,7 +823,6 @@
                     if (data.success) {
                         showToast(`✅ Removed ${username}`);
                         loadConnectedAccounts();
-                        if (currentGame === 'saber') loadGameData();
                     } else {
                         showToast('❌ ' + (data.error || 'Failed to remove account'));
                     }
@@ -889,38 +831,45 @@
                 }
             };
 
-            // Saber data loading – with throttling to avoid 429
-            async function loadGameData() {
-                const loading = document.getElementById('rare-pets-loading');
-                const container = document.getElementById('rare-pets-container');
-                const viewBtn = document.getElementById('view-inventory-btn-container');
-                container.style.display = 'none';
-                loading.style.display = 'block';
-                viewBtn.style.display = 'none';
-                accountDetailsCache = {};
+            // ─── Game Dashboard Data Loading ───
+            async function loadGameDashboardData() {
+                if (!selectedGame) return;
+                const game = selectedGame;
+                const basePath = game === 'saber' ? 'saber' : 'ps99';
 
+                // Overview stats
                 try {
-                    const overviewRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/overview');
+                    const overviewRes = await apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/${basePath}/overview`);
                     const overview = await overviewRes.json();
-                    document.getElementById('stat-total-accounts').textContent = overview.totalAccounts;
-                    document.getElementById('stat-online').textContent = overview.onlineAccounts;
-                    document.getElementById('stat-offline').textContent = overview.offlineAccounts;
+                    document.getElementById('game-stats').innerHTML = `
+                        <div class="stat-card"><div class="label">Total Accounts</div><div class="value">${overview.totalAccounts}</div></div>
+                        <div class="stat-card"><div class="label">Online</div><div class="value">${overview.onlineAccounts}</div></div>
+                        <div class="stat-card"><div class="label">Offline</div><div class="value">${overview.offlineAccounts}</div></div>
+                    `;
+                } catch (err) {
+                    document.getElementById('game-stats').innerHTML = '<p style="color:#ff6b6b;">Failed to load stats.</p>';
+                    return;
+                }
 
-                    const accRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/accounts');
+                // Accounts list
+                try {
+                    const accRes = await apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/${basePath}/accounts`);
                     const accounts = await accRes.json();
                     allAccounts = Array.isArray(accounts) ? accounts : [];
-                    updateModalAccountFilter();
+                } catch (err) {
+                    allAccounts = [];
+                }
 
-                    // Fetch account details sequentially with 300ms delay between each to avoid rate limit
+                // For Saber: load detailed accounts and render rare pets
+                if (game === 'saber') {
+                    accountDetailsCache = {};
                     for (const acc of allAccounts) {
                         try {
                             const res = await apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/saber/account/${encodeURIComponent(acc.username)}`);
                             const detail = await res.json();
                             accountDetailsCache[acc.username] = detail;
-                        } catch (e) {
-                            accountDetailsCache[acc.username] = null;
-                        }
-                        await delay(300); // wait 300ms between requests
+                        } catch (e) { accountDetailsCache[acc.username] = null; }
+                        await delay(300); // respect rate limit
                     }
 
                     const invMap = {};
@@ -939,31 +888,89 @@
                     inventoryLoaded = true;
 
                     await loadDailyHatches();
-                    renderRarePets();
-                    container.style.display = 'block';
-                    loading.style.display = 'none';
-                    viewBtn.style.display = 'block';
-                } catch (err) {
-                    console.error(err);
-                    allAccounts = [];
-                    allInventory = [];
-                    loading.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Failed to load data. Please try again later.</p>';
-                    showToast('❌ Failed to load game data');
+                    renderSaberRarePets();
+                } else if (game === 'ps99') {
+                    // PS99: show accounts list and pet images from metadata
+                    const contentDiv = document.getElementById('game-content');
+                    contentDiv.innerHTML = ''; // clear previous
+                    const accountsListDiv = document.createElement('div');
+                    accountsListDiv.innerHTML = allAccounts.map(acc => {
+                        const lastUpdate = acc.lastUpdate ? new Date(acc.lastUpdate).toLocaleString() : 'Never';
+                        return `<div class="connected-account-row">
+                            <div class="account-details">
+                                <div class="name-line">
+                                    <span class="account-name">${escapeHTML(acc.username)}</span>
+                                    <span class="badge ${acc.online ? 'online' : 'offline'}">${acc.online ? 'Online' : 'Offline'}</span>
+                                </div>
+                                <div style="font-size:0.7rem; color:var(--text-secondary);">ID: ${acc.userId || '—'} · Pets: ${acc.pets || 0} · Last seen: ${lastUpdate}</div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                    contentDiv.appendChild(accountsListDiv);
+
+                    const uniqueNames = new Set();
+                    for (const acc of allAccounts) {
+                        try {
+                            const detailRes = await apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/ps99/account/${encodeURIComponent(acc.username)}`);
+                            const detail = await detailRes.json();
+                            if (detail && detail.pets) {
+                                detail.pets.forEach(p => uniqueNames.add(p.name));
+                            }
+                        } catch (e) { /* skip */ }
+                        await delay(300);
+                    }
+
+                    if (uniqueNames.size > 0) {
+                        const namesParam = Array.from(uniqueNames).join(',');
+                        const metaRes = await fetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/ps99/metadata?names=${encodeURIComponent(namesParam)}`);
+                        const metadataMap = await metaRes.json();
+                        const grid = document.createElement('div');
+                        grid.className = 'pet-cards-grid';
+                        for (const name of uniqueNames) {
+                            const meta = metadataMap[name] || {};
+                            const card = document.createElement('div');
+                            card.className = 'pet-card';
+                            const img = document.createElement('img');
+                            img.src = meta.thumbnailUrl || '';
+                            img.alt = meta.displayName || name;
+                            img.loading = 'lazy';
+                            img.onerror = function() { this.style.display = 'none'; };
+                            card.appendChild(img);
+                            const nameEl = document.createElement('div');
+                            nameEl.className = 'name';
+                            nameEl.textContent = meta.displayName || name;
+                            card.appendChild(nameEl);
+                            grid.appendChild(card);
+                        }
+                        contentDiv.appendChild(grid);
+                    }
                 }
             }
 
-            const VARIANT_ORDER = ['Void', 'Rainbow', 'Shiny', 'Golden', 'Normal'];
+            async function loadDailyHatches() {
+                try {
+                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/daily-hatches');
+                    dailyHatches = await res.json();
+                } catch (e) { dailyHatches = {}; }
+            }
 
-            function renderRarePets() {
+            function renderSaberRarePets() {
+                const contentDiv = document.getElementById('game-content');
+                contentDiv.innerHTML = ''; // Clear previous
                 const rarePets = [
                     { name: 'Magmatic Vortex', section: 'secret-grid', rarity: 'Secret', localImagePath: '/public/images/pets/magmatic-vortex.webp' },
                     { name: 'Professor Chaos', section: 'triple-moon-grid', rarity: 'Professor Chaos', localImagePath: '/public/images/pets/professor-chaos.webp' }
                 ];
-                document.getElementById('secret-grid').innerHTML = '';
-                document.getElementById('triple-moon-grid').innerHTML = '';
                 rarePets.forEach(petDef => {
+                    const section = document.createElement('div');
+                    section.className = 'glass-card';
+                    section.style.padding = '1.5rem';
+                    section.style.marginBottom = '2rem';
+                    section.innerHTML = `<h2 class="section-title">${petDef.name}</h2><div class="pet-cards-grid" id="${petDef.section}"></div>`;
+                    contentDiv.appendChild(section);
+
                     const grid = document.getElementById(petDef.section);
-                    VARIANT_ORDER.forEach(variant => {
+                    ['Void','Rainbow','Shiny','Golden','Normal'].forEach(variant => {
                         const entry = allInventory.find(p => p.name === petDef.name && p.variant === variant);
                         const amount = entry ? entry.amount : 0;
                         const key = `${petDef.name}|${petDef.rarity}|${variant}`;
@@ -1012,145 +1019,23 @@
                 });
             }
 
-            // PS99 Data Loading – also throttled
-            async function loadPS99Data() {
-                document.getElementById('ps99-accounts-list').innerHTML = '';
-                document.getElementById('ps99-pets-grid').innerHTML = '';
-                document.getElementById('ps99-no-pets').textContent = 'Loading PS99 data...';
-                try {
-                    const overviewRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/ps99/overview');
-                    const overview = await overviewRes.json();
-                    document.getElementById('stat-ps99-total-accounts').textContent = overview.totalAccounts;
-                    document.getElementById('stat-ps99-online').textContent = overview.onlineAccounts;
-                    document.getElementById('stat-ps99-offline').textContent = overview.offlineAccounts;
-
-                    const accRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/ps99/accounts');
-                    const accounts = await accRes.json();
-                    const accountsArray = Array.isArray(accounts) ? accounts : [];
-                    const accountsListDiv = document.getElementById('ps99-accounts-list');
-                    accountsListDiv.innerHTML = accountsArray.map(acc => {
-                        const lastUpdate = acc.lastUpdate ? new Date(acc.lastUpdate).toLocaleString() : 'Never';
-                        return `<div class="connected-account-row">
-                            <div class="account-details">
-                                <div class="name-line">
-                                    <span class="account-name">${escapeHTML(acc.username)}</span>
-                                    <span class="badge ${acc.online ? 'online' : 'offline'}">${acc.online ? 'Online' : 'Offline'}</span>
-                                </div>
-                                <div style="font-size:0.7rem; color:var(--text-secondary);">ID: ${acc.userId || '—'} · Pets: ${acc.pets || 0} · Last seen: ${lastUpdate}</div>
-                            </div>
-                        </div>`;
-                    }).join('');
-
-                    const uniqueNames = new Set();
-                    for (const acc of accountsArray) {
-                        try {
-                            const detailRes = await apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/ps99/account/${encodeURIComponent(acc.username)}`);
-                            const detail = await detailRes.json();
-                            if (detail && detail.pets) {
-                                detail.pets.forEach(p => uniqueNames.add(p.name));
-                            }
-                        } catch (e) { /* skip */ }
-                        await delay(300);
-                    }
-
-                    if (uniqueNames.size === 0) {
-                        document.getElementById('ps99-no-pets').textContent = 'No pets found in your PS99 accounts.';
-                        return;
-                    }
-
-                    const namesParam = Array.from(uniqueNames).join(',');
-                    const metaRes = await fetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/ps99/metadata?names=${encodeURIComponent(namesParam)}`);
-                    const metadataMap = await metaRes.json();
-
-                    const grid = document.getElementById('ps99-pets-grid');
-                    grid.innerHTML = '';
-                    for (const name of uniqueNames) {
-                        const meta = metadataMap[name] || {};
-                        const card = document.createElement('div');
-                        card.className = 'pet-card';
-                        const img = document.createElement('img');
-                        img.src = meta.thumbnailUrl || '';
-                        img.alt = meta.displayName || name;
-                        img.loading = 'lazy';
-                        img.onerror = function() { this.style.display = 'none'; };
-                        card.appendChild(img);
-                        const nameEl = document.createElement('div');
-                        nameEl.className = 'name';
-                        nameEl.textContent = meta.displayName || name;
-                        card.appendChild(nameEl);
-                        const amountEl = document.createElement('div');
-                        amountEl.className = 'amount';
-                        amountEl.textContent = '×?';
-                        card.appendChild(amountEl);
-                        grid.appendChild(card);
-                    }
-                    document.getElementById('ps99-no-pets').style.display = 'none';
-                } catch (err) {
-                    console.error(err);
-                    document.getElementById('ps99-no-pets').textContent = 'Failed to load PS99 data.';
+            // ─── Game Session Data ───
+            async function loadGameSessionData() {
+                if (!selectedGame) return;
+                const basePath = selectedGame === 'saber' ? 'saber' : 'ps99';
+                // Currently only Saber has session endpoint; PS99 can be placeholder
+                if (selectedGame !== 'saber') {
+                    document.getElementById('session-total-hatches').textContent = '—';
+                    document.getElementById('session-duration').textContent = '—';
+                    document.getElementById('session-best-hatch').textContent = 'No data yet';
+                    document.getElementById('session-feed').innerHTML = '<p style="color:var(--text-secondary);">Session tracking coming soon for PS99.</p>';
+                    return;
                 }
-            }
-
-            async function loadDailyHatches() {
                 try {
-                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/daily-hatches');
-                    dailyHatches = await res.json();
-                } catch (e) {
-                    dailyHatches = {};
-                }
-            }
-
-            window.openFullInventory = function() {
-                document.getElementById('inventory-modal').style.display = 'flex';
-                updateModalAccountFilter();
-                renderInventoryList();
-            };
-            window.closeFullInventory = function() {
-                document.getElementById('inventory-modal').style.display = 'none';
-            };
-            function updateModalAccountFilter() {
-                const sel = document.getElementById('inv-account-filter');
-                if (!sel) return;
-                sel.innerHTML = '<option value="">All Accounts</option>';
-                const accounts = Array.isArray(allAccounts) ? allAccounts : [];
-                accounts.forEach(a => {
-                    sel.innerHTML += `<option value="${escapeHTML(a.username)}">${escapeHTML(a.username)}</option>`;
-                });
-            }
-            function renderInventoryList() {
-                const container = document.getElementById('inv-list-container');
-                if (!inventoryLoaded) { container.innerHTML = '<p style="text-align:center;color:var(--text-secondary);">Loading...</p>'; return; }
-                let filtered = allInventory.slice();
-                const search = document.getElementById('inv-search').value.toLowerCase();
-                if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search));
-                const account = document.getElementById('inv-account-filter').value;
-                if (account) filtered = filtered.filter(p => p.owners.includes(account));
-                const variant = document.getElementById('inv-variant-filter').value;
-                if (variant) filtered = filtered.filter(p => p.variant === variant);
-                const sort = document.getElementById('inv-sort').value;
-                if (sort === 'name-asc') filtered.sort((a,b) => a.name.localeCompare(b.name));
-                else if (sort === 'amount-desc') filtered.sort((a,b) => b.amount - a.amount);
-                else if (sort === 'amount-asc') filtered.sort((a,b) => a.amount - b.amount);
-                container.innerHTML = filtered.length ? filtered.map(p => `
-                    <div class="inventory-row"><span class="pet-name">${escapeHTML(p.name)}</span><span class="pet-variant">${escapeHTML(p.variant||'—')}</span><span class="pet-amount">${p.amount}</span></div>
-                `).join('') : '<p style="text-align:center;color:var(--text-secondary);">No pets match.</p>';
-            }
-
-            function escapeHTML(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
-            function showToast(msg) {
-                const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
-                document.getElementById('toast-container').appendChild(t);
-                setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4000);
-            }
-
-            async function loadSessionData() {
-                try {
-                    const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/session');
+                    const res = await apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/${basePath}/session`);
                     const data = await res.json();
                     document.getElementById('session-total-hatches').textContent = data.totalHatchesToday || '0';
-                    document.getElementById('session-duration').textContent = data.sessionDuration
-                        ? formatDuration(data.sessionDuration)
-                        : 'Not started';
+                    document.getElementById('session-duration').textContent = data.sessionDuration ? formatDuration(data.sessionDuration) : 'Not started';
                     const bestEl = document.getElementById('session-best-hatch');
                     if (data.bestHatch) {
                         bestEl.textContent = `${data.bestHatch.variant} ${data.bestHatch.rarity} ${data.bestHatch.name}`;
@@ -1192,7 +1077,7 @@
                 return `${h}h ${m}m ${s}s`;
             }
 
-            // Reviews functions
+            // ─── Reviews (unchanged) ───
             function setupStarRating() {
                 const stars = document.querySelectorAll('#star-rating .star');
                 stars.forEach(star => {
@@ -1244,9 +1129,7 @@
                         myReviewSection.style.display = 'none';
                         document.getElementById('submit-review-btn').disabled = false;
                     }
-                } catch (e) {
-                    showToast('❌ ' + e.message);
-                }
+                } catch (e) { showToast('❌ ' + e.message); }
                 if (window.userPermissions === 'OWNER' || window.userPermissions === 'MANAGER') {
                     loadAdminReviews();
                 }
@@ -1273,9 +1156,7 @@
                             </div>
                         </div>
                     `).join('');
-                } catch (e) {
-                    showToast('❌ ' + e.message);
-                }
+                } catch (e) { showToast('❌ ' + e.message); }
             }
             document.getElementById('submit-review-btn').addEventListener('click', async () => {
                 const rating = selectedRating;
@@ -1332,7 +1213,15 @@
             };
             setupStarRating();
 
-            // Background particles (unchanged)
+            // ─── Utility ───
+            function escapeHTML(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+            function showToast(msg) {
+                const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg;
+                document.getElementById('toast-container').appendChild(t);
+                setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4000);
+            }
+
+            // ─── Background particles (unchanged) ───
             const glow = document.getElementById('cursor-glow');
             document.addEventListener('mousemove', (e) => {
                 glow.style.left = e.clientX + 'px';
@@ -1418,17 +1307,11 @@
             animFrame = requestAnimationFrame(animate);
             window.addEventListener('beforeunload', () => cancelAnimationFrame(animFrame));
 
-            // Init
+            // ─── Initialization ───
             (async function init() {
-                try {
-                    await loadUserProfile();
-                    pages.dashboard.style.display = 'block';
-                    document.getElementById('saber-stats').style.display = 'grid';
-                    document.getElementById('saber-content').style.display = 'block';
-                    document.getElementById('ps99-stats').style.display = 'none';
-                    document.getElementById('ps99-content').style.display = 'none';
-                    loadGameData();
-                } catch (e) {}
+                await loadUserProfile();
+                // Show game selection page by default, no game-specific API calls
+                switchToPage('game-selection');
             })();
         })();
     </script>
