@@ -372,7 +372,7 @@
             </div>
         </div>
 
-        <!-- Settings Page (unchanged) -->
+        <!-- Settings Page -->
         <div id="page-settings" style="display:none;">
             <div class="glass-card" style="padding:2rem; max-width:700px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
@@ -523,7 +523,7 @@
             };
 
             // ─── Application state ───
-            let selectedGame = null;        // 'saber' or 'ps99'
+            let selectedGame = null;
             let allAccounts = [];
             let allInventory = [];
             let accountDetailsCache = {};
@@ -544,14 +544,10 @@
             const pageReviews = document.getElementById('page-reviews');
             const pageSettings = document.getElementById('page-settings');
 
-            // Sidebar links
             const navLinks = document.querySelectorAll('.nav-link');
 
-            // ─── Page switching (only works when a game is selected for game-specific tabs) ───
             function switchToPage(pageName) {
-                // Hide all content sections
                 document.querySelectorAll('#main-content > div[id^="page-"]').forEach(p => p.style.display = 'none');
-                // Show the requested section
                 const pageMap = {
                     'game-selection': pageGameSelection,
                     'dashboard': pageDashboard,
@@ -563,19 +559,16 @@
                 const page = pageMap[pageName];
                 if (page) page.style.display = 'block';
 
-                // Update active nav link
                 navLinks.forEach(l => l.classList.remove('active'));
                 const activeLink = document.querySelector(`.nav-link[data-page="${pageName}"]`);
                 if (activeLink) activeLink.classList.add('active');
             }
 
-            // ─── Sidebar navigation click handler ───
             navLinks.forEach(link => {
                 link.addEventListener('click', (e) => {
                     const page = link.dataset.page;
-                    if (page === 'admin') return; // handled by direct onclick
+                    if (page === 'admin') return;
 
-                    // If no game selected and trying to access game-specific tabs, redirect to game selection
                     if (!selectedGame && ['dashboard','session'].includes(page)) {
                         switchToPage('game-selection');
                         return;
@@ -583,7 +576,6 @@
 
                     switchToPage(page);
 
-                    // Load appropriate data when switching to game-specific pages
                     if (page === 'dashboard' && selectedGame) {
                         loadGameDashboardData();
                     } else if (page === 'session' && selectedGame) {
@@ -604,23 +596,18 @@
             sidebarToggleBtn.addEventListener('click', () => {
                 navLinksContainer.classList.toggle('open');
             });
-            // Close mobile menu when a link is clicked
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('click', () => {
                     if (window.innerWidth <= 768) navLinksContainer.classList.remove('open');
                 });
             });
 
-            // ─── Game selection ───
             window.selectGame = function(game) {
                 selectedGame = game;
-                // Update game-specific labels
                 document.getElementById('dashboard-game-label').textContent = game === 'saber' ? 'Saber Simulator' : 'Pet Simulator 99';
                 document.getElementById('session-game-label').textContent = game === 'saber' ? 'Saber Simulator' : 'Pet Simulator 99';
 
-                // Show dashboard page
                 switchToPage('dashboard');
-                // Clear previous game data
                 allAccounts = [];
                 allInventory = [];
                 accountDetailsCache = {};
@@ -629,16 +616,20 @@
                 document.getElementById('game-stats').innerHTML = '';
                 document.getElementById('game-content').innerHTML = '';
 
-                // Load new game data
                 loadGameDashboardData();
             };
 
-            // ─── Load user profile (shared across games) ───
+            // ─── Load user profile (shared across pages) ───
             async function loadUserProfile() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/profile');
                     const user = await res.json();
-                    document.getElementById('dashboard-username').textContent = user.username;
+
+                    // Update dashboard welcome message if element exists
+                    const dashUser = document.getElementById('dashboard-username');
+                    if (dashUser) dashUser.textContent = user.username;
+
+                    // Settings elements
                     const discordUsernameEl = document.getElementById('discord-username');
                     if (discordUsernameEl) {
                         discordUsernameEl.textContent = user.username;
@@ -647,6 +638,8 @@
                         document.getElementById('masked-key-text').textContent = (user.apiKeyPrefix || 'mrc_live_') + '********';
                         if (user.avatar) {
                             document.getElementById('discord-avatar').src = `https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png`;
+                        } else {
+                            document.getElementById('discord-avatar').src = '';
                         }
                         if (user.permissions === 'OWNER' || user.permissions === 'MANAGER') {
                             document.getElementById('admin-nav-link').style.display = 'block';
@@ -656,6 +649,8 @@
                             document.getElementById('admin-reviews-section').style.display = 'block';
                         }
                     }
+
+                    // Full API key
                     if (user.hasApiKey) {
                         try {
                             const keyRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/user/full-api-key');
@@ -666,7 +661,16 @@
                             fullApiKey = '';
                         }
                     }
-                } catch (e) {}
+                } catch (err) {
+                    // Set fallback values on settings page
+                    const discordUsernameEl = document.getElementById('discord-username');
+                    if (discordUsernameEl) {
+                        discordUsernameEl.textContent = 'Error loading profile';
+                        document.getElementById('discord-id').textContent = 'ID: —';
+                        document.getElementById('user-plan').textContent = 'Plan: —';
+                        document.getElementById('masked-key-text').textContent = 'mrc_live_********';
+                    }
+                }
             }
 
             // ─── Toggle API key visibility ───
@@ -775,7 +779,7 @@
                 navigator.clipboard.writeText(trackerScriptContent).then(() => showToast('✅ Copied!'));
             };
 
-            // ─── Settings (Saber accounts only, as before) ───
+            // ─── Settings ───
             window.loadSettingsData = async function() {
                 await loadUserProfile();
                 await loadConnectedAccounts();
@@ -835,7 +839,6 @@
                 const game = selectedGame;
                 const basePath = game === 'saber' ? 'saber' : 'ps99';
 
-                // Overview stats
                 try {
                     const overviewRes = await apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/${basePath}/overview`);
                     const overview = await overviewRes.json();
@@ -849,7 +852,6 @@
                     return;
                 }
 
-                // Accounts list
                 try {
                     const accRes = await apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/${basePath}/accounts`);
                     const accounts = await accRes.json();
@@ -858,7 +860,6 @@
                     allAccounts = [];
                 }
 
-                // For Saber: load detailed accounts and render rare pets
                 if (game === 'saber') {
                     accountDetailsCache = {};
                     for (const acc of allAccounts) {
@@ -867,7 +868,7 @@
                             const detail = await res.json();
                             accountDetailsCache[acc.username] = detail;
                         } catch (e) { accountDetailsCache[acc.username] = null; }
-                        await delay(300); // respect rate limit
+                        await delay(300);
                     }
 
                     const invMap = {};
@@ -888,9 +889,8 @@
                     await loadDailyHatches();
                     renderSaberRarePets();
                 } else if (game === 'ps99') {
-                    // PS99: show accounts list and pet images from metadata
                     const contentDiv = document.getElementById('game-content');
-                    contentDiv.innerHTML = ''; // clear previous
+                    contentDiv.innerHTML = '';
                     const accountsListDiv = document.createElement('div');
                     accountsListDiv.innerHTML = allAccounts.map(acc => {
                         const lastUpdate = acc.lastUpdate ? new Date(acc.lastUpdate).toLocaleString() : 'Never';
@@ -954,7 +954,7 @@
 
             function renderSaberRarePets() {
                 const contentDiv = document.getElementById('game-content');
-                contentDiv.innerHTML = ''; // Clear previous
+                contentDiv.innerHTML = '';
                 const rarePets = [
                     { name: 'Project Genesis', section: 'secret-grid', rarity: 'Secret', localImagePath: '/public/images/pets/project-genesis.webp' },
                     { name: 'Professor Chaos', section: 'triple-moon-grid', rarity: 'Professor Chaos', localImagePath: '/public/images/pets/professor-chaos.webp' }
@@ -1021,7 +1021,6 @@
             async function loadGameSessionData() {
                 if (!selectedGame) return;
                 const basePath = selectedGame === 'saber' ? 'saber' : 'ps99';
-                // Currently only Saber has session endpoint; PS99 can be placeholder
                 if (selectedGame !== 'saber') {
                     document.getElementById('session-total-hatches').textContent = '—';
                     document.getElementById('session-duration').textContent = '—';
@@ -1075,7 +1074,7 @@
                 return `${h}h ${m}m ${s}s`;
             }
 
-            // ─── Reviews (unchanged) ───
+            // ─── Reviews ───
             function setupStarRating() {
                 const stars = document.querySelectorAll('#star-rating .star');
                 stars.forEach(star => {
@@ -1308,7 +1307,6 @@
             // ─── Initialization ───
             (async function init() {
                 await loadUserProfile();
-                // Show game selection page by default, no game-specific API calls
                 switchToPage('game-selection');
             })();
         })();
