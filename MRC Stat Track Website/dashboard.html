@@ -220,10 +220,6 @@
         .bar-chart { display: flex; align-items: flex-end; gap: 2px; height: 150px; }
         .bar-chart .bar { flex: 1; background: linear-gradient(to top, var(--accent), rgba(47,143,251,0.3)); border-radius: 3px 3px 0 0; transition: height 0.5s ease; }
 
-        /* PS99 inventory card */
-        .ps99-pet-card { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding: 0.5rem; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); }
-        .ps99-pet-card img { width: 64px; height: 64px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.02); }
-
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar { position: fixed; top: 0; left: 0; width: 100%; height: auto; z-index: 100; padding: 1rem;
@@ -430,7 +426,6 @@
 
         <!-- Reviews Page -->
         <div id="page-reviews" style="display:none;">
-            <!-- unchanged -->
             <div class="glass-card" style="padding:2rem; max-width:800px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -464,7 +459,6 @@
 
         <!-- Settings Page -->
         <div id="page-settings" style="display:none;">
-            <!-- unchanged -->
             <div class="glass-card" style="padding:2rem; max-width:700px; margin:0 auto;">
                 <h2 style="font-size:1.8rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -599,11 +593,26 @@
                     window.location.href = '/index.html';
                     throw new Error('Unauthorized');
                 }
+                if (res.status === 429) {
+                    // Rate limited – wait and retry once
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    const retryRes = await fetch(url, { ...options, headers, credentials: 'include' });
+                    if (retryRes.ok) return retryRes;
+                    if (retryRes.status === 401) {
+                        window.location.href = '/index.html';
+                        throw new Error('Unauthorized');
+                    }
+                }
                 if (!res.ok) {
                     const errorData = await res.json().catch(() => ({ error: 'Request failed' }));
                     throw new Error(errorData.error || `HTTP ${res.status}`);
                 }
                 return res;
+            }
+
+            // Delay helper
+            function delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
             }
 
             window.logout = function() {
@@ -624,7 +633,7 @@
             let scriptVisible = false;
             let apiKeyVisible = false;
 
-            // Page switching
+            // Page switching – removed admin page reference
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = {
                 dashboard: document.getElementById('page-dashboard'),
@@ -632,13 +641,14 @@
                 trackers: document.getElementById('page-trackers'),
                 games: document.getElementById('page-games'),
                 reviews: document.getElementById('page-reviews'),
-                settings: document.getElementById('page-settings'),
-                admin: document.getElementById('page-admin'),
+                settings: document.getElementById('page-settings')
             };
 
             navLinks.forEach(link => {
                 link.addEventListener('click', () => {
                     const page = link.dataset.page;
+                    // Skip admin link (handled by onclick)
+                    if (page === 'admin') return;
                     navLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
                     Object.values(pages).forEach(p => p.style.display = 'none');
@@ -648,7 +658,6 @@
                     if (page === 'trackers') loadTrackerScript();
                     if (page === 'reviews') loadReviewsPage();
                     if (page === 'settings') loadSettingsData();
-                    if (page === 'admin') loadAdminPanel();
                 });
             });
 
@@ -880,7 +889,7 @@
                 }
             };
 
-            // Saber data loading (unchanged rare pets, but Professor Chaos)
+            // Saber data loading – with throttling to avoid 429
             async function loadGameData() {
                 const loading = document.getElementById('rare-pets-loading');
                 const container = document.getElementById('rare-pets-container');
@@ -902,17 +911,20 @@
                     allAccounts = Array.isArray(accounts) ? accounts : [];
                     updateModalAccountFilter();
 
-                    const details = await Promise.all(
-                        allAccounts.map(acc =>
-                            apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/saber/account/${encodeURIComponent(acc.username)}`)
-                                .then(r => r.json())
-                                .then(d => { accountDetailsCache[acc.username] = d; return d; })
-                                .catch(() => null)
-                        )
-                    );
+                    // Fetch account details sequentially with 300ms delay between each to avoid rate limit
+                    for (const acc of allAccounts) {
+                        try {
+                            const res = await apiFetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/saber/account/${encodeURIComponent(acc.username)}`);
+                            const detail = await res.json();
+                            accountDetailsCache[acc.username] = detail;
+                        } catch (e) {
+                            accountDetailsCache[acc.username] = null;
+                        }
+                        await delay(300); // wait 300ms between requests
+                    }
 
                     const invMap = {};
-                    for (const data of details) {
+                    for (const data of Object.values(accountDetailsCache)) {
                         if (!data || !data.pets) continue;
                         for (const pet of data.pets) {
                             const key = `${pet.name}|${pet.rarity||''}|${pet.variant||''}`;
@@ -1000,20 +1012,18 @@
                 });
             }
 
-            // PS99 Data Loading
+            // PS99 Data Loading – also throttled
             async function loadPS99Data() {
                 document.getElementById('ps99-accounts-list').innerHTML = '';
                 document.getElementById('ps99-pets-grid').innerHTML = '';
                 document.getElementById('ps99-no-pets').textContent = 'Loading PS99 data...';
                 try {
-                    // Load overview stats
                     const overviewRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/ps99/overview');
                     const overview = await overviewRes.json();
                     document.getElementById('stat-ps99-total-accounts').textContent = overview.totalAccounts;
                     document.getElementById('stat-ps99-online').textContent = overview.onlineAccounts;
                     document.getElementById('stat-ps99-offline').textContent = overview.offlineAccounts;
 
-                    // Load accounts
                     const accRes = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/ps99/accounts');
                     const accounts = await accRes.json();
                     const accountsArray = Array.isArray(accounts) ? accounts : [];
@@ -1031,7 +1041,6 @@
                         </div>`;
                     }).join('');
 
-                    // Collect all pet names from all accounts
                     const uniqueNames = new Set();
                     for (const acc of accountsArray) {
                         try {
@@ -1041,6 +1050,7 @@
                                 detail.pets.forEach(p => uniqueNames.add(p.name));
                             }
                         } catch (e) { /* skip */ }
+                        await delay(300);
                     }
 
                     if (uniqueNames.size === 0) {
@@ -1048,12 +1058,10 @@
                         return;
                     }
 
-                    // Fetch metadata for all unique pet names
                     const namesParam = Array.from(uniqueNames).join(',');
                     const metaRes = await fetch(`https://mrc-saber-api.stat-tracker.workers.dev/api/ps99/metadata?names=${encodeURIComponent(namesParam)}`);
                     const metadataMap = await metaRes.json();
 
-                    // Build pet grid
                     const grid = document.getElementById('ps99-pets-grid');
                     grid.innerHTML = '';
                     for (const name of uniqueNames) {
@@ -1072,22 +1080,17 @@
                         card.appendChild(nameEl);
                         const amountEl = document.createElement('div');
                         amountEl.className = 'amount';
-                        // Compute total amount owned (we need to sum, but we already have details per account; we can aggregate)
-                        let totalAmount = 0;
-                        // Quick aggregation from accounts detail (could be optimized)
-                        amountEl.textContent = `×?`;
+                        amountEl.textContent = '×?';
                         card.appendChild(amountEl);
                         grid.appendChild(card);
                     }
                     document.getElementById('ps99-no-pets').style.display = 'none';
-
                 } catch (err) {
                     console.error(err);
                     document.getElementById('ps99-no-pets').textContent = 'Failed to load PS99 data.';
                 }
             }
 
-            // Helper for daily hatches
             async function loadDailyHatches() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/daily-hatches');
@@ -1097,7 +1100,6 @@
                 }
             }
 
-            // Inventory modal (Saber only)
             window.openFullInventory = function() {
                 document.getElementById('inventory-modal').style.display = 'flex';
                 updateModalAccountFilter();
@@ -1141,7 +1143,6 @@
                 setTimeout(() => { if (t.parentNode) t.parentNode.removeChild(t); }, 4000);
             }
 
-            // Session, Reviews, etc. kept unchanged but fully functional
             async function loadSessionData() {
                 try {
                     const res = await apiFetch('https://mrc-saber-api.stat-tracker.workers.dev/api/saber/session');
@@ -1191,7 +1192,7 @@
                 return `${h}h ${m}m ${s}s`;
             }
 
-            // Reviews functions (unchanged)
+            // Reviews functions
             function setupStarRating() {
                 const stars = document.querySelectorAll('#star-rating .star');
                 stars.forEach(star => {
